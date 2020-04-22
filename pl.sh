@@ -80,10 +80,10 @@ plsh_git_status(){
     not_pushed=`git cherry | wc -l`
 
     if [ "$not_added" != '0' ];then
-        echo has not added files
+        echo -n '*'
     fi
     if [ "$not_commited" != '0' ];then
-        echo has not commited files
+        echo -n '+'
     fi
     if [ "$not_pushed" != '0' ];then
         echo has not pushed files
