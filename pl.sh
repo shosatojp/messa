@@ -115,10 +115,20 @@ plsh_git_status(){
 }
 
 plsh_dir(){
-    plsh_var_dir=`pwd | sed "s|$HOME|~|"`
+    plsh_var_dir_src=`pwd | sed "s|$HOME|~|"`
+    plsh_var_dir=${plsh_var_dir_src#/}
     plsh_var_dir=${plsh_var_dir//\// $plsh_symbol_right_alt }
+
+    if [ `echo $plsh_var_dir_src | head -c 1` == '/' ];then
+        if [ `echo -n $plsh_var_dir_src | tail -c 1` != '/' ];then
+            plsh_var_dir="/ $plsh_symbol_right_alt $plsh_var_dir"
+        else
+            plsh_var_dir="/"
+        fi
+    fi
     echo $plsh_var_dir
     unset plsh_var_dir
+    unset plsh_var_dir_src
 }
 
 plsh_var_ps1_src="\
