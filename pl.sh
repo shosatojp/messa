@@ -51,7 +51,7 @@ plsh_bold(){
 }
 
 plsh_boldoff(){
-	echo -n "\[\e[21m\]"
+	echo -n "\[\e[21;24m\]"
 }
 
 plsh_basic_git_branch_name(){
@@ -62,11 +62,11 @@ plsh_basic_git_branch_name(){
     unset plsh_var_name
 }
 
-plsh_git_branch_name(){
+plsh_git(){
     plsh_var_name=`plsh_basic_git_branch_name`
     if [ $plsh_var_name ];then
         plsh_var_git="$(plsh_bgcolor `plsh_color deep_orange`)$plsh_symbol_right\
-$(plsh_fgcolor `plsh_color white`) $plsh_symbol_branch \$(plsh_basic_git_branch_name) \
+$(plsh_fgcolor `plsh_color white`) $plsh_symbol_branch $(plsh_basic_git_branch_name)$(plsh_git_status) \
 $(plsh_fgcolor `plsh_color deep_orange`)"
         echo -n $plsh_var_git
     fi
@@ -76,7 +76,7 @@ $(plsh_fgcolor `plsh_color deep_orange`)"
 
 plsh_git_status(){
     not_added=`git status -s | grep -e "^.\S" | wc -l`
-    not_commited=`git status -s | grep -s "^[^?]" | wc -l`
+    not_commited=`git status -s | grep -s "^[^? ]" | wc -l`
     not_pushed=`git cherry | wc -l`
 
     if [ "$not_added" != '0' ];then
@@ -86,12 +86,11 @@ plsh_git_status(){
         echo -n '+'
     fi
     if [ "$not_pushed" != '0' ];then
-        echo has not pushed files
+        echo -n " ↑$not_pushed"
     fi
-    if [ "$not_added" == '0' ] && [ "$not_commited" == '0' ] && [ "$not_pushed" == '0' ];then
-        echo ok
-    fi
-
+    # if [ "$not_added" == '0' ] && [ "$not_commited" == '0' ] && [ "$not_pushed" == '0' ];then
+    #     echo -n ''
+    # fi
 }
 
 plsh_create_ps1(){
@@ -106,11 +105,7 @@ $(plsh_bgcolor `plsh_color teal`)$plsh_symbol_right\
 $(plsh_fgcolor `plsh_color white`) $plsh_var_dir \
 $(plsh_fgcolor `plsh_color teal`)\
 \
-$(plsh_bold)'\
-\
-$(plsh_git_branch_name)\
-'$(plsh_boldoff)\
-\
+$(plsh_git)\
 $(plsh_default_bgcolor)$plsh_symbol_right\
 \
 $(plsh_resetcolor)\n\
