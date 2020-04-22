@@ -4,6 +4,13 @@
 plsh_symbol_right='\ue0b0'
 plsh_symbol_right_alt='\ue0b1'
 plsh_symbol_git_branch='\ue0a0'
+plsh_symbol_git_unadded='*'
+plsh_symbol_git_uncommited='+'
+plsh_symbol_git_unpushed='↑'
+
+# parts
+plsh_prompt='🤗 \$ '
+plsh_userhost=' \u@\h '
 
 # colors
 plsh_color_bg_userhost='indigo'
@@ -91,15 +98,15 @@ plsh_git_status(){
     plsh_not_pushed_count=`git cherry | wc -l`
 
     if [ "$plsh_not_added" ];then
-        echo -n '*'
+        echo -n "$plsh_symbol_git_unadded"
     fi
 
     if [ "$plsh_not_commited" ];then
-        echo -n '+'
+        echo -n "$plsh_symbol_git_uncommited"
     fi
 
     if [ "$plsh_not_pushed_count" != '0' ];then
-        echo -n " ↑$plsh_not_pushed_count"
+        echo -n " $plsh_symbol_git_unpushed$plsh_not_pushed_count"
     fi
 
     unset plsh_not_added
@@ -109,7 +116,7 @@ plsh_git_status(){
 
 plsh_var_ps1_src="\
 $(plsh_bgcolor `plsh_color $plsh_color_bg_userhost`)\
-$(plsh_fgcolor `plsh_color $plsh_color_fg_userhost`) \u@\h \
+$(plsh_fgcolor `plsh_color $plsh_color_fg_userhost`)$plsh_userhost\
 $(plsh_fgcolor `plsh_color $plsh_color_bg_userhost`)\
 \
 $(plsh_bgcolor `plsh_color $plsh_color_bg_path`)$plsh_symbol_right\
@@ -120,7 +127,7 @@ $(plsh_fgcolor `plsh_color $plsh_color_bg_path`)\
 $(plsh_default_bgcolor)$plsh_symbol_right\
 \
 $(plsh_resetcolor)\n\
-$(plsh_fgcolor `plsh_color $plsh_color_fg_prompt`)$(plsh_bgcolor `plsh_color $plsh_color_bg_prompt`)🤗 \$ \
+$(plsh_fgcolor `plsh_color $plsh_color_fg_prompt`)$(plsh_bgcolor `plsh_color $plsh_color_bg_prompt`)$plsh_prompt\
 $(plsh_resetcolor)$(plsh_fgcolor `plsh_color $plsh_color_bg_prompt`)$plsh_symbol_right\
 $(plsh_resetcolor) "
 
