@@ -141,3 +141,27 @@ $(plsh_resetcolor) "
 plsh_create_ps1(){
     PS1=$(eval "echo -en \"$plsh_var_ps1_src\"")
 }
+
+
+unset plsh_symbol_right
+unset plsh_symbol_git_branch
+
+unset plsh_prompt
+unset plsh_userhost
+
+unset plsh_color_bg_userhost
+unset plsh_color_fg_userhost
+unset plsh_color_bg_path
+unset plsh_color_fg_path
+unset plsh_color_bg_git
+unset plsh_color_fg_git
+unset plsh_color_bg_prompt
+unset plsh_color_fg_prompt
+
+unset plsh_fgcolor
+unset plsh_bgcolor
+unset plsh_color
+unset plsh_resetcolor
+unset plsh_default_bgcolor
+unset plsh_bold
+unset plsh_boldoff
