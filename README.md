@@ -2,19 +2,19 @@
 
 create powerline prompt with **no dependency**.
 
-![](5.png)
+![](images/5.png)
 
 ### unadded
-![](2.png)
+![](images/2.png)
 
 ### uncommited
-![](3.png)
+![](images/3.png)
 
 ### unpushed
-![](4.png)
+![](images/4.png)
 
 ### unadded & unpushed
-![](1.png)
+![](images/1.png)
 
 
 ## Install
