@@ -4,6 +4,15 @@ plsh_symbol_right='\ue0b0'
 plsh_symbol_right_alt='\ue0b1'
 plsh_symbol_branch='\ue0a0'
 
+plsh_color_bg_userhost='indigo'
+plsh_color_fg_userhost='white'
+plsh_color_bg_path='teal'
+plsh_color_fg_path='white'
+plsh_color_bg_git='deep_orange'
+plsh_color_fg_git='white'
+plsh_color_bg_prompt='red'
+plsh_color_fg_prompt='white'
+
 plsh_fgcolor(){
 	echo -n "\[\e[38;$1m\]"
 }
@@ -65,9 +74,9 @@ plsh_basic_git_branch_name(){
 plsh_git(){
     plsh_var_name=`plsh_basic_git_branch_name`
     if [ $plsh_var_name ];then
-        plsh_var_git="$(plsh_bgcolor `plsh_color deep_orange`)$plsh_symbol_right\
-$(plsh_fgcolor `plsh_color white`) $plsh_symbol_branch $(plsh_basic_git_branch_name)$(plsh_git_status) \
-$(plsh_fgcolor `plsh_color deep_orange`)"
+        plsh_var_git="$(plsh_bgcolor `plsh_color $plsh_color_bg_git`)$plsh_symbol_right\
+$(plsh_fgcolor `plsh_color $plsh_color_fg_git`) $plsh_symbol_branch $(plsh_basic_git_branch_name)$(plsh_git_status) \
+$(plsh_fgcolor `plsh_color $plsh_color_bg_git`)"
         echo -n $plsh_var_git
     fi
     unset plsh_var_name
@@ -94,23 +103,25 @@ plsh_git_status(){
 }
 
 plsh_create_ps1(){
+
+
     plsh_var_dir=`pwd | sed "s|$HOME|~|"`
     plsh_var_dir=${plsh_var_dir//\// $plsh_symbol_right_alt }
     export plsh_var_ps1_src='\
-$(plsh_bgcolor `plsh_color indigo`)\
-$(plsh_fgcolor `plsh_color white`) \u@\h \
-$(plsh_fgcolor `plsh_color indigo`)\
+$(plsh_bgcolor `plsh_color $plsh_color_bg_userhost`)\
+$(plsh_fgcolor `plsh_color $plsh_color_fg_userhost`) \u@\h \
+$(plsh_fgcolor `plsh_color $plsh_color_bg_userhost`)\
 \
-$(plsh_bgcolor `plsh_color teal`)$plsh_symbol_right\
-$(plsh_fgcolor `plsh_color white`) $plsh_var_dir \
-$(plsh_fgcolor `plsh_color teal`)\
+$(plsh_bgcolor `plsh_color $plsh_color_bg_path`)$plsh_symbol_right\
+$(plsh_fgcolor `plsh_color $plsh_color_fg_path`) $plsh_var_dir \
+$(plsh_fgcolor `plsh_color $plsh_color_bg_path`)\
 \
 $(plsh_git)\
 $(plsh_default_bgcolor)$plsh_symbol_right\
 \
 $(plsh_resetcolor)\n\
-$(plsh_fgcolor `plsh_color white`)$(plsh_bgcolor `plsh_color red`)🤗 \$ \
-$(plsh_resetcolor)$(plsh_fgcolor `plsh_color red`)$plsh_symbol_right\
+$(plsh_fgcolor `plsh_color $plsh_color_fg_prompt`)$(plsh_bgcolor `plsh_color $plsh_color_bg_prompt`)🤗 \$ \
+$(plsh_resetcolor)$(plsh_fgcolor `plsh_color $plsh_color_bg_prompt`)$plsh_symbol_right\
 $(plsh_resetcolor) '
     PS1=$(eval "echo -en \"$plsh_var_ps1_src\"")
     unset plsh_var_dir
