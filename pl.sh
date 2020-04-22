@@ -74,6 +74,12 @@ $(plsh_fgcolor `plsh_color deep_orange`)"
     unset plsh_var_git
 }
 
+plsh_git_status(){
+    # ??がある -> add していないファイルあり
+    # ??以外のものがある -> add はしてある
+    # commitされてるけどPUSHされてない
+}
+
 plsh_create_ps1(){
     plsh_var_dir=`pwd | sed "s|$HOME|~|"`
     plsh_var_dir=${plsh_var_dir//\// $plsh_symbol_right_alt }
@@ -94,7 +100,7 @@ $(plsh_git_branch_name)\
 $(plsh_default_bgcolor)$plsh_symbol_right\
 \
 $(plsh_resetcolor)\n\
-$(plsh_fgcolor `plsh_color white`)$(plsh_bgcolor `plsh_color red`)🤗 \$  \
+$(plsh_fgcolor `plsh_color white`)$(plsh_bgcolor `plsh_color red`)🤗 \$ \
 $(plsh_resetcolor)$(plsh_fgcolor `plsh_color red`)$plsh_symbol_right\
 $(plsh_resetcolor) '
     PS1=$(eval "echo -en \"$plsh_var_ps1_src\"")
