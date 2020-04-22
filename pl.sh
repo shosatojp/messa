@@ -9,7 +9,7 @@ plsh_symbol_git_uncommited='\x2b'
 plsh_symbol_git_unpushed='↑'
 
 # parts
-plsh_prompt='🤗 \$ '
+plsh_prompt='\$(plsh_ssh)🤗 \$ '
 plsh_userhost=' \u@\h '
 
 # colors
@@ -82,14 +82,14 @@ plsh_git_branch_name(){
 
 plsh_git_branch(){
     plsh_var_cols=`tput cols`
-    if [ $plsh_var_cols -gt 50 ];then
-        echo "$plsh_symbol_git_branch"
+    if [ $plsh_var_cols -gt '50' ];then
+        echo -n "$plsh_symbol_git_branch "
     fi
     unset plsh_var_cols
 }
 
 plsh_var_git_src="$(plsh_bgcolor `plsh_color $plsh_color_bg_git`)$plsh_symbol_right\
-$(plsh_fgcolor `plsh_color $plsh_color_fg_git`) \$plsh_git_branch\$(plsh_git_branch_name)\$(plsh_git_status) \
+$(plsh_fgcolor `plsh_color $plsh_color_fg_git`) \$(plsh_git_branch)\$(plsh_git_branch_name)\$(plsh_git_status) \
 $(plsh_fgcolor `plsh_color $plsh_color_bg_git`)"
 plsh_var_git_src_short="$(plsh_bgcolor `plsh_color $plsh_color_bg_git`)$plsh_symbol_right\
 $(plsh_fgcolor `plsh_color $plsh_color_fg_git`)\$(plsh_git_status)\
@@ -100,7 +100,7 @@ plsh_git(){
     git status -s &>/dev/null
     if [ "$?" == '0' ];then
         plsh_var_cols=`tput cols`
-        if [ $plsh_var_cols -gt 50 ];then
+        if [ $plsh_var_cols -gt '50' ];then
             echo -n `eval "echo \"$plsh_var_git_src"\"`
         else
             echo -n `eval "echo \"$plsh_var_git_src_short"\"`
@@ -158,14 +158,14 @@ plsh_dir(){
 }
 
 plsh_ssh(){
-    # if [ "$SSH_TTY" ];then
+    if [ "$SSH_TTY" ];then
         echo "🌐"
-    # fi
+    fi
 }
 
 plsh_var_ps1_src="\
 $(plsh_bgcolor `plsh_color $plsh_color_bg_userhost`)\
-$(plsh_fgcolor `plsh_color $plsh_color_fg_userhost`)$plsh_userhost\$(plsh_ssh)\
+$(plsh_fgcolor `plsh_color $plsh_color_fg_userhost`)$plsh_userhost\
 $(plsh_fgcolor `plsh_color $plsh_color_bg_userhost`)\
 \
 $(plsh_bgcolor `plsh_color $plsh_color_bg_path`)$plsh_symbol_right\
@@ -184,9 +184,6 @@ plsh_create_ps1(){
     PS1=$(eval "echo -en \"$plsh_var_ps1_src\"")
 }
 
-
-unset plsh_symbol_right
-unset plsh_symbol_git_branch
 
 unset plsh_prompt
 unset plsh_userhost
