@@ -114,13 +114,20 @@ plsh_git_status(){
     unset plsh_not_pushed_count
 }
 
+plsh_dir(){
+    plsh_var_dir=`pwd | sed "s|$HOME|~|"`
+    plsh_var_dir=${plsh_var_dir//\// $plsh_symbol_right_alt }
+    echo $plsh_var_dir
+    unset plsh_var_dir
+}
+
 plsh_var_ps1_src="\
 $(plsh_bgcolor `plsh_color $plsh_color_bg_userhost`)\
 $(plsh_fgcolor `plsh_color $plsh_color_fg_userhost`)$plsh_userhost\
 $(plsh_fgcolor `plsh_color $plsh_color_bg_userhost`)\
 \
 $(plsh_bgcolor `plsh_color $plsh_color_bg_path`)$plsh_symbol_right\
-$(plsh_fgcolor `plsh_color $plsh_color_fg_path`) \$plsh_var_dir \
+$(plsh_fgcolor `plsh_color $plsh_color_fg_path`) \$(plsh_dir) \
 $(plsh_fgcolor `plsh_color $plsh_color_bg_path`)\
 \
 \$(plsh_git)\
@@ -132,8 +139,5 @@ $(plsh_resetcolor)$(plsh_fgcolor `plsh_color $plsh_color_bg_prompt`)$plsh_symbol
 $(plsh_resetcolor) "
 
 plsh_create_ps1(){
-    plsh_var_dir=`pwd | sed "s|$HOME|~|"`
-    plsh_var_dir=${plsh_var_dir//\// $plsh_symbol_right_alt }
     PS1=$(eval "echo -en \"$plsh_var_ps1_src\"")
-    unset plsh_var_dir
 }
