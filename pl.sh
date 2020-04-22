@@ -9,8 +9,8 @@ plsh_symbol_git_uncommited='\x2b'
 plsh_symbol_git_unpushed='↑'
 
 # parts
-plsh_prompt='\$(plsh_ssh)🤗 \$ '
-plsh_userhost=' \u@\h '
+plsh_userhost='\$(plsh_ssh) \u@\h '
+plsh_prompt='🤗 \$ '
 
 # colors
 plsh_color_bg_userhost='indigo'
