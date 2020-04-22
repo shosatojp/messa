@@ -2,7 +2,7 @@
 
 create powerline prompt with **no dependency**.
 
-![](images/5.png)
+<!-- ![](images/5.png) -->
 
 ### unadded
 ![](images/2.png)
