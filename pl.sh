@@ -7,9 +7,10 @@ plsh_symbol_git_branch='\ue0a0'
 plsh_symbol_git_unadded='\x2a'
 plsh_symbol_git_uncommited='\x2b'
 plsh_symbol_git_unpushed='↑'
+plsh_symbol_remote='🌐'
 
 # parts
-plsh_userhost='\$(plsh_ssh) \u@\h '
+plsh_userhost='\$(plsh_remote) \u@\h '
 plsh_prompt='🤗 \$ '
 
 # colors
@@ -95,7 +96,6 @@ plsh_var_git_src_short="$(plsh_bgcolor `plsh_color $plsh_color_bg_git`)$plsh_sym
 $(plsh_fgcolor `plsh_color $plsh_color_fg_git`)\$(plsh_git_status)\
 $(plsh_fgcolor `plsh_color $plsh_color_bg_git`)"
 
-
 plsh_git(){
     git status -s &>/dev/null
     if [ "$?" == '0' ];then
@@ -147,19 +147,20 @@ plsh_dir(){
         fi
         echo $plsh_var_dir
         unset plsh_var_dir
-        unset plsh_var_dir_src
     elif [ $plsh_var_cols -gt '60' ];then
         echo $plsh_var_dir_src
-        unset plsh_var_dir_src
+    elif [ $plsh_var_cols -gt '50' ];then
+        echo $(echo -n $plsh_var_dir_src | sed -E 's|/(.)[^/]*|/\1|g' | head -c -1)$(basename $plsh_var_dir_src)
     else
         echo `basename $plsh_var_dir_src`
     fi
+    unset plsh_var_dir_src
     unset plsh_var_cols
 }
 
-plsh_ssh(){
+plsh_remote(){
     if [ "$SSH_TTY" ];then
-        echo "🌐"
+        echo "$plsh_symbol_remote"
     fi
 }
 
@@ -183,7 +184,6 @@ $(plsh_resetcolor) "
 plsh_create_ps1(){
     PS1=$(eval "echo -en \"$plsh_var_ps1_src\"")
 }
-
 
 unset plsh_prompt
 unset plsh_userhost
