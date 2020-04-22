@@ -2,6 +2,8 @@
 
 create powerline prompt with **no dependency**.
 
+![](screenshot.png)
+
 ## Install
 
 1. place `pl.sh` as you like
