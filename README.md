@@ -2,7 +2,20 @@
 
 create powerline prompt with **no dependency**.
 
-![](screenshot.png)
+![](5.png)
+
+### unadded
+![](2.png)
+
+### uncommited
+![](3.png)
+
+### unpushed
+![](4.png)
+
+### unadded & unpushed
+![](1.png)
+
 
 ## Install
 
