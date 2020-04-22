@@ -4,8 +4,8 @@
 plsh_symbol_right='\ue0b0'
 plsh_symbol_right_alt='\ue0b1'
 plsh_symbol_git_branch='\ue0a0'
-plsh_symbol_git_unadded='*'
-plsh_symbol_git_uncommited='+'
+plsh_symbol_git_unadded='\x2a'
+plsh_symbol_git_uncommited='\x2b'
 plsh_symbol_git_unpushed='↑'
 
 # parts
@@ -80,16 +80,33 @@ plsh_git_branch_name(){
     unset plsh_var_name
 }
 
+plsh_git_branch(){
+    plsh_var_cols=`tput cols`
+    if [ $plsh_var_cols -gt 50 ];then
+        echo "$plsh_symbol_git_branch"
+    fi
+    unset plsh_var_cols
+}
+
 plsh_var_git_src="$(plsh_bgcolor `plsh_color $plsh_color_bg_git`)$plsh_symbol_right\
-$(plsh_fgcolor `plsh_color $plsh_color_fg_git`) $plsh_symbol_git_branch \$(plsh_git_branch_name)\$(plsh_git_status) \
+$(plsh_fgcolor `plsh_color $plsh_color_fg_git`) \$plsh_git_branch\$(plsh_git_branch_name)\$(plsh_git_status) \
 $(plsh_fgcolor `plsh_color $plsh_color_bg_git`)"
+plsh_var_git_src_short="$(plsh_bgcolor `plsh_color $plsh_color_bg_git`)$plsh_symbol_right\
+$(plsh_fgcolor `plsh_color $plsh_color_fg_git`)\$(plsh_git_status)\
+$(plsh_fgcolor `plsh_color $plsh_color_bg_git`)"
+
 
 plsh_git(){
     git status -s &>/dev/null
-
     if [ "$?" == '0' ];then
-        echo -n `eval "echo \"$plsh_var_git_src"\"`
+        plsh_var_cols=`tput cols`
+        if [ $plsh_var_cols -gt 50 ];then
+            echo -n `eval "echo \"$plsh_var_git_src"\"`
+        else
+            echo -n `eval "echo \"$plsh_var_git_src_short"\"`
+        fi
     fi
+    unset plsh_var_cols
 }
 
 plsh_git_status(){
@@ -116,24 +133,39 @@ plsh_git_status(){
 
 plsh_dir(){
     plsh_var_dir_src=`pwd | sed "s|$HOME|~|"`
-    plsh_var_dir=${plsh_var_dir_src#/}
-    plsh_var_dir=${plsh_var_dir//\// $plsh_symbol_right_alt }
+    plsh_var_cols=`tput cols`
+    if [ $plsh_var_cols -gt '70' ];then
+        plsh_var_dir=${plsh_var_dir_src#/}
+        plsh_var_dir=${plsh_var_dir//\// $plsh_symbol_right_alt }
 
-    if [ `echo $plsh_var_dir_src | head -c 1` == '/' ];then
-        if [ `echo -n $plsh_var_dir_src | tail -c 1` != '/' ];then
-            plsh_var_dir="/ $plsh_symbol_right_alt $plsh_var_dir"
-        else
-            plsh_var_dir="/"
+        if [ `echo $plsh_var_dir_src | head -c 1` == '/' ];then
+            if [ `echo -n $plsh_var_dir_src | tail -c 1` != '/' ];then
+                plsh_var_dir="/ $plsh_symbol_right_alt $plsh_var_dir"
+            else
+                plsh_var_dir="/"
+            fi
         fi
+        echo $plsh_var_dir
+        unset plsh_var_dir
+        unset plsh_var_dir_src
+    elif [ $plsh_var_cols -gt '60' ];then
+        echo $plsh_var_dir_src
+        unset plsh_var_dir_src
+    else
+        echo `basename $plsh_var_dir_src`
     fi
-    echo $plsh_var_dir
-    unset plsh_var_dir
-    unset plsh_var_dir_src
+    unset plsh_var_cols
+}
+
+plsh_ssh(){
+    # if [ "$SSH_TTY" ];then
+        echo "🌐"
+    # fi
 }
 
 plsh_var_ps1_src="\
 $(plsh_bgcolor `plsh_color $plsh_color_bg_userhost`)\
-$(plsh_fgcolor `plsh_color $plsh_color_fg_userhost`)$plsh_userhost\
+$(plsh_fgcolor `plsh_color $plsh_color_fg_userhost`)$plsh_userhost\$(plsh_ssh)\
 $(plsh_fgcolor `plsh_color $plsh_color_bg_userhost`)\
 \
 $(plsh_bgcolor `plsh_color $plsh_color_bg_path`)$plsh_symbol_right\
