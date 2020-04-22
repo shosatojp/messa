@@ -1,9 +1,11 @@
 #!/bin/bash
 
+# symbols
 plsh_symbol_right='\ue0b0'
 plsh_symbol_right_alt='\ue0b1'
-plsh_symbol_branch='\ue0a0'
+plsh_symbol_git_branch='\ue0a0'
 
+# colors
 plsh_color_bg_userhost='indigo'
 plsh_color_fg_userhost='white'
 plsh_color_bg_path='teal'
@@ -63,7 +65,7 @@ plsh_boldoff(){
 	echo -n "\[\e[21;24m\]"
 }
 
-plsh_basic_git_branch_name(){
+plsh_git_branch_name(){
 	plsh_var_name=`git rev-parse --abbrev-ref HEAD 2>/dev/null`
 	if [ $? -eq 0 ];then
 		echo -n "$plsh_var_name"
@@ -71,59 +73,60 @@ plsh_basic_git_branch_name(){
     unset plsh_var_name
 }
 
-plsh_git(){
-    plsh_var_name=`plsh_basic_git_branch_name`
-    if [ $plsh_var_name ];then
-        plsh_var_git="$(plsh_bgcolor `plsh_color $plsh_color_bg_git`)$plsh_symbol_right\
-$(plsh_fgcolor `plsh_color $plsh_color_fg_git`) $plsh_symbol_branch $(plsh_basic_git_branch_name)$(plsh_git_status) \
+plsh_var_git_src="$(plsh_bgcolor `plsh_color $plsh_color_bg_git`)$plsh_symbol_right\
+$(plsh_fgcolor `plsh_color $plsh_color_fg_git`) $plsh_symbol_git_branch \$(plsh_git_branch_name)\$(plsh_git_status) \
 $(plsh_fgcolor `plsh_color $plsh_color_bg_git`)"
-        echo -n $plsh_var_git
+
+plsh_git(){
+    git status -s &>/dev/null
+
+    if [ "$?" == '0' ];then
+        echo -n `eval "echo \"$plsh_var_git_src"\"`
     fi
-    unset plsh_var_name
-    unset plsh_var_git
 }
 
 plsh_git_status(){
-    not_added=`git status -s | grep -e "^.\S" | wc -l`
-    not_commited=`git status -s | grep -s "^[^? ]" | wc -l`
-    not_pushed=`git cherry | wc -l`
+    plsh_not_added=`git status -s | grep -e "^.\S"`
+    plsh_not_commited=`git status -s | grep -e "^[^? ]"`
+    plsh_not_pushed_count=`git cherry | wc -l`
 
-    if [ "$not_added" != '0' ];then
+    if [ "$plsh_not_added" ];then
         echo -n '*'
     fi
-    if [ "$not_commited" != '0' ];then
+
+    if [ "$plsh_not_commited" ];then
         echo -n '+'
     fi
-    if [ "$not_pushed" != '0' ];then
-        echo -n " ↑$not_pushed"
+
+    if [ "$plsh_not_pushed_count" != '0' ];then
+        echo -n " ↑$plsh_not_pushed_count"
     fi
-    # if [ "$not_added" == '0' ] && [ "$not_commited" == '0' ] && [ "$not_pushed" == '0' ];then
-    #     echo -n ''
-    # fi
+
+    unset plsh_not_added
+    unset plsh_not_commited
+    unset plsh_not_pushed_count
 }
 
-plsh_create_ps1(){
-
-
-    plsh_var_dir=`pwd | sed "s|$HOME|~|"`
-    plsh_var_dir=${plsh_var_dir//\// $plsh_symbol_right_alt }
-    export plsh_var_ps1_src='\
+plsh_var_ps1_src="\
 $(plsh_bgcolor `plsh_color $plsh_color_bg_userhost`)\
 $(plsh_fgcolor `plsh_color $plsh_color_fg_userhost`) \u@\h \
 $(plsh_fgcolor `plsh_color $plsh_color_bg_userhost`)\
 \
 $(plsh_bgcolor `plsh_color $plsh_color_bg_path`)$plsh_symbol_right\
-$(plsh_fgcolor `plsh_color $plsh_color_fg_path`) $plsh_var_dir \
+$(plsh_fgcolor `plsh_color $plsh_color_fg_path`) \$plsh_var_dir \
 $(plsh_fgcolor `plsh_color $plsh_color_bg_path`)\
 \
-$(plsh_git)\
+\$(plsh_git)\
 $(plsh_default_bgcolor)$plsh_symbol_right\
 \
 $(plsh_resetcolor)\n\
 $(plsh_fgcolor `plsh_color $plsh_color_fg_prompt`)$(plsh_bgcolor `plsh_color $plsh_color_bg_prompt`)🤗 \$ \
 $(plsh_resetcolor)$(plsh_fgcolor `plsh_color $plsh_color_bg_prompt`)$plsh_symbol_right\
-$(plsh_resetcolor) '
+$(plsh_resetcolor) "
+
+plsh_create_ps1(){
+    plsh_var_dir=`pwd | sed "s|$HOME|~|"`
+    plsh_var_dir=${plsh_var_dir//\// $plsh_symbol_right_alt }
     PS1=$(eval "echo -en \"$plsh_var_ps1_src\"")
     unset plsh_var_dir
-    unset plsh_var_ps1_src
 }
