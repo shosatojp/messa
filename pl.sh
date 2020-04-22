@@ -75,9 +75,23 @@ $(plsh_fgcolor `plsh_color deep_orange`)"
 }
 
 plsh_git_status(){
-    # ??がある -> add していないファイルあり
-    # ??以外のものがある -> add はしてある
-    # commitされてるけどPUSHされてない
+    not_added=`git status -s | grep -e "^.\S" | wc -l`
+    not_commited=`git status -s | grep -s "^[^?]" | wc -l`
+    not_pushed=`git cherry | wc -l`
+
+    if [ "$not_added" != '0' ];then
+        echo has not added files
+    fi
+    if [ "$not_commited" != '0' ];then
+        echo has not commited files
+    fi
+    if [ "$not_pushed" != '0' ];then
+        echo has not pushed files
+    fi
+    if [ "$not_added" == '0' ] && [ "$not_commited" == '0' ] && [ "$not_pushed" == '0' ];then
+        echo ok
+    fi
+
 }
 
 plsh_create_ps1(){
