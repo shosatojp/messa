@@ -19,7 +19,7 @@ plsh_color_bg_path='teal'
 plsh_color_fg_path='white'
 plsh_color_bg_git='deep_orange'
 plsh_color_fg_git='white'
-plsh_color_bg_prompt='red'
+plsh_color_bg_prompt='pink'
 plsh_color_fg_prompt='white'
 
 plsh_fgcolor(){
