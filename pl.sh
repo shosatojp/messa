@@ -10,10 +10,12 @@ plsh_symbol_git_unpushed='↑'
 plsh_symbol_remote='🌐'
 
 # parts
-plsh_userhost='\$(plsh_remote) \u@\h '
+plsh_userhost=' \u@\h '
 plsh_prompt='🤗 \$ '
 
 # colors
+plsh_color_bg_remote='deep_purple'
+plsh_color_fg_remote='white'
 plsh_color_bg_userhost='indigo'
 plsh_color_fg_userhost='white'
 plsh_color_bg_path='teal'
@@ -158,14 +160,23 @@ plsh_dir(){
     unset plsh_var_cols
 }
 
+plsh_remote_src="$(plsh_bgcolor `plsh_color $plsh_color_bg_remote`)\
+$(plsh_fgcolor `plsh_color $plsh_color_fg_remote`) $plsh_symbol_remote\
+$(plsh_fgcolor `plsh_color $plsh_color_bg_remote`)\
+$(plsh_bgcolor `plsh_color $plsh_color_bg_userhost`)$plsh_symbol_right"
+
+plsh_no_remort_src="$(plsh_bgcolor `plsh_color $plsh_color_bg_userhost`)"
+
 plsh_remote(){
     if [ "$SSH_TTY" ];then
-        echo "$plsh_symbol_remote"
+        echo -n `eval "echo \"$plsh_remote_src"\"`
+    else
+        echo -n `eval "echo \"$plsh_no_remort_src"\"`
     fi
 }
 
 plsh_var_ps1_src="\
-$(plsh_bgcolor `plsh_color $plsh_color_bg_userhost`)\
+\$(plsh_remote)\
 $(plsh_fgcolor `plsh_color $plsh_color_fg_userhost`)$plsh_userhost\
 $(plsh_fgcolor `plsh_color $plsh_color_bg_userhost`)\
 \
