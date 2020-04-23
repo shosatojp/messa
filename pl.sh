@@ -11,7 +11,7 @@ plsh_symbol_remote='🌐'
 
 # parts
 plsh_userhost=' \u@\h '
-plsh_prompt_text='🤗 \$ '
+plsh_prompt_text='🤗 ${plsh_var_prev_code_show:= }\$ '
 
 # colors
 plsh_color_bg_remote='deep_purple'
@@ -186,6 +186,7 @@ plsh_prompt(){
     if [ "$plsh_var_prev_code" == '0' ];then
         echo -n `eval "echo \"$plsh_prompt_src\""`
     else
+        plsh_var_prev_code_show="$plsh_var_prev_code "
         echo -n `eval "echo \"$plsh_prompt_error_src\""`
     fi
 }
