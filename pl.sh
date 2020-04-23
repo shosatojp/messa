@@ -11,7 +11,7 @@ plsh_symbol_remote='🌐'
 
 # parts
 plsh_userhost=' \u@\h '
-plsh_prompt='🤗 \$ '
+plsh_prompt_text='🤗 \$ '
 
 # colors
 plsh_color_bg_remote='deep_purple'
@@ -22,8 +22,10 @@ plsh_color_bg_path='teal'
 plsh_color_fg_path='white'
 plsh_color_bg_git='deep_orange'
 plsh_color_fg_git='white'
-plsh_color_bg_prompt='pink'
+plsh_color_bg_prompt='cyan'
 plsh_color_fg_prompt='white'
+plsh_color_bg_prompt_error='pink'
+plsh_color_fg_prompt_error='white'
 
 plsh_fgcolor(){
 	echo -n "\[\e[38;$1m\]"
@@ -175,6 +177,19 @@ plsh_remote(){
     fi
 }
 
+plsh_prompt_src="$(plsh_fgcolor `plsh_color $plsh_color_fg_prompt`)$(plsh_bgcolor `plsh_color $plsh_color_bg_prompt`)$plsh_prompt_text\
+$(plsh_resetcolor)$(plsh_fgcolor `plsh_color $plsh_color_bg_prompt`)$plsh_symbol_right"
+plsh_prompt_error_src="$(plsh_fgcolor `plsh_color $plsh_color_fg_prompt_error`)$(plsh_bgcolor `plsh_color $plsh_color_bg_prompt_error`)$plsh_prompt_text\
+$(plsh_resetcolor)$(plsh_fgcolor `plsh_color $plsh_color_bg_prompt_error`)$plsh_symbol_right"
+
+plsh_prompt(){
+    if [ "$plsh_var_prev_code" == '0' ];then
+        echo -n `eval "echo \"$plsh_prompt_src\""`
+    else
+        echo -n `eval "echo \"$plsh_prompt_error_src\""`
+    fi
+}
+
 plsh_var_ps1_src="\
 \$(plsh_remote)\
 $(plsh_fgcolor `plsh_color $plsh_color_fg_userhost`)$plsh_userhost\
@@ -188,15 +203,14 @@ $(plsh_fgcolor `plsh_color $plsh_color_bg_path`)\
 $(plsh_default_bgcolor)$plsh_symbol_right\
 \
 $(plsh_resetcolor)\n\
-$(plsh_fgcolor `plsh_color $plsh_color_fg_prompt`)$(plsh_bgcolor `plsh_color $plsh_color_bg_prompt`)$plsh_prompt\
-$(plsh_resetcolor)$(plsh_fgcolor `plsh_color $plsh_color_bg_prompt`)$plsh_symbol_right\
+\$(plsh_prompt)\
 $(plsh_resetcolor) "
 
 plsh_create_ps1(){
+    plsh_var_prev_code=$?
     PS1=$(eval "echo -en \"$plsh_var_ps1_src\"")
 }
 
-unset plsh_prompt
 unset plsh_userhost
 
 unset plsh_color_bg_userhost
