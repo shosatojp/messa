@@ -191,6 +191,12 @@ plsh_prompt(){
     fi
 }
 
+rightprompt()
+{
+    printf "%*s" $COLUMNS "\w"
+}
+# \[$(tput sc; rightprompt; tput rc)\]\
+
 plsh_var_ps1_src="\
 \$(plsh_remote)\
 $(plsh_fgcolor `plsh_color $plsh_color_fg_userhost`)$plsh_userhost\
