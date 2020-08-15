@@ -37,29 +37,54 @@ plsh_bgcolor(){
 
 plsh_color(){
     case $1 in
-        "red"        ) echo -n "2;244;67;54"  ;;
-        "pink"       ) echo -n "2;233;30;99"  ;;
-        "purple"     ) echo -n "2;156;39;176" ;;
-        "deep_purple") echo -n "2;103;58;183" ;;
-        "indigo"     ) echo -n "2;63;81;181"  ;;
-        "blue"       ) echo -n "2;33;150;243" ;;
-        "light_blue" ) echo -n "2;3;169;244"  ;;
-        "cyan"       ) echo -n "2;0;188;212"  ;;
-        "teal"       ) echo -n "2;0;150;136"  ;;
-        "green"      ) echo -n "2;76;175;80"  ;;
-        "light_green") echo -n "2;139;195;74" ;;
-        "lime"       ) echo -n "2;205;220;57" ;;
-        "yellow"     ) echo -n "2;255;235;59" ;;
-        "amber"      ) echo -n "2;255;193;7"  ;;
-        "orange"     ) echo -n "2;255;152;0"  ;;
-        "deep_orange") echo -n "2;255;87;34"  ;;
-        "brown"      ) echo -n "2;121;85;72"  ;;
-        "grey"       ) echo -n "2;158;158;158";;
-        "blue_grey"  ) echo -n "2;96;125;139" ;;
+        "red"        ) echo -n "5;203"  ;;
+        "pink"       ) echo -n "5;161"  ;;
+        "purple"     ) echo -n "5;127" ;;
+        "deep_purple") echo -n "5;61" ;;
+        "indigo"     ) echo -n "5;61"  ;;
+        "blue"       ) echo -n "5;33" ;;
+        "light_blue" ) echo -n "5;39"  ;;
+        "cyan"       ) echo -n "5;38"  ;;
+        "teal"       ) echo -n "5;30"  ;;
+        "green"      ) echo -n "5;71"  ;;
+        "light_green") echo -n "5;107" ;;
+        "lime"       ) echo -n "5;107" ;;
+        "yellow"     ) echo -n "5;221" ;;
+        "amber"      ) echo -n "5;214"  ;;
+        "orange"     ) echo -n "5;208"  ;;
+        "deep_orange") echo -n "5;202"  ;;
+        "brown"      ) echo -n "5;"  ;;
+        "grey"       ) echo -n "5;247";;
+        "blue_grey"  ) echo -n "5;66" ;;
         "white"      ) echo -n "5;15";;
         "black"      ) echo -n "5;0";;
     esac
 }
+# plsh_color(){
+#     case $1 in
+#         "red"        ) echo -n "2;244;67;54"  ;;
+#         "pink"       ) echo -n "2;233;30;99"  ;;
+#         "purple"     ) echo -n "2;156;39;176" ;;
+#         "deep_purple") echo -n "2;103;58;183" ;;
+#         "indigo"     ) echo -n "2;63;81;181"  ;;
+#         "blue"       ) echo -n "2;33;150;243" ;;
+#         "light_blue" ) echo -n "2;3;169;244"  ;;
+#         "cyan"       ) echo -n "2;0;188;212"  ;;
+#         "teal"       ) echo -n "2;0;150;136"  ;;
+#         "green"      ) echo -n "2;76;175;80"  ;;
+#         "light_green") echo -n "2;139;195;74" ;;
+#         "lime"       ) echo -n "2;205;220;57" ;;
+#         "yellow"     ) echo -n "2;255;235;59" ;;
+#         "amber"      ) echo -n "2;255;193;7"  ;;
+#         "orange"     ) echo -n "2;255;152;0"  ;;
+#         "deep_orange") echo -n "2;255;87;34"  ;;
+#         "brown"      ) echo -n "2;121;85;72"  ;;
+#         "grey"       ) echo -n "2;158;158;158";;
+#         "blue_grey"  ) echo -n "2;96;125;139" ;;
+#         "white"      ) echo -n "5;15";;
+#         "black"      ) echo -n "5;0";;
+#     esac
+# }
 
 plsh_resetcolor(){
 	echo -n "\[\e[0m\]"
@@ -116,7 +141,7 @@ plsh_git(){
 plsh_git_status(){
     plsh_not_added=`git status -s | grep -e "^.\S"`
     plsh_not_commited=`git status -s | grep -e "^[^? ]"`
-    plsh_not_pushed_count=`git cherry | wc -l`
+    plsh_not_pushed_count=`git cherry 2>/dev/null | wc -l`
 
     if [ "$plsh_not_added" ];then
         echo -n "$plsh_symbol_git_unadded"
