@@ -1,0 +1,24 @@
+[[bin]]
+name = "pl"
+path = "pl.rs"
+
+[package]
+name = "hello_world"
+version = "0.0.1"
+authors = [ "あなたの名前 <you@example.com>" ]
+edition = "2018"
+
+[dependencies]
+# tokio = { version = "0.2", features = ["full"] }
+git2 = "*"
+whoami = "*"
+clap = "*"
+
+[profile.dev]
+opt-level = "s"
+lto = true
+panic = "abort"
+link-args = "-static"
+
+[build]
+jobs = 16
