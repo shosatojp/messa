@@ -1,1 +1,1 @@
-./target/debug/pl --home $HOME --pwd $PWD --error $?
+./target/debug/pl --home $HOME --pwd $PWD --error $? --width `tput cols`
