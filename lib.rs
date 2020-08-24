@@ -1,4 +1,4 @@
-use git2::{Branch, Repository, Status, StatusOptions};
+use git2::{Branch, Repository};
 
 pub mod colors {
     pub const RED: &str = "5;203";
@@ -22,6 +22,21 @@ pub mod colors {
     pub const BLUE_GREY: &str = "5;66";
     pub const WHITE: &str = "5;15";
     pub const BLACK: &str = "5;0";
+    pub fn forground(color: &str) -> String {
+        return format!("\x1b[38;{}m", color);
+    }
+
+    pub fn background(color: &str) -> String {
+        return format!("\x1b[48;{}m", color);
+    }
+
+    pub fn resetbackground() -> String {
+        return String::from("\x1b[49;24m");
+    }
+
+    pub fn resetcolor() -> String {
+        return String::from("\x1b[0m");
+    }
 }
 
 pub mod symbols {
@@ -31,22 +46,6 @@ pub mod symbols {
     pub const SYMBOL_GIT_BRANCH: char = '\u{e0a0}';
     pub const SYMBOL_GIT_CHANGED: char = '\x2a';
     pub const SYMBOL_GIT_STAGED: char = '\x2b';
-}
-
-pub fn forground(color: &str) -> String {
-    return format!("\x1b[38;{}m", color);
-}
-
-pub fn background(color: &str) -> String {
-    return format!("\x1b[48;{}m", color);
-}
-
-pub fn resetbackground() -> String {
-    return String::from("\x1b[49;24m");
-}
-
-pub fn resetcolor() -> String {
-    return String::from("\x1b[0m");
 }
 
 pub fn get_branch_name(repo: &Repository) -> String {
@@ -109,4 +108,36 @@ pub enum PATH_LENGTH {
     LONG,
     SHORT,
     SHORTEST,
+}
+
+pub fn count_git_status(repo: &Repository) -> (u32, u32) {
+    let staged_mask = 0b11111;
+    let changed_mask = 0b11111 << 7;
+
+    let mut changed = 0;
+    let mut staged = 0;
+    repo.statuses(Option::None)
+        .unwrap()
+        .iter()
+        .for_each(|status| {
+            let bits = &status.status().bits();
+            changed += std::cmp::min(bits & changed_mask, 1);
+            staged += std::cmp::min(bits & staged_mask, 1);
+            return ();
+        });
+
+    return (changed, staged);
+}
+
+pub fn count_unpushed(repo: &Repository, branch: &Branch) -> Result<usize, &'static str> {
+    let mut rw = repo.revwalk().or(Err("could not get revwalk"))?;
+    rw.push_head().or(Err("could not push head"))?;
+    let upstream = branch.upstream().or(Err("could not get upstream"))?;
+    let oid = upstream
+        .into_reference()
+        .target()
+        .ok_or("could not get oid")?;
+    rw.hide(oid).or(Err("could not hide upstream oid"))?;
+
+    return Ok(rw.count());
 }
