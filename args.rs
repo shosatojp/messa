@@ -12,7 +12,7 @@ pub fn get_arg_matches() -> clap::ArgMatches<'static> {
         .arg(
             clap::Arg::with_name("pwd")
                 .help("specify current working directory")
-                .short("w")
+                .short("d")
                 .long("pwd")
                 .required(false)
                 .takes_value(true),
@@ -24,6 +24,15 @@ pub fn get_arg_matches() -> clap::ArgMatches<'static> {
                 .long("error")
                 .required(false)
                 .default_value("0")
+                .takes_value(true),
+        )
+        .arg(
+            clap::Arg::with_name("width")
+                .help("tput cols")
+                .short("w")
+                .long("width")
+                .required(false)
+                .default_value("200")
                 .takes_value(true),
         )
         .get_matches();
