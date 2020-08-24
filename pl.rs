@@ -23,78 +23,92 @@ fn main() -> Result<(), &'static str> {
     let mut prompt = String::new();
     prompt.reserve(1024);
 
-    prompt.push_str(forground(WHITE).as_str());
-    prompt.push_str(background(INDIGO).as_str());
+    // def colors
+    let fg = WHITE;
+    let bg_user_hostname = INDIGO;
+    let bg_path = TEAL;
+    let bg_git = DEEP_ORANGE;
+    let bg_prompt = if prev_error > 0 { PINK } else { CYAN };
+
+    // user@hostname
+    prompt.push_str(background(bg_user_hostname).as_str());
+    prompt.push_str(forground(fg).as_str());
     prompt.push(' ');
     prompt.push_str(whoami::username().as_str());
     prompt.push('@');
     prompt.push_str(whoami::hostname().as_str());
     prompt.push(' ');
-    prompt.push_str(forground(INDIGO).as_str());
-    prompt.push_str(background(TEAL).as_str());
+    prompt.push_str(forground(bg_user_hostname).as_str());
+    prompt.push_str(background(bg_path).as_str());
     prompt.push(SYMBOL_RIGHT);
-    prompt.push_str(forground(WHITE).as_str());
+
+    // path
+    prompt.push_str(forground(fg).as_str());
     prompt.push(' ');
     prompt.push_str(build_path_str(home, pwd, PATH_LENGTH::LONG).as_str());
     prompt.push(' ');
-    if repo.is_ok() {
-        prompt.push_str(forground(TEAL).as_str());
-        prompt.push_str(background(DEEP_ORANGE).as_str());
-        prompt.push(SYMBOL_RIGHT);
-        prompt.push_str(forground(WHITE).as_str());
-        prompt.push(' ');
-        prompt.push(SYMBOL_GIT_BRANCH);
 
-        // git
-        let re = repo.unwrap();
-        let branch = Branch::wrap(re.head().unwrap());
+    // git
+    match repo {
+        Ok(repo) => {
+            prompt.push_str(forground(bg_path).as_str());
+            prompt.push_str(background(bg_git).as_str());
+            prompt.push(SYMBOL_RIGHT);
+            prompt.push_str(forground(fg).as_str());
+            prompt.push(' ');
+            prompt.push(SYMBOL_GIT_BRANCH);
 
-        // branch name
-        branch.name().ok().and_then(|opt_name| {
-            opt_name.and_then(|name| Some(prompt.push_str(format!(" {}", name).as_str())))
-        });
+            // git
+            let branch = Branch::wrap(repo.head().unwrap());
 
-        // changed & staged
-        let (changed, staged) = count_git_status(&re);
-        if changed > 0 {
-            prompt.push(SYMBOL_GIT_CHANGED);
+            // branch name
+            branch.name().ok().and_then(|opt_name| {
+                opt_name.and_then(|name| Some(prompt.push_str(format!(" {}", name).as_str())))
+            });
+
+            // changed & staged
+            let (changed, staged) = count_git_status(&repo);
+            if changed > 0 {
+                prompt.push(SYMBOL_GIT_CHANGED);
+            }
+            if staged > 0 {
+                prompt.push(SYMBOL_GIT_STAGED);
+            }
+
+            // unpushed
+            count_unpushed(&repo, &branch).ok().and_then(|unpushed| {
+                Some(prompt.push_str(format!(" {}{}", SYMBOL_GIT_UNPUSHED, unpushed).as_str()))
+            });
+
+            prompt.push(' ');
+            prompt.push_str(resetbackground().as_str());
+            prompt.push_str(forground(bg_git).as_str());
+            prompt.push(SYMBOL_RIGHT);
         }
-        if staged > 0 {
-            prompt.push(SYMBOL_GIT_STAGED);
+        Err(_) => {
+            prompt.push_str(forground(bg_path).as_str());
+            prompt.push_str(resetbackground().as_str());
+            prompt.push(SYMBOL_RIGHT);
         }
-
-        // unpushed
-        count_unpushed(&re, &branch).ok().and_then(|unpushed| {
-            Some(prompt.push_str(format!(" {}{}", SYMBOL_GIT_UNPUSHED, unpushed).as_str()))
-        });
-
-        prompt.push(' ');
-        prompt.push_str(resetbackground().as_str());
-        prompt.push_str(forground(DEEP_ORANGE).as_str());
-        prompt.push(SYMBOL_RIGHT);
-    } else {
-        prompt.push_str(forground(TEAL).as_str());
-        prompt.push_str(resetbackground().as_str());
-        prompt.push(SYMBOL_RIGHT);
     }
     prompt.push_str(resetcolor().as_str());
     prompt.push('\n');
 
-    prompt.push_str(forground(WHITE).as_str());
-    if prev_error > 0 {
-        prompt.push_str(background(PINK).as_str());
-        prompt.push_str("🤗 ");
-        prompt.push_str(format!("{}", prev_error).as_str());
-        prompt.push_str(" $ ");
-        prompt.push_str(resetcolor().as_str());
-        prompt.push_str(forground(PINK).as_str());
-    } else {
-        prompt.push_str(background(CYAN).as_str());
-        prompt.push_str("🤗 ");
-        prompt.push_str(" $ ");
-        prompt.push_str(resetcolor().as_str());
-        prompt.push_str(forground(CYAN).as_str());
-    }
+    // prompt
+    prompt.push_str(background(bg_prompt).as_str());
+    prompt.push_str(forground(fg).as_str());
+    prompt.push_str(
+        format!(
+            "🤗 {} $ ",
+            if prev_error > 0 {
+                prev_error.to_string()
+            } else {
+                "".to_string()
+            }
+        )
+        .as_str(),
+    );
+    prompt.push_str(forground(bg_prompt).as_str());
     prompt.push_str(resetbackground().as_str());
     prompt.push(SYMBOL_RIGHT);
     prompt.push_str(resetcolor().as_str());
