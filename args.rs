@@ -1,4 +1,4 @@
-pub fn get_arg_matches() -> clap::ArgMatches<'static> {
+pub fn get_arg_matches<'a>() -> clap::ArgMatches<'a> {
     return clap::App::new("powerline-shell")
         .version("0.1.0")
         .arg(

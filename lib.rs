@@ -1,3 +1,4 @@
+use super::builder::*;
 use git2::{Branch, Repository};
 
 pub mod colors {
@@ -48,6 +49,10 @@ pub mod symbols {
     pub const SYMBOL_GIT_STAGED: char = '\x2b';
 }
 
+pub trait PartialPrompt {
+    fn construct(&self, level: LENGTH_LEVEL, mode: BuildMode) -> PromptStringBuilder;
+}
+
 pub fn get_branch_name(repo: &Repository) -> String {
     let branch = Branch::wrap(repo.head().unwrap());
     return match branch.name() {
@@ -56,7 +61,7 @@ pub fn get_branch_name(repo: &Repository) -> String {
     };
 }
 
-pub fn build_path_str(home_src: &str, path_src: &str, length: PATH_LENGTH) -> String {
+pub fn build_path_str(home_src: &str, path_src: &str, level: LENGTH_LEVEL) -> String {
     let home = home_src.as_bytes();
     let home_len = home.len();
     let path = path_src.as_bytes();
@@ -73,8 +78,8 @@ pub fn build_path_str(home_src: &str, path_src: &str, length: PATH_LENGTH) -> St
             slice_start = i + 1;
         }
     }
-    match length {
-        PATH_LENGTH::LONG => {
+    match level {
+        LENGTH_LEVEL::LONG => {
             for piece in path_src[slice_start..].split('/') {
                 if piece.len() > 0 {
                     piecies.push(piece.to_string());
@@ -82,7 +87,7 @@ pub fn build_path_str(home_src: &str, path_src: &str, length: PATH_LENGTH) -> St
             }
             return piecies.join(format!(" {} ", symbols::SYMBOL_RIGHT_ALT).as_str());
         }
-        PATH_LENGTH::SHORT => {
+        LENGTH_LEVEL::MEDIUM => {
             let splits = path_src[slice_start..].split('/').collect::<Vec<&str>>();
             for piece in splits.iter() {
                 if piece.len() > 0 {
@@ -95,7 +100,7 @@ pub fn build_path_str(home_src: &str, path_src: &str, length: PATH_LENGTH) -> St
             }
             return piecies.join(format!("/").as_str());
         }
-        PATH_LENGTH::SHORTEST => {
+        LENGTH_LEVEL::SHORT => {
             return path_src[slice_start..]
                 .split('/')
                 .last()
@@ -104,10 +109,12 @@ pub fn build_path_str(home_src: &str, path_src: &str, length: PATH_LENGTH) -> St
         }
     }
 }
-pub enum PATH_LENGTH {
-    LONG,
-    SHORT,
-    SHORTEST,
+
+#[derive(PartialOrd, PartialEq, Copy, Clone)]
+pub enum LENGTH_LEVEL {
+    LONG = 2,
+    MEDIUM = 1,
+    SHORT = 0,
 }
 
 pub fn count_git_status(repo: &Repository) -> (u32, u32) {
@@ -129,7 +136,7 @@ pub fn count_git_status(repo: &Repository) -> (u32, u32) {
     return (changed, staged);
 }
 
-pub fn count_unpushed(repo: &Repository, branch: &Branch) -> Result<usize, &'static str> {
+pub fn count_unpushed(repo: &Repository, branch: &Branch) -> Result<u32, &'static str> {
     let mut rw = repo.revwalk().or(Err("could not get revwalk"))?;
     rw.push_head().or(Err("could not push head"))?;
     let upstream = branch.upstream().or(Err("could not get upstream"))?;
@@ -139,5 +146,5 @@ pub fn count_unpushed(repo: &Repository, branch: &Branch) -> Result<usize, &'sta
         .ok_or("could not get oid")?;
     rw.hide(oid).or(Err("could not hide upstream oid"))?;
 
-    return Ok(rw.count());
+    return Ok(rw.count() as u32);
 }
