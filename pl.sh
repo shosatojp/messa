@@ -130,9 +130,11 @@ plsh_git(){
     if [ "$?" == '0' ];then
         plsh_var_cols=`tput cols`
         if [ $plsh_var_cols -gt '50' ];then
-            echo -n `eval "echo \"$plsh_var_git_src"\"`
+            evaled=`eval "echo \"$plsh_var_git_src"\"`
+            echo -n "$evaled"
         else
-            echo -n `eval "echo \"$plsh_var_git_src_short"\"`
+            evaled=`eval "echo \"$plsh_var_git_src_short"\"`
+            echo -n "$evaled"
         fi
     fi
     unset plsh_var_cols
@@ -167,21 +169,22 @@ plsh_dir(){
         plsh_var_dir=${plsh_var_dir_src#/}
         plsh_var_dir=${plsh_var_dir//\// $plsh_symbol_right_alt }
 
-        if [ `echo $plsh_var_dir_src | head -c 1` == '/' ];then
-            if [ `echo -n $plsh_var_dir_src | tail -c 1` != '/' ];then
+        if [ `echo "$plsh_var_dir_src" | head -c 1` == '/' ];then
+            if [ `echo -n "$plsh_var_dir_src" | tail -c 1` != '/' ];then
                 plsh_var_dir="/ $plsh_symbol_right_alt $plsh_var_dir"
             else
                 plsh_var_dir="/"
             fi
         fi
-        echo $plsh_var_dir
+        echo "$plsh_var_dir"
         unset plsh_var_dir
     elif [ $plsh_var_cols -gt '60' ];then
-        echo $plsh_var_dir_src
+        echo "$plsh_var_dir_src"
     elif [ $plsh_var_cols -gt '50' ];then
-        echo $(echo -n $plsh_var_dir_src | sed -E 's|/(.)[^/]*|/\1|g' | head -c -1)$(basename $plsh_var_dir_src)
+        evaled=$(echo -n "$plsh_var_dir_src" | sed -E 's|/(.)[^/]*|/\1|g' | head -c -1)$(basename "$plsh_var_dir_src")
+        echo "$evaled"
     else
-        echo `basename $plsh_var_dir_src`
+        echo "`basename $plsh_var_dir_src`"
     fi
     unset plsh_var_dir_src
     unset plsh_var_cols
@@ -196,10 +199,11 @@ plsh_no_remort_src="$(plsh_bgcolor `plsh_color $plsh_color_bg_userhost`)"
 
 plsh_remote(){
     if [ "$SSH_TTY" ];then
-        echo -n `eval "echo \"$plsh_remote_src"\"`
+        evaled=`eval "echo \"$plsh_remote_src"\"`
     else
-        echo -n `eval "echo \"$plsh_no_remort_src"\"`
+        evaled=`eval "echo \"$plsh_no_remort_src"\"`
     fi
+    echo -n "$evaled"
 }
 
 plsh_prompt_src="$(plsh_fgcolor `plsh_color $plsh_color_fg_prompt`)$(plsh_bgcolor `plsh_color $plsh_color_bg_prompt`)$plsh_prompt_text\
@@ -209,11 +213,12 @@ $(plsh_resetcolor)$(plsh_fgcolor `plsh_color $plsh_color_bg_prompt_error`)$plsh_
 
 plsh_prompt(){
     if [ "$plsh_var_prev_code" == '0' ];then
-        echo -n `eval "echo \"$plsh_prompt_src\""`
+        evaled=`eval "echo \"$plsh_prompt_src\""`
     else
         plsh_var_prev_code_show="$plsh_var_prev_code "
-        echo -n `eval "echo \"$plsh_prompt_error_src\""`
+        evaled=`eval "echo \"$plsh_prompt_error_src\""`
     fi
+    echo -n "$evaled"
 }
 
 plsh_var_ps1_src="\
