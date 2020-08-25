@@ -31,7 +31,7 @@ impl Prompt {
     }
 }
 
-impl PartialPrompt for Prompt {
+impl PromptSegment for Prompt {
     fn construct(&self, level: LENGTH_LEVEL, mode: BuildMode) -> PromptStringBuilder {
         let mut builder = PromptStringBuilder::new(mode);
         builder.push_string(&background(self.bg));
@@ -58,5 +58,8 @@ impl PartialPrompt for Prompt {
     }
     fn get_bg(&self) -> &str {
         return self.bg;
+    }
+    fn is_enabled(&self) -> bool {
+        return true;
     }
 }

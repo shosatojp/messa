@@ -18,6 +18,8 @@ mod userhost;
 use userhost::*;
 mod git;
 use git::*;
+mod ssh;
+use ssh::*;
 mod prompt;
 use clap::ArgMatches;
 use prompt::*;
@@ -25,6 +27,7 @@ use prompt::*;
 fn main() -> Result<(), &'static str> {
     let matches: ArgMatches = get_arg_matches();
 
+    // arguments
     let pwd = matches.value_of("pwd").ok_or("")?;
     let home = matches.value_of("home").unwrap();
 
@@ -33,97 +36,99 @@ fn main() -> Result<(), &'static str> {
 
     // def colors
     let fg = WHITE;
+    let bg_ssh = DEEP_PURPLE;
     let bg_user_hostname = INDIGO;
     let bg_path = TEAL;
     let bg_git = DEEP_ORANGE;
     let bg_prompt = if prev_error > 0 { PINK } else { CYAN };
 
     // partial prompt builders
-    let userhostname = UserHostname::new(fg, bg_user_hostname);
-    let path = Path::new(fg, bg_path, home, pwd);
-    let git = Git::new(fg, bg_git, pwd);
-    // let partials: [Box<dyn PartialPrompt>; 3] =
-    //     [Box::new(userhostname), Box::new(path), Box::new(git)];
+    let segment_ssh: Box<dyn PromptSegment> = Box::new(Ssh::new(fg, bg_ssh));
+    let segment_userhostname: Box<dyn PromptSegment> =
+        Box::new(UserHostname::new(fg, bg_user_hostname));
+    let segment_path: Box<dyn PromptSegment> = Box::new(Path::new(fg, bg_path, home, pwd));
+    let segment_git: Box<dyn PromptSegment> = Box::new(Git::new(fg, bg_git, pwd));
     let prompt = Prompt::new(fg, bg_prompt, prev_error);
 
-    let profiles: Vec<[LENGTH_LEVEL; 3]> = vec![
-        [LENGTH_LEVEL::LONG, LENGTH_LEVEL::LONG, LENGTH_LEVEL::LONG],
-        [LENGTH_LEVEL::LONG, LENGTH_LEVEL::MEDIUM, LENGTH_LEVEL::LONG],
-        [LENGTH_LEVEL::LONG, LENGTH_LEVEL::SHORT, LENGTH_LEVEL::LONG],
-        [
-            LENGTH_LEVEL::LONG,
-            LENGTH_LEVEL::SHORT,
-            LENGTH_LEVEL::MEDIUM,
+    // profiles
+    let profiles: Vec<Vec<(&Box<dyn PromptSegment>, LENGTH_LEVEL)>> = vec![
+        vec![
+            (&segment_ssh, LENGTH_LEVEL::LONG),
+            (&segment_userhostname, LENGTH_LEVEL::LONG),
+            (&segment_path, LENGTH_LEVEL::LONG),
+            (&segment_git, LENGTH_LEVEL::LONG),
         ],
-        [
-            LENGTH_LEVEL::MEDIUM,
-            LENGTH_LEVEL::SHORT,
-            LENGTH_LEVEL::MEDIUM,
+        vec![
+            (&segment_ssh, LENGTH_LEVEL::LONG),
+            (&segment_userhostname, LENGTH_LEVEL::LONG),
+            (&segment_path, LENGTH_LEVEL::MEDIUM),
+            (&segment_git, LENGTH_LEVEL::LONG),
         ],
-        [
-            LENGTH_LEVEL::SHORT,
-            LENGTH_LEVEL::SHORT,
-            LENGTH_LEVEL::MEDIUM,
+        vec![
+            (&segment_ssh, LENGTH_LEVEL::LONG),
+            (&segment_userhostname, LENGTH_LEVEL::LONG),
+            (&segment_path, LENGTH_LEVEL::LONG),
+            (&segment_git, LENGTH_LEVEL::LONG),
         ],
-        [
-            LENGTH_LEVEL::SHORT,
-            LENGTH_LEVEL::SHORT,
-            LENGTH_LEVEL::MEDIUM,
+        vec![
+            (&segment_ssh, LENGTH_LEVEL::LONG),
+            (&segment_userhostname, LENGTH_LEVEL::LONG),
+            (&segment_path, LENGTH_LEVEL::SHORT),
+            (&segment_git, LENGTH_LEVEL::LONG),
+        ],
+        vec![
+            (&segment_ssh, LENGTH_LEVEL::MEDIUM),
+            (&segment_userhostname, LENGTH_LEVEL::LONG),
+            (&segment_path, LENGTH_LEVEL::SHORT),
+            (&segment_git, LENGTH_LEVEL::MEDIUM),
+        ],
+        vec![
+            (&segment_ssh, LENGTH_LEVEL::MEDIUM),
+            (&segment_userhostname, LENGTH_LEVEL::MEDIUM),
+            (&segment_path, LENGTH_LEVEL::SHORT),
+            (&segment_git, LENGTH_LEVEL::MEDIUM),
+        ],
+        vec![
+            (&segment_ssh, LENGTH_LEVEL::SHORT),
+            (&segment_userhostname, LENGTH_LEVEL::SHORT),
+            (&segment_path, LENGTH_LEVEL::SHORT),
+            (&segment_git, LENGTH_LEVEL::MEDIUM),
+        ],
+        vec![
+            (&segment_ssh, LENGTH_LEVEL::SHORT),
+            (&segment_userhostname, LENGTH_LEVEL::SHORT),
+            (&segment_path, LENGTH_LEVEL::SHORT),
+            (&segment_git, LENGTH_LEVEL::MEDIUM),
         ],
     ];
 
-    // for profile in profiles {
-    //     let mut sum = 0;
-    //     for (i, level) in profile.iter().enumerate() {
-    //         sum += partials[i].get_size()[*level as usize] + 1;
-    //     }
-
-    //     if width >= sum {
-    //         let mut string = String::new();
-    //         string.reserve(1024);
-
-    //         for (i, part) in partials.iter().enumerate() {
-    //             string.push_str(background((*part).get_bg()).as_str());
-    //             if (i != 0) {
-    //                 string.push(SYMBOL_RIGHT);
-    //             }
-    //             string.push_str(forground((*part).get_fg()).as_str());
-
-    //             string.push_str(
-    //                 part.construct(profile[i], BuildMode::CONSTRUCT)
-    //                     .data
-    //                     .as_str(),
-    //             );
-
-    //             string.push_str(forground((*part).get_bg()).as_str());
-    //         }
-    //     }
-    // }
-
+    // output
     for profile in profiles {
-        if width
-            >= userhostname.size[profile[0] as usize]
-                + path.size[profile[1] as usize]
-                + git.size[profile[2] as usize]
-        {
+        let mut sum = 0;
+        for (seg, level) in &profile {
+            if (**seg).is_enabled() {
+                sum += (**seg).get_size()[*level as usize] + 1;
+            }
+        }
+
+        if width >= sum {
             let mut string = String::new();
             string.reserve(1024);
-            string.push_str(
-                userhostname
-                    .construct(profile[0], BuildMode::CONSTRUCT)
-                    .data
-                    .as_str(),
-            );
-            string.push_str(
-                path.construct(profile[1], BuildMode::CONSTRUCT)
-                    .data
-                    .as_str(),
-            );
-            string.push_str(
-                git.construct(profile[2], BuildMode::CONSTRUCT)
-                    .data
-                    .as_str(),
-            );
+
+            for (i, &(seg, level)) in profile.iter().enumerate() {
+                if (*seg).is_enabled() {
+                    string.push_str(background((*seg).get_bg()).as_str());
+                    if i != 0 {
+                        string.push(SYMBOL_RIGHT);
+                    }
+                    string.push_str(forground((*seg).get_fg()).as_str());
+                    string.push_str((*seg).construct(level, BuildMode::CONSTRUCT).data.as_str());
+                    string.push_str(forground((*seg).get_bg()).as_str());
+                }
+            }
+
+            string.push_str(resetbackground().as_str());
+            string.push(SYMBOL_RIGHT);
             println!("{}", string);
             break;
         }
