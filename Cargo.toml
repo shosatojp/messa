@@ -1,15 +1,14 @@
 [[bin]]
 name = "pl"
-path = "pl.rs"
+path = "src/pl.rs"
 
 [package]
-name = "hello_world"
+name = "powerline-shell"
 version = "0.0.1"
-authors = [ "あなたの名前 <you@example.com>" ]
+authors = [ "shosatojp <me@shosato.jp>" ]
 edition = "2018"
 
 [dependencies]
-# tokio = { version = "0.2", features = ["full"] }
 git2 = "*"
 whoami = "*"
 clap = "*"

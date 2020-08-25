@@ -78,15 +78,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "hello_world"
-version = "0.0.1"
-dependencies = [
- "clap",
- "git2",
- "whoami",
-]
-
-[[package]]
 name = "hermit-abi"
 version = "0.1.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -206,6 +197,15 @@ name = "pkg-config"
 version = "0.3.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d36492546b6af1463394d46f0c834346f31548646f6ba10849802c9c9a27ac33"
+
+[[package]]
+name = "powerline-shell"
+version = "0.0.1"
+dependencies = [
+ "clap",
+ "git2",
+ "whoami",
+]
 
 [[package]]
 name = "strsim"
