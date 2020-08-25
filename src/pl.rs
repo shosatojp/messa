@@ -130,6 +130,7 @@ fn main() -> Result<(), &'static str> {
 
             string.push_str(resetbackground().as_str());
             string.push(SYMBOL_RIGHT);
+            string.push_str(resetcolor().as_str());
             println!("{}", string);
             break;
         }
