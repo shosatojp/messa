@@ -28,11 +28,19 @@ fn main() -> Result<(), &'static str> {
     let matches: ArgMatches = get_arg_matches();
 
     // arguments
-    let pwd = matches.value_of("pwd").ok_or("")?;
+    let pwd = matches.value_of("pwd").unwrap();
     let home = matches.value_of("home").unwrap();
 
-    let width: u32 = matches.value_of("width").unwrap().parse().unwrap();
-    let prev_error: u8 = matches.value_of("error").unwrap().parse().unwrap();
+    let width: u32 = matches
+        .value_of("width")
+        .unwrap()
+        .parse()
+        .or(Err("parse int error"))?;
+    let prev_error: u8 = matches
+        .value_of("error")
+        .unwrap()
+        .parse()
+        .or(Err("parse int error"))?;
 
     // def colors
     let fg = WHITE;
