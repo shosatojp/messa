@@ -35,16 +35,12 @@ impl Path<'_> {
     }
 }
 
-impl PartialPrompt for Path<'_> {
+impl PromptSegment for Path<'_> {
     fn construct(&self, level: LENGTH_LEVEL, mode: BuildMode) -> PromptStringBuilder {
         let mut builder = PromptStringBuilder::new(mode);
-        builder.push_string(&background(self.bg));
-        builder.push(SYMBOL_RIGHT);
-        builder.push_string(&forground(self.fg));
         builder.push(' ');
         builder.push_string(&build_path_str(self.home, self.pwd, level));
         builder.push(' ');
-        builder.push_string(&forground(self.bg));
         return builder;
     }
     fn get_size(&self) -> &[u32; 3] {
@@ -55,5 +51,8 @@ impl PartialPrompt for Path<'_> {
     }
     fn get_bg(&self) -> &str {
         return self.bg;
+    }
+    fn is_enabled(&self) -> bool {
+        return true;
     }
 }

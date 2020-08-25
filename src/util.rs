@@ -47,13 +47,15 @@ pub mod symbols {
     pub const SYMBOL_GIT_BRANCH: char = '\u{e0a0}';
     pub const SYMBOL_GIT_CHANGED: char = '\x2a';
     pub const SYMBOL_GIT_STAGED: char = '\x2b';
+    pub const SYMBOL_SSH: char = '🌐';
 }
 
-pub trait PartialPrompt {
+pub trait PromptSegment {
     fn construct(&self, level: LENGTH_LEVEL, mode: BuildMode) -> PromptStringBuilder;
     fn get_size(&self) -> &[u32; 3];
     fn get_fg(&self) -> &str;
     fn get_bg(&self) -> &str;
+    fn is_enabled(&self) -> bool;
 }
 
 pub fn get_branch_name(repo: &Repository) -> String {

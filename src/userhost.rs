@@ -33,23 +33,19 @@ impl UserHostname {
     }
 }
 
-impl PartialPrompt for UserHostname {
+impl PromptSegment for UserHostname {
     fn construct(&self, level: LENGTH_LEVEL, mode: BuildMode) -> PromptStringBuilder {
         let mut builder = PromptStringBuilder::new(mode);
 
-        builder.push_string(&background(self.bg));
-        builder.push_string(&forground(self.fg));
         builder.push(' ');
-
         builder.push_string(&self.username);
-        builder.push('@');
 
         if level >= LENGTH_LEVEL::MEDIUM {
+            builder.push('@');
             builder.push_string(&self.hostname);
-            builder.push(' ');
         }
+        builder.push(' ');
 
-        builder.push_string(&forground(self.bg));
         return builder;
     }
     fn get_size(&self) -> &[u32; 3] {
@@ -60,5 +56,8 @@ impl PartialPrompt for UserHostname {
     }
     fn get_bg(&self) -> &str {
         return self.bg;
+    }
+    fn is_enabled(&self) -> bool {
+        return true;
     }
 }

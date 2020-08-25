@@ -56,14 +56,10 @@ impl Git {
     }
 }
 
-impl PartialPrompt for Git {
+impl PromptSegment for Git {
     fn construct(&self, level: LENGTH_LEVEL, mode: BuildMode) -> PromptStringBuilder {
         let mut builder = PromptStringBuilder::new(mode);
         if self.enabled {
-            builder.push_string(&background(self.bg));
-            builder.push(SYMBOL_RIGHT);
-            builder.push_string(&forground(self.fg));
-
             if level >= LENGTH_LEVEL::MEDIUM {
                 builder.push(' ');
                 builder.push(SYMBOL_GIT_BRANCH);
@@ -84,11 +80,7 @@ impl PartialPrompt for Git {
             }
 
             builder.push(' ');
-            builder.push_string(&forground(self.bg));
         }
-        builder.push_string(&resetbackground());
-        builder.push(SYMBOL_RIGHT);
-        builder.push_string(&resetcolor());
         return builder;
     }
     fn get_size(&self) -> &[u32; 3] {
@@ -99,5 +91,8 @@ impl PartialPrompt for Git {
     }
     fn get_bg(&self) -> &str {
         return self.bg;
+    }
+    fn is_enabled(&self) -> bool {
+        return self.enabled;
     }
 }
