@@ -24,19 +24,19 @@ pub mod colors {
     pub const WHITE: &str = "5;15";
     pub const BLACK: &str = "5;0";
     pub fn forground(color: &str) -> String {
-        return format!("\x1b[38;{}m", color);
+        return format!("\\[\x1b[38;{}m\\]", color);
     }
 
     pub fn background(color: &str) -> String {
-        return format!("\x1b[48;{}m", color);
+        return format!("\\[\x1b[48;{}m\\]", color);
     }
 
     pub fn resetbackground() -> String {
-        return String::from("\x1b[49;24m");
+        return String::from("\\[\x1b[49;24m\\]");
     }
 
     pub fn resetcolor() -> String {
-        return String::from("\x1b[0m");
+        return String::from("\\[\x1b[0m\\]");
     }
 }
 
@@ -68,21 +68,29 @@ pub fn build_path_str(home_src: &str, path_src: &str, level: LENGTH_LEVEL) -> St
     let home = home_src.as_bytes();
     let home_len = home.len();
     let path = path_src.as_bytes();
-    let mut piecies: Vec<String> = vec![];
+    let mut in_home = false;
 
     let mut slice_start = 0;
 
-    for i in 0..home_len {
-        if path[i] != home[i] {
-            break;
-        }
-        if i + 1 == home_len {
-            piecies.push("~".to_string());
-            slice_start = i + 1;
+    if path.len() >= home_len {
+        for i in 0..home_len {
+            if path[i] != home[i] {
+                break;
+            }
+            if i + 1 == home_len {
+                in_home = true;
+                slice_start = i + 1;
+            }
         }
     }
     match level {
         LENGTH_LEVEL::LONG => {
+            let mut piecies: Vec<String> = vec![];
+            if in_home {
+                piecies.push("~".to_string());
+            } else {
+                piecies.push("/".to_string());
+            }
             for piece in path_src[slice_start..].split('/') {
                 if piece.len() > 0 {
                     piecies.push(piece.to_string());
@@ -91,17 +99,14 @@ pub fn build_path_str(home_src: &str, path_src: &str, level: LENGTH_LEVEL) -> St
             return piecies.join(format!(" {} ", symbols::SYMBOL_RIGHT_ALT).as_str());
         }
         LENGTH_LEVEL::MEDIUM => {
-            let splits = path_src[slice_start..].split('/').collect::<Vec<&str>>();
-            for piece in splits.iter() {
-                if piece.len() > 0 {
-                    if &piece == &splits.last().unwrap() {
-                        piecies.push(piece.to_string());
-                    } else {
-                        piecies.push(piece.chars().nth(0).unwrap().to_string());
-                    }
-                }
+            let mut sliced = path_src[slice_start..].to_string();
+            if !sliced.starts_with("/") {
+                sliced.insert(0, '/');
             }
-            return piecies.join(format!("/").as_str());
+            if in_home {
+                sliced.insert(0, '~');
+            }
+            return sliced;
         }
         LENGTH_LEVEL::SHORT => {
             return path_src[slice_start..]
