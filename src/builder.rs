@@ -28,7 +28,7 @@ impl PromptStringBuilder {
         if self.mode == BuildMode::CONSTRUCT {
             self.data.push_str(string.as_str());
         }
-        if string.len() > 0 && string.as_bytes()[0] != '\x1b' as u8 {
+        if !string.starts_with("\\[\x1b") {
             self.count += string.chars().count();
         }
     }
