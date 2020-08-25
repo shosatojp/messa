@@ -5,14 +5,14 @@ use super::util::*;
 use git2::{Branch, Repository};
 
 pub struct Prompt {
-    prev_error: i8,
+    prev_error: u8,
     fg: &'static str,
     bg: &'static str,
     size: [u32; 3],
 }
 
 impl Prompt {
-    pub fn new(fg: &'static str, bg: &'static str, prev_error: i8) -> Prompt {
+    pub fn new(fg: &'static str, bg: &'static str, prev_error: u8) -> Prompt {
         let mut prompt = Prompt {
             fg,
             bg,

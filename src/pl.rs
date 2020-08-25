@@ -29,11 +29,7 @@ fn main() -> Result<(), &'static str> {
     let home = matches.value_of("home").unwrap();
 
     let width: u32 = matches.value_of("width").unwrap().parse().unwrap();
-    let prev_error: i8 = matches
-        .value_of("error")
-        .unwrap()
-        .parse()
-        .or(Err("error must be int"))?;
+    let prev_error: u8 = matches.value_of("error").unwrap().parse().unwrap();
 
     // def colors
     let fg = WHITE;
