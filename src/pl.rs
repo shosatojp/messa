@@ -133,8 +133,8 @@ fn main() -> Result<(), &'static str> {
         }
     }
 
-    println!(
-        "{}",
+    print!(
+        "{} ",
         prompt
             .construct(LENGTH_LEVEL::LONG, BuildMode::CONSTRUCT)
             .data
