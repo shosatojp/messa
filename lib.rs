@@ -51,6 +51,9 @@ pub mod symbols {
 
 pub trait PartialPrompt {
     fn construct(&self, level: LENGTH_LEVEL, mode: BuildMode) -> PromptStringBuilder;
+    fn get_size(&self) -> &[u32; 3];
+    fn get_fg(&self) -> &str;
+    fn get_bg(&self) -> &str;
 }
 
 pub fn get_branch_name(repo: &Repository) -> String {

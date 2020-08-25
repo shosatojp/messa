@@ -18,11 +18,11 @@ pub struct Git {
 impl Git {
     pub fn new(fg: &'static str, bg: &'static str, pwd: &str) -> Git {
         let repo = Repository::open(pwd);
-        let mut git = match repo {
+        let mut git: Git = match repo {
             Ok(repo) => {
                 let branch = Branch::wrap(repo.head().unwrap());
                 let (changed, staged) = count_git_status(&repo);
-                return Git {
+                Git {
                     enabled: true,
                     branch_name: branch.name().unwrap_or(None).unwrap_or("").to_string(),
                     changed,
@@ -31,7 +31,7 @@ impl Git {
                     fg,
                     bg,
                     size: [0, 0, 0],
-                };
+                }
             }
             Err(_) => Git {
                 enabled: false,
@@ -45,9 +45,10 @@ impl Git {
             },
         };
 
-        let long = git.construct(LENGTH_LEVEL::LONG, BuildMode::ESTIMATE).count as u32;
-        git.size[2] = long;
-        git.size[1] = long;
+        git.size[2] = git.construct(LENGTH_LEVEL::LONG, BuildMode::ESTIMATE).count as u32;
+        git.size[1] = git
+            .construct(LENGTH_LEVEL::MEDIUM, BuildMode::ESTIMATE)
+            .count as u32;
         git.size[0] = git
             .construct(LENGTH_LEVEL::SHORT, BuildMode::ESTIMATE)
             .count as u32;
@@ -62,31 +63,41 @@ impl PartialPrompt for Git {
             builder.push_string(&background(self.bg));
             builder.push(SYMBOL_RIGHT);
             builder.push_string(&forground(self.fg));
-            builder.push(' ');
-            builder.push(SYMBOL_GIT_BRANCH);
 
             if level >= LENGTH_LEVEL::MEDIUM {
-                if self.branch_name.len() > 0 {
-                    builder.push_string(&format!(" {}", self.branch_name));
+                builder.push(' ');
+                builder.push(SYMBOL_GIT_BRANCH);
+                if level >= LENGTH_LEVEL::LONG {
+                    if self.branch_name.len() > 0 {
+                        builder.push_string(&format!(" {}", self.branch_name));
+                    }
                 }
-            }
-            if self.changed > 0 {
-                builder.push(SYMBOL_GIT_CHANGED);
-            }
-            if self.staged > 0 {
-                builder.push(SYMBOL_GIT_STAGED);
-            }
-            if self.unpushed > 0 {
-                builder.push_string(&format!(" {}{}", SYMBOL_GIT_UNPUSHED, self.unpushed));
+                if self.changed > 0 {
+                    builder.push(SYMBOL_GIT_CHANGED);
+                }
+                if self.staged > 0 {
+                    builder.push(SYMBOL_GIT_STAGED);
+                }
+                if self.unpushed > 0 {
+                    builder.push_string(&format!(" {}{}", SYMBOL_GIT_UNPUSHED, self.unpushed));
+                }
             }
 
             builder.push(' ');
-            builder.push_string(&resetbackground());
             builder.push_string(&forground(self.bg));
-            builder.push(SYMBOL_RIGHT);
         }
+        builder.push_string(&resetbackground());
+        builder.push(SYMBOL_RIGHT);
         builder.push_string(&resetcolor());
-        builder.push('\n');
         return builder;
+    }
+    fn get_size(&self) -> &[u32; 3] {
+        return &self.size;
+    }
+    fn get_fg(&self) -> &str {
+        return self.fg;
+    }
+    fn get_bg(&self) -> &str {
+        return self.bg;
     }
 }

@@ -52,4 +52,13 @@ impl PartialPrompt for UserHostname {
         builder.push_string(&forground(self.bg));
         return builder;
     }
+    fn get_size(&self) -> &[u32; 3] {
+        return &self.size;
+    }
+    fn get_fg(&self) -> &str {
+        return self.fg;
+    }
+    fn get_bg(&self) -> &str {
+        return self.bg;
+    }
 }

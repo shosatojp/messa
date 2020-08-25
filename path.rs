@@ -4,16 +4,16 @@ use super::lib::symbols::*;
 use super::lib::*;
 use git2::{Branch, Repository};
 
-pub struct Path {
-    home: &'static str,
-    pwd: &'static str,
+pub struct Path<'a> {
+    home: &'a str,
+    pwd: &'a str,
     fg: &'static str,
     bg: &'static str,
     pub size: [u32; 3],
 }
 
-impl Path {
-    pub fn new(fg: &'static str, bg: &'static str, home: &'static str, pwd: &'static str) -> Path {
+impl Path<'_> {
+    pub fn new<'a>(fg: &'static str, bg: &'static str, home: &'a str, pwd: &'a str) -> Path<'a> {
         let mut path = Path {
             fg,
             bg,
@@ -35,7 +35,7 @@ impl Path {
     }
 }
 
-impl PartialPrompt for Path {
+impl PartialPrompt for Path<'_> {
     fn construct(&self, level: LENGTH_LEVEL, mode: BuildMode) -> PromptStringBuilder {
         let mut builder = PromptStringBuilder::new(mode);
         builder.push_string(&background(self.bg));
@@ -46,5 +46,14 @@ impl PartialPrompt for Path {
         builder.push(' ');
         builder.push_string(&forground(self.bg));
         return builder;
+    }
+    fn get_size(&self) -> &[u32; 3] {
+        return &self.size;
+    }
+    fn get_fg(&self) -> &str {
+        return self.fg;
+    }
+    fn get_bg(&self) -> &str {
+        return self.bg;
     }
 }

@@ -28,16 +28,16 @@ impl PromptStringBuilder {
         if self.mode == BuildMode::CONSTRUCT {
             self.data.push_str(string.as_str());
         }
-        if string.as_bytes()[0] != '\x1b' as u8 {
-            self.count += string.len();
+        if string.len() > 0 && string.as_bytes()[0] != '\x1b' as u8 {
+            self.count += string.chars().count();
         }
     }
-    fn push_str(&mut self, string: &str, len: usize) {
-        if self.mode == BuildMode::CONSTRUCT {
-            self.data.push_str(string);
-        }
-        if string.as_bytes()[0] != '\x1b' as u8 {
-            self.count += len;
-        }
-    }
+    // fn push_str(&mut self, string: &str, len: usize) {
+    //     if self.mode == BuildMode::CONSTRUCT {
+    //         self.data.push_str(string);
+    //     }
+    //     if string.as_bytes()[0] != '\x1b' as u8 {
+    //         self.count += len;
+    //     }
+    // }
 }

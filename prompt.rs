@@ -50,4 +50,13 @@ impl PartialPrompt for Prompt {
         builder.push_string(&resetcolor());
         return builder;
     }
+    fn get_size(&self) -> &[u32; 3] {
+        return &self.size;
+    }
+    fn get_fg(&self) -> &str {
+        return self.fg;
+    }
+    fn get_bg(&self) -> &str {
+        return self.bg;
+    }
 }
