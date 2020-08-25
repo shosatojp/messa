@@ -14,10 +14,12 @@ whoami = "*"
 clap = "*"
 
 [profile.dev]
-opt-level = "s"
+opt-level = 3
 lto = true
 panic = "abort"
-# link-args = "-static"
+debug = false
+codegen-units = 1
+link-args = "-static"
 
 [build]
 jobs = 16
