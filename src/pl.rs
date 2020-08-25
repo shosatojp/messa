@@ -115,16 +115,18 @@ fn main() -> Result<(), &'static str> {
             let mut string = String::new();
             string.reserve(1024);
 
-            for (i, &(seg, level)) in profile.iter().enumerate() {
-                if (*seg).is_enabled() {
-                    string.push_str(background((*seg).get_bg()).as_str());
-                    if i != 0 {
-                        string.push(SYMBOL_RIGHT);
-                    }
-                    string.push_str(forground((*seg).get_fg()).as_str());
-                    string.push_str((*seg).construct(level, BuildMode::CONSTRUCT).data.as_str());
-                    string.push_str(forground((*seg).get_bg()).as_str());
+            for (i, &(seg, level)) in profile
+                .iter()
+                .filter(|(seg, level)| (*seg).is_enabled())
+                .enumerate()
+            {
+                string.push_str(background((*seg).get_bg()).as_str());
+                if i != 0 {
+                    string.push(SYMBOL_RIGHT);
                 }
+                string.push_str(forground((*seg).get_fg()).as_str());
+                string.push_str((*seg).construct(level, BuildMode::CONSTRUCT).data.as_str());
+                string.push_str(forground((*seg).get_bg()).as_str());
             }
 
             string.push_str(resetbackground().as_str());
