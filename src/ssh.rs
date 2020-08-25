@@ -14,7 +14,10 @@ pub struct Ssh {
 impl Ssh {
     pub fn new<'a>(fg: &'static str, bg: &'static str) -> Ssh {
         let mut ssh = Ssh {
-            enabled: std::env::var("SSH_TTY").is_ok(),
+            enabled: std::env::var("SSH_TTY")
+                .and_then(|s| Ok(s.len()))
+                .unwrap_or(0)
+                != 0,
             fg,
             bg,
             size: [0, 0, 0],
