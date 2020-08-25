@@ -1,6 +1,6 @@
 [[bin]]
 name = "pl"
-path = "pl.rs"
+path = "src/pl.rs"
 
 [package]
 name = "powerline-shell"

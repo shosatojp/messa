@@ -4,10 +4,10 @@
 #![allow(unused_imports)]
 
 use git2::{Branch, Repository};
-mod lib;
-use lib::colors::*;
-use lib::symbols::*;
-use lib::*;
+mod util;
+use util::colors::*;
+use util::symbols::*;
+use util::*;
 mod args;
 use args::*;
 mod path;
