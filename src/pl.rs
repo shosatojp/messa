@@ -104,12 +104,11 @@ fn main() -> Result<(), &'static str> {
 
     // output
     for profile in profiles {
-        let mut sum = 0;
-        for (seg, level) in &profile {
-            if (**seg).is_enabled() {
-                sum += (**seg).get_size()[*level as usize] + 1;
-            }
-        }
+        let sum = (&profile)
+            .iter()
+            .filter(|(seg, level)| (*seg).is_enabled())
+            .map(|(seg, level)| (**seg).get_size()[*level as usize] + 1)
+            .sum();
 
         if width >= sum {
             let mut string = String::new();
