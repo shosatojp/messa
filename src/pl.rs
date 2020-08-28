@@ -23,24 +23,24 @@ use ssh::*;
 mod prompt;
 use clap::ArgMatches;
 use prompt::*;
+mod out;
+use out::*;
 
-fn main() -> Result<(), &'static str> {
+fn main() {
     let matches: ArgMatches = get_arg_matches();
 
     // arguments
-    let pwd = matches.value_of("pwd").unwrap();
-    let home = matches.value_of("home").unwrap();
+    let pwd = matches.value_of("pwd").unwrap().to_string();
+    let home = matches.value_of("home").unwrap().to_string();
 
-    let width: u32 = matches
-        .value_of("width")
-        .unwrap()
-        .parse()
-        .or(Err("parse int error"))?;
-    let prev_error: u8 = matches
-        .value_of("error")
-        .unwrap()
-        .parse()
-        .or(Err("parse int error"))?;
+    let width: u32 = match matches.value_of("width").unwrap().parse() {
+        Ok(width) => width,
+        Err(_) => return,
+    };
+    let prev_error: u8 = match matches.value_of("error").unwrap().parse() {
+        Ok(e) => e,
+        Err(_) => return,
+    };
 
     // def colors
     let fg = WHITE;
@@ -54,8 +54,8 @@ fn main() -> Result<(), &'static str> {
     let segment_ssh: Box<dyn PromptSegment> = Box::new(Ssh::new(fg, bg_ssh));
     let segment_userhostname: Box<dyn PromptSegment> =
         Box::new(UserHostname::new(fg, bg_user_hostname));
-    let segment_path: Box<dyn PromptSegment> = Box::new(Path::new(fg, bg_path, home, pwd));
-    let segment_git: Box<dyn PromptSegment> = Box::new(Git::new(fg, bg_git, pwd));
+    let segment_path: Box<dyn PromptSegment> = Box::new(Path::new(fg, bg_path, &home, &pwd));
+    let segment_git: Box<dyn PromptSegment> = Box::new(Git::new(fg, bg_git, pwd.as_str()));
     let prompt = Prompt::new(fg, bg_prompt, prev_error);
 
     // profiles
@@ -110,45 +110,5 @@ fn main() -> Result<(), &'static str> {
         ],
     ];
 
-    // output
-    for profile in profiles {
-        let sum = (&profile)
-            .iter()
-            .filter(|(seg, level)| (*seg).is_enabled())
-            .map(|(seg, level)| (**seg).get_size()[*level as usize] + 1)
-            .sum();
-
-        if width >= sum {
-            let mut string = String::new();
-            string.reserve(1024);
-
-            for (i, &(seg, level)) in profile
-                .iter()
-                .filter(|(seg, level)| (*seg).is_enabled())
-                .enumerate()
-            {
-                string.push_str(background((*seg).get_bg()).as_str());
-                if i != 0 {
-                    string.push(SYMBOL_RIGHT);
-                }
-                string.push_str(forground((*seg).get_fg()).as_str());
-                string.push_str((*seg).construct(level, BuildMode::CONSTRUCT).data.as_str());
-                string.push_str(forground((*seg).get_bg()).as_str());
-            }
-
-            string.push_str(resetbackground().as_str());
-            string.push(SYMBOL_RIGHT);
-            string.push_str(resetcolor().as_str());
-            println!("{}", string);
-            break;
-        }
-    }
-
-    print!(
-        "{} ",
-        prompt
-            .construct(LENGTH_LEVEL::LONG, BuildMode::CONSTRUCT)
-            .data
-    );
-    return Ok(());
+    out(width, &profiles, &prompt);
 }

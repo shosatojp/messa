@@ -4,21 +4,21 @@ use super::util::symbols::*;
 use super::util::*;
 use git2::{Branch, Repository};
 
-pub struct Path<'a> {
-    home: &'a str,
-    pwd: &'a str,
+pub struct Path {
+    home: String,
+    pwd: String,
     fg: &'static str,
     bg: &'static str,
     pub size: [u32; 3],
 }
 
-impl Path<'_> {
-    pub fn new<'a>(fg: &'static str, bg: &'static str, home: &'a str, pwd: &'a str) -> Path<'a> {
+impl Path {
+    pub fn new(fg: &'static str, bg: &'static str, home: &String, pwd: &String) -> Path {
         let mut path = Path {
             fg,
             bg,
-            home,
-            pwd,
+            home: home.to_owned(),
+            pwd: pwd.to_owned(),
             size: [0, 0, 0],
         };
 
@@ -35,11 +35,15 @@ impl Path<'_> {
     }
 }
 
-impl PromptSegment for Path<'_> {
+impl PromptSegment for Path {
     fn construct(&self, level: LENGTH_LEVEL, mode: BuildMode) -> PromptStringBuilder {
         let mut builder = PromptStringBuilder::new(mode);
         builder.push(' ');
-        builder.push_string(&build_path_str(self.home, self.pwd, level));
+        builder.push_string(&build_path_str(
+            self.home.as_str(),
+            self.pwd.as_str(),
+            level,
+        ));
         builder.push(' ');
         return builder;
     }

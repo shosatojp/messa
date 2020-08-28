@@ -20,14 +20,22 @@ impl Git {
         let repo = Repository::open(pwd);
         let mut git: Git = match repo {
             Ok(repo) => {
-                let branch = Branch::wrap(repo.head().unwrap());
+                let mut unpushed = 0;
+                let mut branch_name = String::new();
+                let head = repo.head();
+                if head.is_ok() {
+                    let branch = Branch::wrap(head.unwrap());
+                    unpushed = count_unpushed(&repo, &branch).unwrap_or(0);
+                    branch_name = branch.name().unwrap_or(None).unwrap_or("").to_string()
+                }
                 let (changed, staged) = count_git_status(&repo);
+
                 Git {
                     enabled: true,
-                    branch_name: branch.name().unwrap_or(None).unwrap_or("").to_string(),
+                    branch_name,
                     changed,
                     staged,
-                    unpushed: count_unpushed(&repo, &branch).unwrap_or(0),
+                    unpushed,
                     fg,
                     bg,
                     size: [0, 0, 0],
