@@ -18,6 +18,9 @@
 1. append following code to your `.bashrc`
 
 ```sh
-export PATH='$HOME/.cargo/bin:$PATH"
-export PROMPT_COMMAND="fprompt --home $HOME --pwd $PWD --error $? --width $COLUMNS'
+export PATH="$HOME/.cargo/bin:$PATH"
+function create_prompt(){
+    PS1=$(fprompt --home $HOME --pwd $PWD --error $? --width $COLUMNS)
+}
+export PROMPT_COMMAND=create_prompt
 ```
