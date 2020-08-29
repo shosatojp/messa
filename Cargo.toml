@@ -1,9 +1,10 @@
 [[bin]]
-name = "pl"
+name = "fprompt"
 path = "src/pl.rs"
 
 [package]
-name = "powerline-shell"
+name = "fprompt"
+description = "fprompt"
 version = "0.0.1"
 authors = [ "shosatojp <me@shosato.jp>" ]
 edition = "2018"
@@ -11,9 +12,9 @@ repository = "https://github.com/shosatojp/powerline-shell"
 license = "MIT"
 
 [dependencies]
-git2 = "*"
-whoami = "*"
-clap = "*"
+git2 = "0.13.10"
+whoami = "0.9.0"
+clap = "2.33.3"
 
 [profile.dev]
 opt-level = 3
