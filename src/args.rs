@@ -1,6 +1,6 @@
 pub fn get_arg_matches<'a>() -> clap::ArgMatches<'a> {
     return clap::App::new("powerline-shell")
-        .version("0.0.3")
+        .version("0.0.4")
         .arg(
             clap::Arg::with_name("home")
                 .help("specify home directory")
