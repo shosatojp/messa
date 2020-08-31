@@ -17,9 +17,19 @@ pub struct Git {
 
 impl Git {
     pub fn new(fg: &'static str, bg: &'static str, pwd: &str) -> Git {
-        let repo = Repository::open(pwd);
+        let mut repo = None;
+        for parent in std::path::Path::new(pwd)
+            .ancestors()
+            .filter(|&path| path.join(".git").exists())
+        {
+            println!("{}", parent.to_str().unwrap());
+            repo = match Repository::open(parent) {
+                Ok(repo) => Some(repo),
+                Err(_) => continue,
+            }
+        }
         let mut git: Git = match repo {
-            Ok(repo) => {
+            Some(repo) => {
                 let mut unpushed = 0;
                 let mut branch_name = String::new();
                 let head = repo.head();
@@ -41,7 +51,7 @@ impl Git {
                     size: [0, 0, 0],
                 }
             }
-            Err(_) => Git {
+            None => Git {
                 enabled: false,
                 branch_name: "".to_string(),
                 changed: 0,
