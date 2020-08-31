@@ -1,1 +1,1 @@
-PROMPT_COMMAND="fprompt --home $HOME --pwd $PWD --error $? --width $COLUMNS"
+export PS1=$(target/debug/fprompt --home $HOME --pwd $PWD --error $? --width $COLUMNS)
