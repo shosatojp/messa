@@ -40,6 +40,7 @@ impl PromptSegment for Ssh {
         builder.push(' ');
         if level >= LENGTH_LEVEL::MEDIUM {
             builder.push(SYMBOL_SSH);
+            builder.count += 1; // SYMBOL_SSH が幅２
             builder.push(' ');
         }
         return builder;
