@@ -58,7 +58,7 @@ fn main() {
         Box::new(UserHostname::new(fg, bg_user_hostname));
     let segment_path: Box<dyn PromptSegment> = Box::new(Path::new(fg, bg_path, &home, &pwd));
     let segment_git: Box<dyn PromptSegment> = Box::new(Git::new(fg, bg_git, pwd.as_str()));
-    let segment_time: Box<dyn PromptSegment> = Box::new(Time::new(fg, bg_ssh));
+    // let segment_time: Box<dyn PromptSegment> = Box::new(Time::new(fg, bg_ssh));
     let prompt = Prompt::new(fg, bg_prompt, prev_error);
 
     // profiles
@@ -68,7 +68,7 @@ fn main() {
             (&segment_userhostname, LENGTH_LEVEL::LONG, Location::LEFT),
             (&segment_path, LENGTH_LEVEL::LONG, Location::LEFT),
             (&segment_git, LENGTH_LEVEL::LONG, Location::LEFT),
-            (&segment_time, LENGTH_LEVEL::LONG, Location::RIGHT),
+            // (&segment_time, LENGTH_LEVEL::LONG, Location::RIGHT),
         ],
         vec![
             (&segment_ssh, LENGTH_LEVEL::LONG, Location::LEFT),

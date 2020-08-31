@@ -49,22 +49,22 @@ pub fn out(
             string.push_str(resetcolor().as_str());
 
             // right
-            let mut right_string = String::new();
+            // let mut right_string = String::new();
 
-            for (seg, level, loc) in profile
-                .iter()
-                .filter(|(seg, level, loc)| *loc == Location::RIGHT)
-            {
-                right_string.push_str(forground(seg.get_bg()).as_str());
-                right_string.push(SYMBOL_LEFT);
-                right_string.push_str(forground(seg.get_fg()).as_str());
-                right_string.push_str(background(seg.get_bg()).as_str());
-                right_string.push_str(seg.construct(*level, BuildMode::CONSTRUCT).data.as_str());
-            }
-            right_string.push_str(resetcolor().as_str());
+            // for (seg, level, loc) in profile
+            //     .iter()
+            //     .filter(|(seg, level, loc)| *loc == Location::RIGHT)
+            // {
+            //     right_string.push_str(forground(seg.get_bg()).as_str());
+            //     right_string.push(SYMBOL_LEFT);
+            //     right_string.push_str(forground(seg.get_fg()).as_str());
+            //     right_string.push_str(background(seg.get_bg()).as_str());
+            //     right_string.push_str(seg.construct(*level, BuildMode::CONSTRUCT).data.as_str());
+            // }
+            // right_string.push_str(resetcolor().as_str());
 
-            string.push_str(" ".repeat(width as usize - sum as usize).as_str());
-            string.push_str(right_string.as_str());
+            // string.push_str(" ".repeat(width as usize - sum as usize).as_str());
+            // string.push_str(right_string.as_str());
 
             println!("{}", string);
             break;
