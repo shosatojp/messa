@@ -22,7 +22,6 @@ impl Git {
             .ancestors()
             .filter(|&path| path.join(".git").exists())
         {
-            println!("{}", parent.to_str().unwrap());
             repo = match Repository::open(parent) {
                 Ok(repo) => Some(repo),
                 Err(_) => continue,
