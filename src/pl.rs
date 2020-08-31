@@ -44,7 +44,7 @@ fn main() {
 
     // def colors
     let fg = WHITE;
-    let bg_ssh = DEEP_PURPLE;
+    let bg_ssh = BLUE;
     let bg_user_hostname = INDIGO;
     let bg_path = TEAL;
     let bg_git = DEEP_ORANGE;
