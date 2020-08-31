@@ -42,12 +42,19 @@ pub mod colors {
 
 pub mod symbols {
     pub const SYMBOL_RIGHT: char = '\u{e0b0}';
+    pub const SYMBOL_LEFT: char = '\u{e0b2}';
     pub const SYMBOL_RIGHT_ALT: char = '\u{e0b1}';
     pub const SYMBOL_GIT_UNPUSHED: char = '↑';
     pub const SYMBOL_GIT_BRANCH: char = '\u{e0a0}';
     pub const SYMBOL_GIT_CHANGED: char = '\x2a';
     pub const SYMBOL_GIT_STAGED: char = '\x2b';
     pub const SYMBOL_SSH: char = '🌐';
+}
+
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub enum Location {
+    LEFT,
+    RIGHT,
 }
 
 pub trait PromptSegment {

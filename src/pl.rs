@@ -25,6 +25,8 @@ use clap::ArgMatches;
 use prompt::*;
 mod out;
 use out::*;
+mod time;
+use time::*;
 
 fn main() {
     let matches: ArgMatches = get_arg_matches();
@@ -56,57 +58,59 @@ fn main() {
         Box::new(UserHostname::new(fg, bg_user_hostname));
     let segment_path: Box<dyn PromptSegment> = Box::new(Path::new(fg, bg_path, &home, &pwd));
     let segment_git: Box<dyn PromptSegment> = Box::new(Git::new(fg, bg_git, pwd.as_str()));
+    let segment_time: Box<dyn PromptSegment> = Box::new(Time::new(fg, bg_ssh));
     let prompt = Prompt::new(fg, bg_prompt, prev_error);
 
     // profiles
-    let profiles: Vec<Vec<(&Box<dyn PromptSegment>, LENGTH_LEVEL)>> = vec![
+    let profiles: Vec<Vec<(&Box<dyn PromptSegment>, LENGTH_LEVEL, Location)>> = vec![
         vec![
-            (&segment_ssh, LENGTH_LEVEL::LONG),
-            (&segment_userhostname, LENGTH_LEVEL::LONG),
-            (&segment_path, LENGTH_LEVEL::LONG),
-            (&segment_git, LENGTH_LEVEL::LONG),
+            (&segment_ssh, LENGTH_LEVEL::LONG, Location::LEFT),
+            (&segment_userhostname, LENGTH_LEVEL::LONG, Location::LEFT),
+            (&segment_path, LENGTH_LEVEL::LONG, Location::LEFT),
+            (&segment_git, LENGTH_LEVEL::LONG, Location::LEFT),
+            (&segment_time, LENGTH_LEVEL::LONG, Location::RIGHT),
         ],
         vec![
-            (&segment_ssh, LENGTH_LEVEL::LONG),
-            (&segment_userhostname, LENGTH_LEVEL::LONG),
-            (&segment_path, LENGTH_LEVEL::MEDIUM),
-            (&segment_git, LENGTH_LEVEL::LONG),
+            (&segment_ssh, LENGTH_LEVEL::LONG, Location::LEFT),
+            (&segment_userhostname, LENGTH_LEVEL::LONG, Location::LEFT),
+            (&segment_path, LENGTH_LEVEL::MEDIUM, Location::LEFT),
+            (&segment_git, LENGTH_LEVEL::LONG, Location::LEFT),
         ],
         vec![
-            (&segment_ssh, LENGTH_LEVEL::LONG),
-            (&segment_userhostname, LENGTH_LEVEL::LONG),
-            (&segment_path, LENGTH_LEVEL::LONG),
-            (&segment_git, LENGTH_LEVEL::LONG),
+            (&segment_ssh, LENGTH_LEVEL::LONG, Location::LEFT),
+            (&segment_userhostname, LENGTH_LEVEL::LONG, Location::LEFT),
+            (&segment_path, LENGTH_LEVEL::LONG, Location::LEFT),
+            (&segment_git, LENGTH_LEVEL::LONG, Location::LEFT),
         ],
         vec![
-            (&segment_ssh, LENGTH_LEVEL::LONG),
-            (&segment_userhostname, LENGTH_LEVEL::LONG),
-            (&segment_path, LENGTH_LEVEL::SHORT),
-            (&segment_git, LENGTH_LEVEL::LONG),
+            (&segment_ssh, LENGTH_LEVEL::LONG, Location::LEFT),
+            (&segment_userhostname, LENGTH_LEVEL::LONG, Location::LEFT),
+            (&segment_path, LENGTH_LEVEL::SHORT, Location::LEFT),
+            (&segment_git, LENGTH_LEVEL::LONG, Location::LEFT),
         ],
         vec![
-            (&segment_ssh, LENGTH_LEVEL::MEDIUM),
-            (&segment_userhostname, LENGTH_LEVEL::LONG),
-            (&segment_path, LENGTH_LEVEL::SHORT),
-            (&segment_git, LENGTH_LEVEL::MEDIUM),
+            (&segment_ssh, LENGTH_LEVEL::MEDIUM, Location::LEFT),
+            (&segment_userhostname, LENGTH_LEVEL::LONG, Location::LEFT),
+            (&segment_path, LENGTH_LEVEL::SHORT, Location::LEFT),
+            (&segment_git, LENGTH_LEVEL::MEDIUM, Location::LEFT),
         ],
         vec![
-            (&segment_ssh, LENGTH_LEVEL::MEDIUM),
-            (&segment_userhostname, LENGTH_LEVEL::MEDIUM),
-            (&segment_path, LENGTH_LEVEL::SHORT),
-            (&segment_git, LENGTH_LEVEL::MEDIUM),
+            (&segment_ssh, LENGTH_LEVEL::MEDIUM, Location::LEFT),
+            (&segment_userhostname, LENGTH_LEVEL::MEDIUM, Location::LEFT),
+            (&segment_path, LENGTH_LEVEL::SHORT, Location::LEFT),
+            (&segment_git, LENGTH_LEVEL::MEDIUM, Location::LEFT),
         ],
         vec![
-            (&segment_ssh, LENGTH_LEVEL::SHORT),
-            (&segment_userhostname, LENGTH_LEVEL::SHORT),
-            (&segment_path, LENGTH_LEVEL::SHORT),
-            (&segment_git, LENGTH_LEVEL::MEDIUM),
+            (&segment_ssh, LENGTH_LEVEL::SHORT, Location::LEFT),
+            (&segment_userhostname, LENGTH_LEVEL::SHORT, Location::LEFT),
+            (&segment_path, LENGTH_LEVEL::SHORT, Location::LEFT),
+            (&segment_git, LENGTH_LEVEL::MEDIUM, Location::LEFT),
         ],
         vec![
-            (&segment_ssh, LENGTH_LEVEL::SHORT),
-            (&segment_userhostname, LENGTH_LEVEL::SHORT),
-            (&segment_path, LENGTH_LEVEL::SHORT),
-            (&segment_git, LENGTH_LEVEL::MEDIUM),
+            (&segment_ssh, LENGTH_LEVEL::SHORT, Location::LEFT),
+            (&segment_userhostname, LENGTH_LEVEL::SHORT, Location::LEFT),
+            (&segment_path, LENGTH_LEVEL::SHORT, Location::LEFT),
+            (&segment_git, LENGTH_LEVEL::MEDIUM, Location::LEFT),
         ],
     ];
 
