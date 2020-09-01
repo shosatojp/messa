@@ -1,3 +1,5 @@
+use unicode_width::{UnicodeWidthChar, UnicodeWidthStr};
+
 #[derive(PartialEq)]
 pub enum BuildMode {
     ESTIMATE,
@@ -22,14 +24,15 @@ impl PromptStringBuilder {
         if self.mode == BuildMode::CONSTRUCT {
             self.data.push(ch);
         }
-        self.count += 1;
+        self.count += UnicodeWidthChar::width(ch).unwrap_or(0);
     }
     pub fn push_string(&mut self, string: &String) {
         if self.mode == BuildMode::CONSTRUCT {
             self.data.push_str(string.as_str());
         }
         if !string.starts_with("\\[\x1b") {
-            self.count += string.chars().count();
+            self.count += UnicodeWidthStr::width(string.as_str());
+            // self.count += string.chars().count();
         }
     }
     // fn push_str(&mut self, string: &str, len: usize) {

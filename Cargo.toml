@@ -5,7 +5,7 @@ path = "src/pl.rs"
 [package]
 name = "fprompt"
 description = "fprompt"
-version = "0.0.7"
+version = "0.0.8"
 authors = [ "shosatojp <me@shosato.jp>" ]
 edition = "2018"
 repository = "https://github.com/shosatojp/powerline-shell"
@@ -16,6 +16,7 @@ git2 = "0.13.10"
 whoami = "0.9.0"
 clap = "2.33.3"
 chrono = "0.4.15"
+unicode-width = "0.1.8"
 
 [profile.dev]
 opt-level = 3
