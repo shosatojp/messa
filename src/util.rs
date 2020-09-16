@@ -138,19 +138,18 @@ pub fn count_git_status(repo: &Repository) -> (u32, u32) {
     let staged_mask = 0b11111;
     let changed_mask = 0b11111 << 7;
 
-    let mut changed = 0;
-    let mut staged = 0;
-    repo.statuses(Option::None)
-        .unwrap()
-        .iter()
-        .for_each(|status| {
-            let bits = &status.status().bits();
-            changed += std::cmp::min(bits & changed_mask, 1);
-            staged += std::cmp::min(bits & staged_mask, 1);
-            return ();
-        });
+    let mut changed = false;
+    let mut staged = false;
+    for status in repo.statuses(Option::None).unwrap().iter() {
+        let bits = &status.status().bits();
+        changed |= bits & changed_mask > 0;
+        staged |= bits & staged_mask > 0;
+        if staged || changed {
+            break;
+        }
+    }
 
-    return (changed, staged);
+    return (changed as u32, staged as u32);
 }
 
 pub fn count_unpushed(repo: &Repository, branch: &Branch) -> Result<u32, &'static str> {
