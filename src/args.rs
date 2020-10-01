@@ -14,7 +14,7 @@ pub fn get_arg_matches<'a>() -> clap::ArgMatches<'a> {
                 .help("specify current working directory")
                 .short("d")
                 .long("pwd")
-                .required(false)
+                .required(true)
                 .takes_value(true),
         )
         .arg(
@@ -22,7 +22,7 @@ pub fn get_arg_matches<'a>() -> clap::ArgMatches<'a> {
                 .help("previous error code")
                 .short("e")
                 .long("error")
-                .required(false)
+                .required(true)
                 .default_value("0")
                 .takes_value(true),
         )
@@ -35,5 +35,21 @@ pub fn get_arg_matches<'a>() -> clap::ArgMatches<'a> {
                 .default_value("200")
                 .takes_value(true),
         )
+        .arg(
+            clap::Arg::with_name("user")
+                .help("overwrite username")
+                .short("u")
+                .long("user")
+                .required(true)
+                .takes_value(true),
+            )
+        .arg(
+            clap::Arg::with_name("host")
+                .help("hostname")
+                .short("i")
+                .long("host")
+                .required(true)
+                .takes_value(true),
+            )
         .get_matches();
 }

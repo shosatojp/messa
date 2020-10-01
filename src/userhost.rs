@@ -13,10 +13,10 @@ pub struct UserHostname {
 }
 
 impl UserHostname {
-    pub fn new(fg: &'static str, bg: &'static str) -> UserHostname {
+    pub fn new(fg: &'static str, bg: &'static str,user:String,host:String) -> UserHostname {
         let mut userhost = UserHostname {
-            username: whoami::username(),
-            hostname: whoami::hostname(),
+            username: user,
+            hostname: host,
             fg,
             bg,
             size: [0, 0, 0],
