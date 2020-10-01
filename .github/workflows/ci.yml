@@ -14,7 +14,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - run: sudo docker run --rm -v "$(shell pwd)":/home/rust/src ekidd/rust-musl-builder cargo build --release
+    - run: sudo docker run --rm -v "$(pwd)":/home/rust/src ekidd/rust-musl-builder cargo build --release
     - run: strip target/x86_64-unknown-linux-musl/release/fprompt
     - uses: actions/upload-artifact@v2
       with:
