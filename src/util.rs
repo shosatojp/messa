@@ -140,11 +140,11 @@ pub fn count_git_status(repo: &Repository) -> (u32, u32) {
 
     let mut changed = false;
     let mut staged = false;
-    for status in repo.statuses(Option::None).unwrap().iter() {
+    for status in repo.statuses(Option::None).unwrap().iter().take(100) {
         let bits = &status.status().bits();
         changed |= bits & changed_mask > 0;
         staged |= bits & staged_mask > 0;
-        if staged || changed {
+        if staged && changed {
             break;
         }
     }
