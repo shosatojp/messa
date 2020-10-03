@@ -37,7 +37,7 @@ impl PromptSegment for Prompt {
         builder.push_string(&background(self.bg));
         builder.push_string(&forground(self.fg));
         builder.push_string(&format!(
-            "🤗 {} $ ",
+            " {} $ ",
             if self.prev_error > 0 {
                 self.prev_error.to_string()
             } else {

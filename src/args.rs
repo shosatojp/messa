@@ -1,6 +1,6 @@
 pub fn get_arg_matches<'a>() -> clap::ArgMatches<'a> {
     return clap::App::new("fprompt")
-        .version("0.0.8")
+        .version("0.0.9")
         .arg(
             clap::Arg::with_name("home")
                 .help("specify home directory")
