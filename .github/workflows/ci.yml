@@ -1,0 +1,22 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - run: make musl
+    - uses: actions/upload-artifact@v2
+      with:
+        name: fprompt
+        path: |
+          target/x86_64-unknown-linux-musl/release/fprompt
