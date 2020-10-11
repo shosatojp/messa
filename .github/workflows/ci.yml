@@ -7,16 +7,14 @@ on:
     branches: [ master ]
 
 jobs:
+  strategy:
+    matrix:
+      os: [ ubuntu-latest, macos-latest ]
 
   build:
-
-    runs-on: ubuntu-latest
+    runs-on: ${{matrix.os}}
 
     steps:
     - uses: actions/checkout@v2
-    - run: make musl
-    - uses: actions/upload-artifact@v2
-      with:
-        name: fprompt
-        path: |
-          target/x86_64-unknown-linux-musl/release/fprompt
+    - name: Build
+      run: cargo build
