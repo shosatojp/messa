@@ -1,5 +1,5 @@
 use super::builder::*;
-use git2::{Branch, Repository};
+use git2::{Branch, Repository, StatusOptions};
 
 pub mod colors {
     pub const RED: &str = "5;203";
@@ -140,7 +140,9 @@ pub fn count_git_status(repo: &Repository) -> (u32, u32) {
 
     let mut changed = false;
     let mut staged = false;
-    for status in repo.statuses(Option::None).unwrap().iter().take(100) {
+    let mut options = StatusOptions::default();
+
+    for status in repo.statuses(Some(&mut options)).unwrap().iter() {
         let bits = &status.status().bits();
         changed |= bits & changed_mask > 0;
         staged |= bits & staged_mask > 0;
