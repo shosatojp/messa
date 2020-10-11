@@ -27,3 +27,9 @@ export PROMPT_COMMAND=create_prompt
 ```sh
 . ~/.bashrc
 ```
+
+## Build
+
+```sh
+cargo build
+```
