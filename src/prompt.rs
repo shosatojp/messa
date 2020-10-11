@@ -8,15 +8,17 @@ pub struct Prompt {
     prev_error: u8,
     fg: &'static str,
     bg: &'static str,
+    user: String,
     size: [u32; 3],
 }
 
 impl Prompt {
-    pub fn new(fg: &'static str, bg: &'static str, prev_error: u8) -> Prompt {
+    pub fn new(user: &String, fg: &'static str, bg: &'static str, prev_error: u8) -> Prompt {
         let mut prompt = Prompt {
             fg,
             bg,
             prev_error,
+            user: user.to_string(),
             size: [0, 0, 0],
         };
 
@@ -37,12 +39,13 @@ impl PromptSegment for Prompt {
         builder.push_string(&background(self.bg));
         builder.push_string(&forground(self.fg));
         builder.push_string(&format!(
-            " {} $ ",
+            " {} {} ",
             if self.prev_error > 0 {
                 self.prev_error.to_string()
             } else {
                 "".to_string()
-            }
+            },
+            if self.user == "root" { "#" } else { "$" }
         ));
         builder.push_string(&forground(self.bg));
         builder.push_string(&resetbackground());

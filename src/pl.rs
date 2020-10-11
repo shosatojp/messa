@@ -43,6 +43,8 @@ fn main() {
         Ok(e) => e,
         Err(_) => return,
     };
+    let user = matches.value_of("user").unwrap().to_string();
+    let hostname = matches.value_of("host").unwrap().to_string();
 
     // def colors
     let fg = WHITE;
@@ -54,16 +56,12 @@ fn main() {
 
     // partial prompt builders
     let segment_ssh: Box<dyn PromptSegment> = Box::new(Ssh::new(fg, bg_ssh));
-    let segment_userhostname: Box<dyn PromptSegment> = Box::new(UserHostname::new(
-        fg,
-        bg_user_hostname,
-        matches.value_of("user").unwrap().to_string(),
-        matches.value_of("host").unwrap().to_string(),
-    ));
+    let segment_userhostname: Box<dyn PromptSegment> =
+        Box::new(UserHostname::new(fg, bg_user_hostname, &user, &hostname));
     let segment_path: Box<dyn PromptSegment> = Box::new(Path::new(fg, bg_path, &home, &pwd));
     let segment_git: Box<dyn PromptSegment> = Box::new(Git::new(fg, bg_git, pwd.as_str()));
     let segment_time: Box<dyn PromptSegment> = Box::new(Time::new(fg, bg_ssh));
-    let prompt = Prompt::new(fg, bg_prompt, prev_error);
+    let prompt = Prompt::new(&user, fg, bg_prompt, prev_error);
 
     // profiles
     let profiles: Vec<Vec<(&Box<dyn PromptSegment>, LENGTH_LEVEL, Location)>> = vec![
