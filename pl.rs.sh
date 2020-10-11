@@ -1,1 +1,0 @@
-export PS1=$(target/debug/fprompt --home $HOME --pwd $PWD --error $? --width $COLUMNS)
