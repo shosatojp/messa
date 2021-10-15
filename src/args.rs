@@ -1,6 +1,8 @@
+use clap::{crate_name, crate_version};
+
 pub fn get_arg_matches<'a>() -> clap::ArgMatches<'a> {
-    return clap::App::new("fprompt")
-        .version("0.0.9")
+    return clap::App::new(crate_name!())
+        .version(crate_version!())
         .arg(
             clap::Arg::with_name("home")
                 .help("specify home directory")
@@ -42,7 +44,7 @@ pub fn get_arg_matches<'a>() -> clap::ArgMatches<'a> {
                 .long("user")
                 .required(true)
                 .takes_value(true),
-            )
+        )
         .arg(
             clap::Arg::with_name("host")
                 .help("hostname")
@@ -50,6 +52,6 @@ pub fn get_arg_matches<'a>() -> clap::ArgMatches<'a> {
                 .long("host")
                 .required(true)
                 .takes_value(true),
-            )
+        )
         .get_matches();
 }
