@@ -7,16 +7,16 @@ use git2::{Branch, Repository};
 pub struct Path {
     home: String,
     pwd: String,
-    fg: &'static str,
-    bg: &'static str,
+    fg: String,
+    bg: String,
     pub size: [u32; 3],
 }
 
 impl Path {
-    pub fn new(fg: &'static str, bg: &'static str, home: &String, pwd: &String) -> Path {
+    pub fn new(fg: &str, bg: &str, home: &str, pwd: &str) -> Path {
         let mut path = Path {
-            fg,
-            bg,
+            fg: fg.to_string(),
+            bg: bg.to_string(),
             home: home.to_owned(),
             pwd: pwd.to_owned(),
             size: [0, 0, 0],
@@ -51,10 +51,10 @@ impl PromptSegment for Path {
         return &self.size;
     }
     fn get_fg(&self) -> &str {
-        return self.fg;
+        return &self.fg;
     }
     fn get_bg(&self) -> &str {
-        return self.bg;
+        return &self.bg;
     }
     fn is_enabled(&self) -> bool {
         return true;

@@ -6,17 +6,17 @@ use git2::{Branch, Repository};
 
 pub struct Prompt {
     prev_error: u8,
-    fg: &'static str,
-    bg: &'static str,
+    fg: String,
+    bg: String,
     user: String,
     size: [u32; 3],
 }
 
 impl Prompt {
-    pub fn new(user: &String, fg: &'static str, bg: &'static str, prev_error: u8) -> Prompt {
+    pub fn new(user: &str, fg: &str, bg: &str, prev_error: u8) -> Prompt {
         let mut prompt = Prompt {
-            fg,
-            bg,
+            fg: fg.to_string(),
+            bg: bg.to_string(),
             prev_error,
             user: user.to_string(),
             size: [0, 0, 0],
@@ -36,8 +36,8 @@ impl Prompt {
 impl PromptSegment for Prompt {
     fn construct(&self, level: LENGTH_LEVEL, mode: BuildMode) -> PromptStringBuilder {
         let mut builder = PromptStringBuilder::new(mode);
-        builder.push_string(&background(self.bg));
-        builder.push_string(&forground(self.fg));
+        builder.push_string(&background(&self.bg));
+        builder.push_string(&forground(&self.fg));
         builder.push_string(&format!(
             " {} {} ",
             if self.prev_error > 0 {
@@ -47,7 +47,7 @@ impl PromptSegment for Prompt {
             },
             if self.user == "root" { "#" } else { "$" }
         ));
-        builder.push_string(&forground(self.bg));
+        builder.push_string(&forground(&self.bg));
         builder.push_string(&resetbackground());
         builder.push(SYMBOL_RIGHT);
         builder.push_string(&resetcolor());
@@ -57,10 +57,10 @@ impl PromptSegment for Prompt {
         return &self.size;
     }
     fn get_fg(&self) -> &str {
-        return self.fg;
+        return &self.fg;
     }
     fn get_bg(&self) -> &str {
-        return self.bg;
+        return &self.bg;
     }
     fn is_enabled(&self) -> bool {
         return true;

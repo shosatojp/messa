@@ -5,20 +5,20 @@ use super::util::*;
 use git2::{Branch, Repository};
 
 pub struct UserHostname {
-    fg: &'static str,
-    bg: &'static str,
+    fg: String,
+    bg: String,
     username: String,
     hostname: String,
     pub size: [u32; 3],
 }
 
 impl UserHostname {
-    pub fn new(fg: &'static str, bg: &'static str, user: &String, host: &String) -> UserHostname {
+    pub fn new(fg: &str, bg: &str, user: &str, host: &str) -> UserHostname {
         let mut userhost = UserHostname {
             username: user.to_string(),
             hostname: host.to_string(),
-            fg,
-            bg,
+            fg: fg.to_string(),
+            bg: bg.to_string(),
             size: [0, 0, 0],
         };
 
@@ -52,10 +52,10 @@ impl PromptSegment for UserHostname {
         return &self.size;
     }
     fn get_fg(&self) -> &str {
-        return self.fg;
+        return &self.fg;
     }
     fn get_bg(&self) -> &str {
-        return self.bg;
+        return &self.bg;
     }
     fn is_enabled(&self) -> bool {
         return true;

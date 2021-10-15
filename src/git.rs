@@ -10,13 +10,13 @@ pub struct Git {
     changed: u32,
     staged: u32,
     unpushed: u32,
-    fg: &'static str,
-    bg: &'static str,
+    fg: String,
+    bg: String,
     pub size: [u32; 3],
 }
 
 impl Git {
-    pub fn new(fg: &'static str, bg: &'static str, pwd: &str) -> Git {
+    pub fn new(fg: &str, bg: &str, pwd: &str) -> Git {
         let mut repo = None;
         for parent in std::path::Path::new(pwd)
             .ancestors()
@@ -45,8 +45,8 @@ impl Git {
                     changed,
                     staged,
                     unpushed,
-                    fg,
-                    bg,
+                    fg: fg.to_string(),
+                    bg: bg.to_string(),
                     size: [0, 0, 0],
                 }
             }
@@ -56,8 +56,8 @@ impl Git {
                 changed: 0,
                 staged: 0,
                 unpushed: 0,
-                fg,
-                bg,
+                fg: fg.to_string(),
+                bg: bg.to_string(),
                 size: [0, 0, 0],
             },
         };
@@ -104,10 +104,10 @@ impl PromptSegment for Git {
         return &self.size;
     }
     fn get_fg(&self) -> &str {
-        return self.fg;
+        return &self.fg;
     }
     fn get_bg(&self) -> &str {
-        return self.bg;
+        return &self.bg;
     }
     fn is_enabled(&self) -> bool {
         return self.enabled;

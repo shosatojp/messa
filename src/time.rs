@@ -6,17 +6,17 @@ use chrono::Local;
 
 pub struct Time {
     enabled: bool,
-    fg: &'static str,
-    bg: &'static str,
+    fg: String,
+    bg: String,
     pub size: [u32; 3],
 }
 
 impl Time {
-    pub fn new(fg: &'static str, bg: &'static str) -> Time {
+    pub fn new(fg: &str, bg: &str) -> Time {
         let mut time = Time {
             enabled: true,
-            fg,
-            bg,
+            fg: fg.to_string(),
+            bg: bg.to_string(),
             size: [0, 0, 0],
         };
 
@@ -45,10 +45,10 @@ impl PromptSegment for Time {
         return &self.size;
     }
     fn get_fg(&self) -> &str {
-        return self.fg;
+        return &self.fg;
     }
     fn get_bg(&self) -> &str {
-        return self.bg;
+        return &self.bg;
     }
     fn is_enabled(&self) -> bool {
         return self.enabled;

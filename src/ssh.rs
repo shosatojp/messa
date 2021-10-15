@@ -6,20 +6,20 @@ use git2::{Branch, Repository};
 
 pub struct Ssh {
     enabled: bool,
-    fg: &'static str,
-    bg: &'static str,
+    fg: String,
+    bg: String,
     pub size: [u32; 3],
 }
 
 impl Ssh {
-    pub fn new<'a>(fg: &'static str, bg: &'static str) -> Ssh {
+    pub fn new<'a>(fg: &str, bg: &str) -> Ssh {
         let mut ssh = Ssh {
             enabled: std::env::var("SSH_TTY")
                 .and_then(|s| Ok(s.len()))
                 .unwrap_or(0)
                 != 0,
-            fg,
-            bg,
+            fg: fg.to_string(),
+            bg: bg.to_string(),
             size: [0, 0, 0],
         };
 
@@ -49,10 +49,10 @@ impl PromptSegment for Ssh {
         return &self.size;
     }
     fn get_fg(&self) -> &str {
-        return self.fg;
+        return &self.fg;
     }
     fn get_bg(&self) -> &str {
-        return self.bg;
+        return &self.bg;
     }
     fn is_enabled(&self) -> bool {
         return self.enabled;
