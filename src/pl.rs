@@ -27,6 +27,7 @@ mod out;
 use out::*;
 mod time;
 use time::*;
+mod kube;
 
 fn main() {
     let matches: ArgMatches = get_arg_matches();
