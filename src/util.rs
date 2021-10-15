@@ -166,3 +166,18 @@ pub fn count_unpushed(repo: &Repository, branch: &Branch) -> Result<u32, &'stati
 
     return Ok(rw.count() as u32);
 }
+
+pub fn expand_user(path: &str) -> Result<String, Box<dyn std::error::Error>> {
+    if path.starts_with("~") {
+        let home_dir = std::env::var("HOME")?;
+        if path.starts_with("~/") {
+            let p = std::path::Path::new(&home_dir);
+            let joined = p.join(path.strip_prefix("~/").unwrap());
+            return Ok(joined.to_str().unwrap().to_string());
+        } else {
+            return Ok(home_dir);
+        }
+    } else {
+        return Ok(path.to_string());
+    }
+}
