@@ -1,7 +1,7 @@
-use super::builder::*;
-use super::util::colors::*;
-use super::util::symbols::*;
-use super::util::*;
+use crate::builder::*;
+use crate::util::colors::*;
+use crate::util::symbols::*;
+use crate::util::*;
 use chrono::Local;
 
 pub struct Time {

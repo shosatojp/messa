@@ -10,24 +10,22 @@ use util::symbols::*;
 use util::*;
 mod args;
 use args::*;
-mod path;
-use path::*;
+mod segments {
+    pub mod git;
+    pub mod kube;
+    pub mod path;
+    pub mod prompt;
+    pub mod ssh;
+    pub mod time;
+    pub mod userhost;
+}
+
+use segments::{git::*, kube::*, path::*, prompt::*, ssh::*, time::*, userhost::*};
 mod builder;
 use builder::*;
-mod userhost;
-use userhost::*;
-mod git;
-use git::*;
-mod ssh;
-use ssh::*;
-mod prompt;
 use clap::ArgMatches;
-use prompt::*;
 mod out;
 use out::*;
-mod time;
-use time::*;
-mod kube;
 mod config;
 
 fn main() {

@@ -1,4 +1,4 @@
-use super::builder::*;
+use crate::builder::*;
 use git2::{Branch, Repository, StatusOptions};
 
 pub mod colors {

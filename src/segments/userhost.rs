@@ -1,50 +1,51 @@
-use super::builder::*;
-use super::util::colors::*;
-use super::util::symbols::*;
-use super::util::*;
+use crate::builder::*;
+use crate::util::colors::*;
+use crate::util::symbols::*;
+use crate::util::*;
 use git2::{Branch, Repository};
 
-pub struct Path {
-    home: String,
-    pwd: String,
+pub struct UserHostname {
     fg: String,
     bg: String,
+    username: String,
+    hostname: String,
     pub size: [u32; 3],
 }
 
-impl Path {
-    pub fn new(fg: &str, bg: &str, home: &str, pwd: &str) -> Path {
-        let mut path = Path {
+impl UserHostname {
+    pub fn new(fg: &str, bg: &str, user: &str, host: &str) -> UserHostname {
+        let mut userhost = UserHostname {
+            username: user.to_string(),
+            hostname: host.to_string(),
             fg: fg.to_string(),
             bg: bg.to_string(),
-            home: home.to_owned(),
-            pwd: pwd.to_owned(),
             size: [0, 0, 0],
         };
 
-        path.size[2] = path
+        userhost.size[2] = userhost
             .construct(LENGTH_LEVEL::LONG, BuildMode::ESTIMATE)
             .count as u32;
-        path.size[1] = path
-            .construct(LENGTH_LEVEL::MEDIUM, BuildMode::ESTIMATE)
-            .count as u32;
-        path.size[0] = path
+        userhost.size[1] = userhost.size[2];
+        userhost.size[0] = userhost
             .construct(LENGTH_LEVEL::SHORT, BuildMode::ESTIMATE)
             .count as u32;
-        return path;
+        return userhost;
     }
 }
 
-impl PromptSegment for Path {
+impl PromptSegment for UserHostname {
     fn construct(&self, level: LENGTH_LEVEL, mode: BuildMode) -> PromptStringBuilder {
         let mut builder = PromptStringBuilder::new(mode);
+
         builder.push(' ');
-        builder.push_string(&build_path_str(
-            self.home.as_str(),
-            self.pwd.as_str(),
-            level,
-        ));
+        builder.push_string(&self.username);
+
+        if level >= LENGTH_LEVEL::MEDIUM {
+            builder.push('@');
+            builder.push_string(&self.hostname);
+        }
         builder.push(' ');
+
         return builder;
     }
     fn get_size(&self) -> &[u32; 3] {

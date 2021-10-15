@@ -1,9 +1,10 @@
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, fs::File, io::BufReader, iter::Map, process::exit};
 
-use crate::{
-    git::Git, path::Path, ssh::Ssh, time::Time, userhost::UserHostname, util::PromptSegment,
+use crate::segments::{
+    git::Git, path::Path, ssh::Ssh, time::Time, userhost::UserHostname,
 };
+use crate::util::PromptSegment;
 
 #[allow(non_snake_case)]
 #[derive(Deserialize, Serialize, Debug)]

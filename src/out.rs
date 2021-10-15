@@ -1,8 +1,8 @@
-use super::builder::*;
-use super::prompt::*;
-use super::util::colors::*;
-use super::util::symbols::*;
-use super::util::*;
+use crate::builder::*;
+use crate::segments::prompt::*;
+use crate::util::colors::*;
+use crate::util::symbols::*;
+use crate::util::*;
 
 pub fn out(
     width: u32,

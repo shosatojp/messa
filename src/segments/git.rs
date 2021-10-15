@@ -1,7 +1,7 @@
-use super::builder::*;
-use super::util::colors::*;
-use super::util::symbols::*;
-use super::util::*;
+use crate::builder::*;
+use crate::util::colors::*;
+use crate::util::symbols::*;
+use crate::util::*;
 use git2::{Branch, Repository};
 
 pub struct Git {
