@@ -64,7 +64,7 @@ fn out_line(width: u32, profiles: &Vec<ProfileConfig>) {
             for seg in profile
                 .segments
                 .iter()
-                .filter(|seg| seg.location == Location::RIGHT)
+                .filter(|seg| seg.segment.is_enabled() && seg.location == Location::RIGHT)
             {
                 right_string.push_str(forground(&seg.segment.get_bg()).as_str());
                 right_string.push(SYMBOL_LEFT);
