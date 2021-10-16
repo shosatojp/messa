@@ -8,18 +8,27 @@
 
 1. Install `fprompt`
 
-```sh
-cargo install fprompt
-```
+- Download from [here](https://github.com/shosatojp/fprompt/releases/latest)
+- or Use `cargo`
 
-2. Append following code to your `.bashrc`
+    ```sh
+    cargo install fprompt
+    ```
+
+1. Append following code to your `.bashrc`
 
 ```sh
 export PATH="$HOME/.cargo/bin:$PATH"
 function create_prompt(){
-    PS1=$(fprompt --home "$HOME" --pwd "$PWD" --error "$?" --width "$COLUMNS" --user "$USER" --host "$HOSTNAME")
+    PS1=$(fprompt --error $? --width $COLUMNS --user $USER --host $HOSTNAME -c $HOME/.fprompt.yaml)
 }
-export PROMPT_COMMAND=create_prompt
+export PROMPT_COMMAND="create_prompt;$PROMPT_COMMAND"
+```
+
+2. Setup config
+
+```sh
+wget -O ~/.fprompt.yaml https://github.com/shosatojp/fprompt/blob/master/.fprompt.yaml
 ```
 
 3. Reload your shell
