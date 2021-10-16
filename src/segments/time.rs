@@ -19,10 +19,10 @@ impl Time {
         };
 
         if time.enabled {
-            time.size[2] = time
-                .construct(LengthLevel::LONG, BuildMode::ESTIMATE)
+            time.size[2] = time.construct(LengthLevel::LONG, BuildMode::ESTIMATE).count as u32;
+            time.size[1] = time
+                .construct(LengthLevel::MEDIUM, BuildMode::ESTIMATE)
                 .count as u32;
-            time.size[1] = time.size[2];
             time.size[0] = time
                 .construct(LengthLevel::SHORT, BuildMode::ESTIMATE)
                 .count as u32;
@@ -32,10 +32,18 @@ impl Time {
 }
 
 impl PromptSegment for Time {
-    fn construct(&self, _level: LengthLevel, mode: BuildMode) -> PromptStringBuilder {
+    fn construct(&self, level: LengthLevel, mode: BuildMode) -> PromptStringBuilder {
         let mut builder = PromptStringBuilder::new(mode);
         builder.push(' ');
-        builder.push_string(&Local::now().format("%H:%M:%S").to_string());
+        match level {
+            LengthLevel::LONG => {
+                builder.push_string(&Local::now().format("%Y/%m/%d %H:%M:%S").to_string())
+            }
+            LengthLevel::MEDIUM => {
+                builder.push_string(&Local::now().format("%H:%M:%S").to_string())
+            }
+            LengthLevel::SHORT => builder.push_string(&Local::now().format("%H:%M").to_string()),
+        }
         builder.push(' ');
         return builder;
     }
