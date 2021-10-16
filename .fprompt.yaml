@@ -11,6 +11,7 @@ config:
     appearance: { fg: white, bg: pink }
   kube:
     appearance: { fg: white, bg: deep_purple }
+    icon: '🕸 '
   prompt:
     ok:
       appearance: { fg: white, bg: 238 }
