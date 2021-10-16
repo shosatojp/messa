@@ -3,6 +3,7 @@ use std::rc::Rc;
 use std::{collections::HashMap, fs::File, io::BufReader, process::exit};
 
 use crate::segments::kube::Kube;
+use crate::segments::prompt::Prompt;
 use crate::segments::{git::Git, path::Path, ssh::Ssh, time::Time, userhost::UserHostname};
 use crate::util;
 use crate::util::colors;
@@ -64,6 +65,7 @@ impl ConfigLoader {
         user: &str,
         hostname: &str,
         kube_config_path: &str,
+        prev_error: u8,
     ) -> Result<ConfigLoader, Box<dyn std::error::Error>> {
         let config = ConfigLoader::load_config(path)?;
         let segments = ConfigLoader::build_segments(
@@ -73,6 +75,7 @@ impl ConfigLoader {
             user,
             hostname,
             kube_config_path,
+            prev_error,
         )?;
         Ok(ConfigLoader {
             path: path.to_string(),
@@ -97,6 +100,7 @@ impl ConfigLoader {
         user: &str,
         hostname: &str,
         kube_config_path: &str,
+        prev_error: u8,
     ) -> Result<SegmentsMap, Box<dyn std::error::Error>> {
         let mut hashmap: SegmentsMap = HashMap::new();
         for (type_, type_config) in type_configs {
@@ -109,6 +113,7 @@ impl ConfigLoader {
                 "git" => Box::new(Git::new(&fg, &bg, &pwd)),
                 "time" => Box::new(Time::new(&fg, &bg)),
                 "kube" => Box::new(Kube::new(kube_config_path, &fg, &bg)?),
+                "prompt" => Box::new(Prompt::new(user, &fg, &bg, prev_error)),
                 _ => {
                     eprintln!("Unsupported segment type: {}", &type_);
                     exit(1);
@@ -140,5 +145,13 @@ impl ConfigLoader {
             profiles.push(profile);
         }
         Ok(profiles)
+    }
+
+    pub fn get_prompt(&self) -> &Segment {
+        let segment = self.segments.get("prompt").unwrap_or_else(|| {
+            eprintln!("`prompt` must be setup");
+            exit(1);
+        });
+        segment
     }
 }

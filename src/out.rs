@@ -1,12 +1,22 @@
 use crate::builder::*;
 use crate::config::ProfileConfig;
-use crate::segments::prompt::*;
+use crate::config::Segment;
 use crate::util::colors::*;
 use crate::util::symbols::*;
 use crate::util::*;
 
-pub fn out(width: u32, profiles: &Vec<ProfileConfig>, prompt: &Prompt) {
-    // output
+pub fn out(width: u32, profiles: &Vec<ProfileConfig>, prompt: &Segment) {
+    out_line(width, profiles);
+
+    print!(
+        "{} ",
+        prompt
+            .construct(LengthLevel::LONG, BuildMode::CONSTRUCT)
+            .data
+    );
+}
+
+fn out_line(width: u32, profiles: &Vec<ProfileConfig>) {
     for profile in profiles {
         let mut left_sum = 0;
         let mut right_sum = 0;
@@ -76,11 +86,4 @@ pub fn out(width: u32, profiles: &Vec<ProfileConfig>, prompt: &Prompt) {
             break;
         }
     }
-
-    print!(
-        "{} ",
-        prompt
-            .construct(LengthLevel::LONG, BuildMode::CONSTRUCT)
-            .data
-    );
 }

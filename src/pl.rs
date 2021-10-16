@@ -1,5 +1,4 @@
 mod util;
-use util::*;
 mod args;
 use args::*;
 mod segments {
@@ -12,7 +11,6 @@ mod segments {
     pub mod userhost;
 }
 
-use segments::prompt::*;
 mod builder;
 use clap::ArgMatches;
 mod out;
@@ -49,19 +47,19 @@ fn main() -> Result<(), String> {
     let kube_config_path = matches.value_of("kubeconfig").unwrap();
 
     let config_path = matches.value_of("config").unwrap();
-    let loader =
-        config::ConfigLoader::new(config_path, &pwd, &home, &user, &hostname, kube_config_path)
-            .or_else(|e| Err(e.to_string()))?;
+    let loader = config::ConfigLoader::new(
+        config_path,
+        &pwd,
+        &home,
+        &user,
+        &hostname,
+        kube_config_path,
+        prev_error,
+    )
+    .or_else(|e| Err(e.to_string()))?;
     let profiles = loader.build_profiles().or_else(|e| Err(e.to_string()))?;
 
-    let prompt = Prompt::new(
-        &user,
-        colors::from_humanreadable("red"),
-        colors::from_humanreadable("white"),
-        prev_error,
-    );
-
-    out(width, &profiles, &prompt);
+    out(width, &profiles, loader.get_prompt());
 
     Ok(())
 }
