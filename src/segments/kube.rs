@@ -145,13 +145,11 @@ impl PromptSegment for Kube {
 fn test_load_config() -> Result<(), Box<dyn std::error::Error>> {
     let path = util::expand_user("~/.kube/config")?;
     let config = Kube::load_config(&path)?;
-    println!("{:?}", &config.current_context);
     let context_name = config.current_context;
     let context = config
         .contexts
         .iter()
         .find(|x| x.name == context_name)
         .ok_or("context not found")?;
-    println!("{:?}", context.context.namespace);
     Ok(())
 }
