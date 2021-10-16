@@ -171,6 +171,18 @@ pub enum LengthLevel {
     SHORT = 0,
 }
 
+pub fn load_lengthlevel(lengthlevel: &str) -> LengthLevel {
+    match lengthlevel.to_uppercase().as_str() {
+        "LONG" => LengthLevel::LONG,
+        "MEDIUM" => LengthLevel::MEDIUM,
+        "SHORT" => LengthLevel::SHORT,
+        _ => {
+            eprintln!("Unsupported length level: {}", &lengthlevel);
+            exit(1);
+        }
+    }
+}
+
 pub fn count_git_status(repo: &Repository) -> (u32, u32) {
     let staged_mask = 0b11111;
     let changed_mask = 0b11111 << 7;

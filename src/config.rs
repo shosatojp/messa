@@ -132,7 +132,7 @@ impl ConfigLoader {
                         exit(1);
                     })),
                     location: util::load_location(&e.location.as_ref().unwrap_or(&"left".to_string())),
-                    size: LengthLevel::LONG,  // TODO
+                    size: util::load_lengthlevel(&e.size),
                 })
                 .collect();
             let profile = ProfileConfig { segments };
