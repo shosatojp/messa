@@ -109,7 +109,7 @@ impl ConfigLoader {
                 "time" => Box::new(Time::new(&fg, &bg)),
                 "kube" => Box::new(Kube::new(kube_config_path, &fg, &bg)?),
                 _ => {
-                    eprintln!("Unsupported segment type");
+                    eprintln!("Unsupported segment type: {}", &type_);
                     exit(1);
                 }
             };
