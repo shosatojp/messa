@@ -1,10 +1,12 @@
 use crate::builder::*;
+use crate::util::colors::RawAppearance;
 use crate::util::*;
 use crate::{
     builder::PromptStringBuilder,
     util::{self, PromptSegment},
 };
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 use std::{fs::File, io::BufReader};
 
 #[allow(non_snake_case)]
@@ -46,6 +48,11 @@ pub struct KubeContext {
     pub user: String,
 }
 
+#[derive(Deserialize, Debug)]
+pub struct RawKubeConfig {
+    pub appearance: RawAppearance,
+}
+
 #[allow(non_snake_case)]
 pub struct Kube {
     fg: String,
@@ -56,13 +63,12 @@ pub struct Kube {
 
 impl Kube {
     pub fn new(
+        config: &RawKubeConfig,
         kube_config_path: &str,
-        fg: &str,
-        bg: &str,
     ) -> Result<Kube, Box<dyn std::error::Error>> {
         let mut kube = Kube {
-            fg: fg.to_string(),
-            bg: bg.to_string(),
+            fg: config.appearance.get_fg(),
+            bg: config.appearance.get_bg(),
             size: [0, 0, 0],
             config: Kube::load_config(&util::expand_user(kube_config_path)?)?,
         };

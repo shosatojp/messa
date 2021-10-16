@@ -4,6 +4,7 @@ use crate::builder::*;
 use git2::{Branch, Repository, StatusOptions};
 
 pub mod colors {
+    use serde::Deserialize;
     use std::process::exit;
 
     pub const RED: &str = "5;203";
@@ -77,6 +78,21 @@ pub mod colors {
         match color_config.parse::<u8>() {
             Ok(code) => format!("5;{}", code),
             Err(_) => from_humanreadable(color_config).to_string(),
+        }
+    }
+
+    #[derive(Deserialize, Debug)]
+    pub struct RawAppearance {
+        pub fg: String,
+        pub bg: String,
+    }
+
+    impl RawAppearance {
+        pub fn get_fg(&self) -> String {
+            return from_color_config(&self.fg);
+        }
+        pub fn get_bg(&self) -> String {
+            return from_color_config(&self.bg);
         }
     }
 }

@@ -1,7 +1,13 @@
-use crate::builder::*;
 use crate::util::symbols::*;
 use crate::util::*;
+use crate::{builder::*, util::colors::RawAppearance};
 use git2::{Branch, Repository};
+use serde::Deserialize;
+
+#[derive(Deserialize, Debug)]
+pub struct RawGitConfig {
+    pub appearance: RawAppearance,
+}
 
 pub struct Git {
     enabled: bool,
@@ -15,7 +21,7 @@ pub struct Git {
 }
 
 impl Git {
-    pub fn new(fg: &str, bg: &str, pwd: &str) -> Git {
+    pub fn new(config: &RawGitConfig, pwd: &str) -> Git {
         let mut repo = None;
         for parent in std::path::Path::new(pwd)
             .ancestors()
@@ -44,8 +50,8 @@ impl Git {
                     changed,
                     staged,
                     unpushed,
-                    fg: fg.to_string(),
-                    bg: bg.to_string(),
+                    fg: config.appearance.get_fg(),
+                    bg: config.appearance.get_bg(),
                     size: [0, 0, 0],
                 }
             }
@@ -55,8 +61,8 @@ impl Git {
                 changed: 0,
                 staged: 0,
                 unpushed: 0,
-                fg: fg.to_string(),
-                bg: bg.to_string(),
+                fg: config.appearance.get_fg(),
+                bg: config.appearance.get_bg(),
                 size: [0, 0, 0],
             },
         };
@@ -65,9 +71,7 @@ impl Git {
         git.size[1] = git
             .construct(LengthLevel::MEDIUM, BuildMode::ESTIMATE)
             .count as u32;
-        git.size[0] = git
-            .construct(LengthLevel::SHORT, BuildMode::ESTIMATE)
-            .count as u32;
+        git.size[0] = git.construct(LengthLevel::SHORT, BuildMode::ESTIMATE).count as u32;
         return git;
     }
 }

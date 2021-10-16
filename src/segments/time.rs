@@ -1,6 +1,13 @@
 use crate::builder::*;
+use crate::util::colors::RawAppearance;
 use crate::util::*;
 use chrono::Local;
+use serde::Deserialize;
+
+#[derive(Deserialize, Debug)]
+pub struct RawTimeConfig {
+    pub appearance: RawAppearance,
+}
 
 pub struct Time {
     enabled: bool,
@@ -10,11 +17,11 @@ pub struct Time {
 }
 
 impl Time {
-    pub fn new(fg: &str, bg: &str) -> Time {
+    pub fn new(config: &RawTimeConfig) -> Time {
         let mut time = Time {
             enabled: true,
-            fg: fg.to_string(),
-            bg: bg.to_string(),
+            fg: config.appearance.get_fg(),
+            bg: config.appearance.get_bg(),
             size: [0, 0, 0],
         };
 

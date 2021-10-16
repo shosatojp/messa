@@ -1,5 +1,12 @@
 use crate::builder::*;
+use crate::util::colors::RawAppearance;
 use crate::util::*;
+use serde::Deserialize;
+
+#[derive(Deserialize, Debug)]
+pub struct RawUserhostConfig {
+    pub appearance: RawAppearance,
+}
 
 pub struct UserHostname {
     fg: String,
@@ -10,12 +17,12 @@ pub struct UserHostname {
 }
 
 impl UserHostname {
-    pub fn new(fg: &str, bg: &str, user: &str, host: &str) -> UserHostname {
+    pub fn new(config: &RawUserhostConfig, user: &str, host: &str) -> UserHostname {
         let mut userhost = UserHostname {
             username: user.to_string(),
             hostname: host.to_string(),
-            fg: fg.to_string(),
-            bg: bg.to_string(),
+            fg: config.appearance.get_fg(),
+            bg: config.appearance.get_bg(),
             size: [0, 0, 0],
         };
 

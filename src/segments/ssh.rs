@@ -1,6 +1,13 @@
 use crate::builder::*;
+use crate::util::colors::RawAppearance;
 use crate::util::symbols::*;
 use crate::util::*;
+use serde::Deserialize;
+
+#[derive(Deserialize, Debug)]
+pub struct RawSshConfig {
+    pub appearance: RawAppearance,
+}
 
 pub struct Ssh {
     enabled: bool,
@@ -10,23 +17,21 @@ pub struct Ssh {
 }
 
 impl Ssh {
-    pub fn new<'a>(fg: &str, bg: &str) -> Ssh {
+    pub fn new<'a>(config: &RawSshConfig) -> Ssh {
         let mut ssh = Ssh {
             enabled: std::env::var("SSH_TTY")
                 .and_then(|s| Ok(s.len()))
                 .unwrap_or(0)
                 != 0,
-            fg: fg.to_string(),
-            bg: bg.to_string(),
+            fg: config.appearance.get_fg(),
+            bg: config.appearance.get_bg(),
             size: [0, 0, 0],
         };
 
         if ssh.enabled {
             ssh.size[2] = ssh.construct(LengthLevel::LONG, BuildMode::ESTIMATE).count as u32;
             ssh.size[1] = ssh.size[2];
-            ssh.size[0] = ssh
-                .construct(LengthLevel::SHORT, BuildMode::ESTIMATE)
-                .count as u32;
+            ssh.size[0] = ssh.construct(LengthLevel::SHORT, BuildMode::ESTIMATE).count as u32;
         }
         return ssh;
     }

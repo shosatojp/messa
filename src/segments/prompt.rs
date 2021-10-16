@@ -2,6 +2,12 @@ use crate::builder::*;
 use crate::util::colors::*;
 use crate::util::symbols::*;
 use crate::util::*;
+use serde::Deserialize;
+
+#[derive(Deserialize, Debug)]
+pub struct RawPromptConfig {
+    pub appearance: RawAppearance,
+}
 
 pub struct Prompt {
     prev_error: u8,
@@ -12,10 +18,10 @@ pub struct Prompt {
 }
 
 impl Prompt {
-    pub fn new(user: &str, fg: &str, bg: &str, prev_error: u8) -> Prompt {
+    pub fn new(config: &RawPromptConfig, user: &str, prev_error: u8) -> Prompt {
         let mut prompt = Prompt {
-            fg: fg.to_string(),
-            bg: bg.to_string(),
+            fg: config.appearance.get_fg(),
+            bg: config.appearance.get_bg(),
             prev_error,
             user: user.to_string(),
             size: [0, 0, 0],

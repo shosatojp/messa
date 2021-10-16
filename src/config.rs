@@ -2,11 +2,15 @@ use serde::Deserialize;
 use std::rc::Rc;
 use std::{collections::HashMap, fs::File, io::BufReader, process::exit};
 
-use crate::segments::kube::Kube;
-use crate::segments::prompt::Prompt;
+use crate::segments::git::RawGitConfig;
+use crate::segments::kube::{Kube, RawKubeConfig};
+use crate::segments::path::RawPathConfig;
+use crate::segments::prompt::{Prompt, RawPromptConfig};
+use crate::segments::ssh::RawSshConfig;
+use crate::segments::time::RawTimeConfig;
+use crate::segments::userhost::RawUserhostConfig;
 use crate::segments::{git::Git, path::Path, ssh::Ssh, time::Time, userhost::UserHostname};
 use crate::util;
-use crate::util::colors;
 use crate::util::{LengthLevel, Location, PromptSegment};
 
 pub type Segment = Rc<Box<dyn PromptSegment>>;
@@ -44,10 +48,21 @@ pub struct ProfileConfig {
     pub segments: Vec<SegmentConfig>,
 }
 
+#[derive(Deserialize, Debug)]
+pub struct RawSegmentsConfig {
+    pub ssh: Option<RawSshConfig>,
+    pub git: Option<RawGitConfig>,
+    pub userhost: Option<RawUserhostConfig>,
+    pub time: Option<RawTimeConfig>,
+    pub path: Option<RawPathConfig>,
+    pub kube: Option<RawKubeConfig>,
+    pub prompt: Option<RawPromptConfig>,
+}
+
 #[allow(non_snake_case)]
 #[derive(Deserialize, Debug)]
 pub struct RawConfig {
-    pub config: HashMap<String, RawTypeConfig>,
+    pub config: RawSegmentsConfig,
     pub profiles: Vec<RawProfileConfig>,
 }
 
@@ -94,7 +109,7 @@ impl ConfigLoader {
     }
 
     pub fn build_segments(
-        type_configs: &HashMap<String, RawTypeConfig>,
+        segments_config: &RawSegmentsConfig,
         pwd: &str,
         home: &str,
         user: &str,
@@ -103,24 +118,38 @@ impl ConfigLoader {
         prev_error: u8,
     ) -> Result<SegmentsMap, Box<dyn std::error::Error>> {
         let mut hashmap: SegmentsMap = HashMap::new();
-        for (type_, type_config) in type_configs {
-            let fg = colors::from_color_config(&type_config.fg);
-            let bg = colors::from_color_config(&type_config.bg);
-            let segment: Box<dyn PromptSegment> = match type_.as_str() {
-                "ssh" => Box::new(Ssh::new(&fg, &bg)),
-                "userhost" => Box::new(UserHostname::new(&fg, &bg, user, hostname)),
-                "path" => Box::new(Path::new(&fg, &bg, home, pwd)),
-                "git" => Box::new(Git::new(&fg, &bg, &pwd)),
-                "time" => Box::new(Time::new(&fg, &bg)),
-                "kube" => Box::new(Kube::new(kube_config_path, &fg, &bg)?),
-                "prompt" => Box::new(Prompt::new(user, &fg, &bg, prev_error)),
-                _ => {
-                    eprintln!("Unsupported segment type: {}", &type_);
-                    exit(1);
-                }
-            };
-
-            hashmap.insert(type_.to_string(), Rc::new(segment));
+        if let Some(ssh) = &segments_config.ssh {
+            hashmap.insert(String::from("ssh"), Rc::new(Box::new(Ssh::new(ssh))));
+        }
+        if let Some(git) = &segments_config.git {
+            hashmap.insert(String::from("git"), Rc::new(Box::new(Git::new(git, pwd))));
+        }
+        if let Some(time) = &segments_config.time {
+            hashmap.insert(String::from("time"), Rc::new(Box::new(Time::new(time))));
+        }
+        if let Some(userhost) = &segments_config.userhost {
+            hashmap.insert(
+                String::from("userhost"),
+                Rc::new(Box::new(UserHostname::new(userhost, user, hostname))),
+            );
+        }
+        if let Some(path) = &segments_config.path {
+            hashmap.insert(
+                String::from("path"),
+                Rc::new(Box::new(Path::new(path, home, pwd))),
+            );
+        }
+        if let Some(kube) = &segments_config.kube {
+            hashmap.insert(
+                String::from("kube"),
+                Rc::new(Box::new(Kube::new(kube, kube_config_path)?)),
+            );
+        }
+        if let Some(prompt) = &segments_config.prompt {
+            hashmap.insert(
+                "prompt".to_string(),
+                Rc::new(Box::new(Prompt::new(prompt, user, prev_error))),
+            );
         }
 
         Ok(hashmap)

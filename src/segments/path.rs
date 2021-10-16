@@ -1,6 +1,12 @@
 use crate::builder::*;
+use crate::util::colors::RawAppearance;
 use crate::util::*;
+use serde::Deserialize;
 
+#[derive(Deserialize, Debug)]
+pub struct RawPathConfig {
+    pub appearance: RawAppearance,
+}
 pub struct Path {
     home: String,
     pwd: String,
@@ -10,18 +16,16 @@ pub struct Path {
 }
 
 impl Path {
-    pub fn new(fg: &str, bg: &str, home: &str, pwd: &str) -> Path {
+    pub fn new(config: &RawPathConfig, home: &str, pwd: &str) -> Path {
         let mut path = Path {
-            fg: fg.to_string(),
-            bg: bg.to_string(),
+            fg: config.appearance.get_fg(),
+            bg: config.appearance.get_bg(),
             home: home.to_owned(),
             pwd: pwd.to_owned(),
             size: [0, 0, 0],
         };
 
-        path.size[2] = path
-            .construct(LengthLevel::LONG, BuildMode::ESTIMATE)
-            .count as u32;
+        path.size[2] = path.construct(LengthLevel::LONG, BuildMode::ESTIMATE).count as u32;
         path.size[1] = path
             .construct(LengthLevel::MEDIUM, BuildMode::ESTIMATE)
             .count as u32;
