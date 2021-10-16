@@ -5,7 +5,7 @@ use std::{collections::HashMap, fs::File, io::BufReader, process::exit};
 use crate::segments::kube::Kube;
 use crate::segments::{git::Git, path::Path, ssh::Ssh, time::Time, userhost::UserHostname};
 use crate::util::colors;
-use crate::util::{Location, PromptSegment, LengthLevel};
+use crate::util::{LengthLevel, Location, PromptSegment};
 
 type SegmentsMap = HashMap<String, Rc<Box<dyn PromptSegment>>>;
 
@@ -132,7 +132,7 @@ impl ConfigLoader {
                         exit(1);
                     })),
                     location: Location::LEFT, // TODO
-                    size: LengthLevel::LONG, // TODO
+                    size: LengthLevel::LONG,  // TODO
                 })
                 .collect();
             let profile = ProfileConfig { segments };
