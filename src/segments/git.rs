@@ -4,7 +4,7 @@ use crate::{builder::*, util::colors::RawAppearance};
 use git2::{Branch, Repository};
 use serde::Deserialize;
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct RawGitConfig {
     pub appearance: RawAppearance,
 }
@@ -15,7 +15,7 @@ pub struct Git {
     changed: u32,
     staged: u32,
     unpushed: u32,
-    appearance: RawAppearance,
+    config: RawGitConfig,
     pub size: [u32; 3],
 }
 
@@ -49,7 +49,7 @@ impl Git {
                     changed,
                     staged,
                     unpushed,
-                    appearance: config.appearance.clone(),
+                    config: config.clone(),
                     size: [0, 0, 0],
                 }
             }
@@ -59,7 +59,7 @@ impl Git {
                 changed: 0,
                 staged: 0,
                 unpushed: 0,
-                appearance: config.appearance.clone(),
+                config: config.clone(),
                 size: [0, 0, 0],
             },
         };
@@ -104,10 +104,10 @@ impl PromptSegment for Git {
         return &self.size;
     }
     fn get_fg(&self) -> String {
-        return self.appearance.get_fg().to_string();
+        return self.config.appearance.get_fg().to_string();
     }
     fn get_bg(&self) -> String {
-        return self.appearance.get_bg().to_string();
+        return self.config.appearance.get_bg().to_string();
     }
     fn is_enabled(&self) -> bool {
         return self.enabled;

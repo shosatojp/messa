@@ -4,14 +4,14 @@ use crate::util::*;
 use chrono::Local;
 use serde::Deserialize;
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct RawTimeConfig {
     pub appearance: RawAppearance,
 }
 
 pub struct Time {
     enabled: bool,
-    appearance: RawAppearance,
+    config: RawTimeConfig,
     pub size: [u32; 3],
 }
 
@@ -19,7 +19,7 @@ impl Time {
     pub fn new(config: &RawTimeConfig) -> Time {
         let mut time = Time {
             enabled: true,
-            appearance: config.appearance.clone(),
+            config: config.clone(),
             size: [0, 0, 0],
         };
 
@@ -56,10 +56,10 @@ impl PromptSegment for Time {
         return &self.size;
     }
     fn get_fg(&self) -> String {
-        return self.appearance.get_fg().to_string();
+        return self.config.appearance.get_fg().to_string();
     }
     fn get_bg(&self) -> String {
-        return self.appearance.get_bg().to_string();
+        return self.config.appearance.get_bg().to_string();
     }
     fn is_enabled(&self) -> bool {
         return self.enabled;

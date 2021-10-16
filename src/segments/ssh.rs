@@ -4,14 +4,14 @@ use crate::util::symbols::*;
 use crate::util::*;
 use serde::Deserialize;
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct RawSshConfig {
     pub appearance: RawAppearance,
 }
 
 pub struct Ssh {
     enabled: bool,
-    appearance: RawAppearance,
+    config: RawSshConfig,
     pub size: [u32; 3],
 }
 
@@ -22,7 +22,7 @@ impl Ssh {
                 .and_then(|s| Ok(s.len()))
                 .unwrap_or(0)
                 != 0,
-            appearance: config.appearance.clone(),
+            config: config.clone(),
             size: [0, 0, 0],
         };
 
@@ -50,10 +50,10 @@ impl PromptSegment for Ssh {
         return &self.size;
     }
     fn get_fg(&self) -> String {
-        return self.appearance.get_fg().to_string();
+        return self.config.appearance.get_fg().to_string();
     }
     fn get_bg(&self) -> String {
-        return self.appearance.get_bg().to_string();
+        return self.config.appearance.get_bg().to_string();
     }
     fn is_enabled(&self) -> bool {
         return self.enabled;

@@ -4,21 +4,21 @@ use crate::util::symbols::*;
 use crate::util::*;
 use serde::Deserialize;
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct RawPromptConfig {
     // pub appearance: RawAppearance,
     pub ok: PromptStatusConfig,
     pub error: PromptStatusConfig,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct PromptStatusConfig {
     appearance: RawAppearance,
 }
 
 pub struct Prompt {
     prev_error: u8,
-    appearance: RawAppearance,
+    config: RawPromptConfig,
     user: String,
     size: [u32; 3],
 }
@@ -26,11 +26,7 @@ pub struct Prompt {
 impl Prompt {
     pub fn new(config: &RawPromptConfig, user: &str, prev_error: u8) -> Prompt {
         let mut prompt = Prompt {
-            appearance: if prev_error == 0 {
-                config.ok.appearance.clone()
-            } else {
-                config.error.appearance.clone()
-            },
+            config: config.clone(),
             prev_error,
             user: user.to_string(),
             size: [0, 0, 0],
@@ -71,10 +67,18 @@ impl PromptSegment for Prompt {
         return &self.size;
     }
     fn get_fg(&self) -> String {
-        return self.appearance.get_fg().to_string();
+        if self.prev_error == 0 {
+            self.config.ok.appearance.get_fg()
+        } else {
+            self.config.error.appearance.get_fg()
+        }
     }
     fn get_bg(&self) -> String {
-        return self.appearance.get_bg().to_string();
+        if self.prev_error == 0 {
+            self.config.ok.appearance.get_bg()
+        } else {
+            self.config.error.appearance.get_bg()
+        }
     }
     fn is_enabled(&self) -> bool {
         return true;

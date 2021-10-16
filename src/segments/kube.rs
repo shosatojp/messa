@@ -48,16 +48,17 @@ pub struct KubeContext {
     pub user: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct RawKubeConfig {
     pub appearance: RawAppearance,
+    pub icon: Option<String>,
 }
 
 #[allow(non_snake_case)]
 pub struct Kube {
-    appearance: RawAppearance,
+    config: RawKubeConfig,
     pub size: [u32; 3],
-    pub config: KubeConfig,
+    pub kube_config: KubeConfig,
 }
 
 impl Kube {
@@ -66,9 +67,9 @@ impl Kube {
         kube_config_path: &str,
     ) -> Result<Kube, Box<dyn std::error::Error>> {
         let mut kube = Kube {
-            appearance: config.appearance.clone(),
+            config: config.clone(),
             size: [0, 0, 0],
-            config: Kube::load_config(&util::expand_user(kube_config_path)?)?,
+            kube_config: Kube::load_config(&util::expand_user(kube_config_path)?)?,
         };
 
         kube.size[2] = kube.construct(LengthLevel::LONG, BuildMode::ESTIMATE).count as u32;
@@ -90,12 +91,17 @@ impl Kube {
     }
 
     fn get_context(&self) -> String {
-        return self.config.current_context.to_string();
+        return self.kube_config.current_context.to_string();
     }
 
     fn get_namespace(&self) -> Option<&str> {
-        let context_name = self.config.current_context.as_str();
-        let context = match self.config.contexts.iter().find(|x| x.name == context_name) {
+        let context_name = self.kube_config.current_context.as_str();
+        let context = match self
+            .kube_config
+            .contexts
+            .iter()
+            .find(|x| x.name == context_name)
+        {
             Some(context_config) => context_config,
             None => return None,
         };
@@ -110,7 +116,10 @@ impl PromptSegment for Kube {
         mode: crate::builder::BuildMode,
     ) -> crate::builder::PromptStringBuilder {
         let mut builder = PromptStringBuilder::new(mode);
-        builder.push_string(&" 🕸 ".to_string());
+        builder.push(' ');
+        if let Some(icon) = &self.config.icon {
+            builder.push_string(icon);
+        }
 
         match level {
             util::LengthLevel::LONG => {
@@ -139,10 +148,10 @@ impl PromptSegment for Kube {
         return &self.size;
     }
     fn get_fg(&self) -> String {
-        return self.appearance.get_fg().to_string();
+        return self.config.appearance.get_fg().to_string();
     }
     fn get_bg(&self) -> String {
-        return self.appearance.get_bg().to_string();
+        return self.config.appearance.get_bg().to_string();
     }
     fn is_enabled(&self) -> bool {
         return true;
