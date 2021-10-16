@@ -127,11 +127,10 @@ impl ConfigLoader {
                 .segments
                 .iter()
                 .map(|e| SegmentConfig {
-                    segment: Rc::clone(
-                        self.segments
-                            .get(&e.type_)
-                            .expect(&format!("key not found: {}", e.type_)),
-                    ),
+                    segment: Rc::clone(self.segments.get(&e.type_).unwrap_or_else(|| {
+                        eprintln!("Segment not found for key `{}`. Please setup `{}` segment on your config.", e.type_, e.type_);
+                        exit(1);
+                    })),
                     location: Location::LEFT, // TODO
                     size: LengthLevel::LONG, // TODO
                 })
