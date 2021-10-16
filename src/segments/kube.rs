@@ -57,12 +57,7 @@ struct Kube {
 }
 
 impl Kube {
-    pub fn new(
-        fg: &str,
-        bg: &str,
-        home: &str,
-        pwd: &str,
-    ) -> Result<Kube, Box<dyn std::error::Error>> {
+    pub fn new(fg: &str, bg: &str) -> Result<Kube, Box<dyn std::error::Error>> {
         let mut kube = Kube {
             fg: fg.to_string(),
             bg: bg.to_string(),
