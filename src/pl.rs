@@ -43,6 +43,16 @@ fn main() -> Result<(), String> {
         .value_of("home")
         .and_then(|e| Some(e.to_string()))
         .unwrap_or(std::env::var("HOME").or(Err("failed to get current dir"))?);
+    let width: u32 = matches
+        .value_of("width")
+        .unwrap()
+        .parse()
+        .or(Err("failed to parse width"))?;
+    let prev_error: u8 = matches
+        .value_of("error")
+        .unwrap()
+        .parse()
+        .or(Err("failed to parse error"))?;
     let user = matches.value_of("user").unwrap().to_string();
     let hostname = matches.value_of("host").unwrap().to_string();
 
