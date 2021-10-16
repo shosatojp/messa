@@ -1,3 +1,5 @@
+use std::process::exit;
+
 use crate::builder::*;
 use git2::{Branch, Repository, StatusOptions};
 
@@ -87,6 +89,17 @@ pub mod symbols {
 pub enum Location {
     LEFT,
     RIGHT,
+}
+
+pub fn load_location(location: &str) -> Location {
+    match location.to_uppercase().as_str() {
+        "LEFT" => Location::LEFT,
+        "RIGHT" => Location::RIGHT,
+        _ => {
+            eprintln!("Unsupported location: {}", &location);
+            exit(1);
+        }
+    }
 }
 
 pub trait PromptSegment {

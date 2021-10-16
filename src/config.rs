@@ -4,6 +4,7 @@ use std::{collections::HashMap, fs::File, io::BufReader, process::exit};
 
 use crate::segments::kube::Kube;
 use crate::segments::{git::Git, path::Path, ssh::Ssh, time::Time, userhost::UserHostname};
+use crate::util;
 use crate::util::colors;
 use crate::util::{LengthLevel, Location, PromptSegment};
 
@@ -130,7 +131,7 @@ impl ConfigLoader {
                         eprintln!("Segment not found for key `{}`. Please setup `{}` segment on your config.", e.type_, e.type_);
                         exit(1);
                     })),
-                    location: Location::LEFT, // TODO
+                    location: util::load_location(&e.location.as_ref().unwrap_or(&"left".to_string())),
                     size: LengthLevel::LONG,  // TODO
                 })
                 .collect();
