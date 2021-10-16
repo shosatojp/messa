@@ -15,8 +15,7 @@ pub struct Git {
     changed: u32,
     staged: u32,
     unpushed: u32,
-    fg: String,
-    bg: String,
+    appearance: RawAppearance,
     pub size: [u32; 3],
 }
 
@@ -50,8 +49,7 @@ impl Git {
                     changed,
                     staged,
                     unpushed,
-                    fg: config.appearance.get_fg(),
-                    bg: config.appearance.get_bg(),
+                    appearance: config.appearance.clone(),
                     size: [0, 0, 0],
                 }
             }
@@ -61,8 +59,7 @@ impl Git {
                 changed: 0,
                 staged: 0,
                 unpushed: 0,
-                fg: config.appearance.get_fg(),
-                bg: config.appearance.get_bg(),
+                appearance: config.appearance.clone(),
                 size: [0, 0, 0],
             },
         };
@@ -106,11 +103,11 @@ impl PromptSegment for Git {
     fn get_size(&self) -> &[u32; 3] {
         return &self.size;
     }
-    fn get_fg(&self) -> &str {
-        return &self.fg;
+    fn get_fg(&self) -> String {
+        return self.appearance.get_fg().to_string();
     }
-    fn get_bg(&self) -> &str {
-        return &self.bg;
+    fn get_bg(&self) -> String {
+        return self.appearance.get_bg().to_string();
     }
     fn is_enabled(&self) -> bool {
         return self.enabled;

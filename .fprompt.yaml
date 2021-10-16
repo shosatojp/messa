@@ -24,9 +24,14 @@ config:
       fg: white
       bg: deep_purple
   prompt:
-    appearance:
-      fg: red
-      bg: black
+    ok:
+      appearance:
+        fg: white
+        bg: 238
+    error:
+      appearance:
+        fg: white
+        bg: pink
   
 profiles:
   - segments:

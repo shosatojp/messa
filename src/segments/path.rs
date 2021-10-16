@@ -10,16 +10,14 @@ pub struct RawPathConfig {
 pub struct Path {
     home: String,
     pwd: String,
-    fg: String,
-    bg: String,
+    appearance: RawAppearance,
     pub size: [u32; 3],
 }
 
 impl Path {
     pub fn new(config: &RawPathConfig, home: &str, pwd: &str) -> Path {
         let mut path = Path {
-            fg: config.appearance.get_fg(),
-            bg: config.appearance.get_bg(),
+            appearance: config.appearance.clone(),
             home: home.to_owned(),
             pwd: pwd.to_owned(),
             size: [0, 0, 0],
@@ -51,11 +49,11 @@ impl PromptSegment for Path {
     fn get_size(&self) -> &[u32; 3] {
         return &self.size;
     }
-    fn get_fg(&self) -> &str {
-        return &self.fg;
+    fn get_fg(&self) -> String {
+        return self.appearance.get_fg().to_string();
     }
-    fn get_bg(&self) -> &str {
-        return &self.bg;
+    fn get_bg(&self) -> String {
+        return self.appearance.get_bg().to_string();
     }
     fn is_enabled(&self) -> bool {
         return true;

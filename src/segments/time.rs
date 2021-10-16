@@ -11,8 +11,7 @@ pub struct RawTimeConfig {
 
 pub struct Time {
     enabled: bool,
-    fg: String,
-    bg: String,
+    appearance: RawAppearance,
     pub size: [u32; 3],
 }
 
@@ -20,8 +19,7 @@ impl Time {
     pub fn new(config: &RawTimeConfig) -> Time {
         let mut time = Time {
             enabled: true,
-            fg: config.appearance.get_fg(),
-            bg: config.appearance.get_bg(),
+            appearance: config.appearance.clone(),
             size: [0, 0, 0],
         };
 
@@ -57,11 +55,11 @@ impl PromptSegment for Time {
     fn get_size(&self) -> &[u32; 3] {
         return &self.size;
     }
-    fn get_fg(&self) -> &str {
-        return &self.fg;
+    fn get_fg(&self) -> String {
+        return self.appearance.get_fg().to_string();
     }
-    fn get_bg(&self) -> &str {
-        return &self.bg;
+    fn get_bg(&self) -> String {
+        return self.appearance.get_bg().to_string();
     }
     fn is_enabled(&self) -> bool {
         return self.enabled;

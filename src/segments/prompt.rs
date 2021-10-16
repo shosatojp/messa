@@ -6,13 +6,19 @@ use serde::Deserialize;
 
 #[derive(Deserialize, Debug)]
 pub struct RawPromptConfig {
-    pub appearance: RawAppearance,
+    // pub appearance: RawAppearance,
+    pub ok: PromptStatusConfig,
+    pub error: PromptStatusConfig,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct PromptStatusConfig {
+    appearance: RawAppearance,
 }
 
 pub struct Prompt {
     prev_error: u8,
-    fg: String,
-    bg: String,
+    appearance: RawAppearance,
     user: String,
     size: [u32; 3],
 }
@@ -20,8 +26,11 @@ pub struct Prompt {
 impl Prompt {
     pub fn new(config: &RawPromptConfig, user: &str, prev_error: u8) -> Prompt {
         let mut prompt = Prompt {
-            fg: config.appearance.get_fg(),
-            bg: config.appearance.get_bg(),
+            appearance: if prev_error == 0 {
+                config.ok.appearance.clone()
+            } else {
+                config.error.appearance.clone()
+            },
             prev_error,
             user: user.to_string(),
             size: [0, 0, 0],
@@ -41,8 +50,8 @@ impl Prompt {
 impl PromptSegment for Prompt {
     fn construct(&self, _level: LengthLevel, mode: BuildMode) -> PromptStringBuilder {
         let mut builder = PromptStringBuilder::new(mode);
-        builder.push_string(&background(&self.bg));
-        builder.push_string(&forground(&self.fg));
+        builder.push_string(&background(&self.get_bg()));
+        builder.push_string(&forground(&self.get_fg()));
         builder.push_string(&format!(
             " {} {} ",
             if self.prev_error > 0 {
@@ -52,7 +61,7 @@ impl PromptSegment for Prompt {
             },
             if self.user == "root" { "#" } else { "$" }
         ));
-        builder.push_string(&forground(&self.bg));
+        builder.push_string(&forground(&self.get_bg()));
         builder.push_string(&resetbackground());
         builder.push(SYMBOL_RIGHT);
         builder.push_string(&resetcolor());
@@ -61,11 +70,11 @@ impl PromptSegment for Prompt {
     fn get_size(&self) -> &[u32; 3] {
         return &self.size;
     }
-    fn get_fg(&self) -> &str {
-        return &self.fg;
+    fn get_fg(&self) -> String {
+        return self.appearance.get_fg().to_string();
     }
-    fn get_bg(&self) -> &str {
-        return &self.bg;
+    fn get_bg(&self) -> String {
+        return self.appearance.get_bg().to_string();
     }
     fn is_enabled(&self) -> bool {
         return true;

@@ -81,7 +81,7 @@ pub mod colors {
         }
     }
 
-    #[derive(Deserialize, Debug)]
+    #[derive(Deserialize, Debug, Clone)]
     pub struct RawAppearance {
         pub fg: String,
         pub bg: String,
@@ -128,8 +128,8 @@ pub fn load_location(location: &str) -> Location {
 pub trait PromptSegment {
     fn construct(&self, level: LengthLevel, mode: BuildMode) -> PromptStringBuilder;
     fn get_size(&self) -> &[u32; 3];
-    fn get_fg(&self) -> &str;
-    fn get_bg(&self) -> &str;
+    fn get_fg(&self) -> String;
+    fn get_bg(&self) -> String;
     fn is_enabled(&self) -> bool;
 }
 

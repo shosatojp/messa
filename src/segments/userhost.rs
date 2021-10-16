@@ -9,8 +9,7 @@ pub struct RawUserhostConfig {
 }
 
 pub struct UserHostname {
-    fg: String,
-    bg: String,
+    appearance: RawAppearance, 
     username: String,
     hostname: String,
     pub size: [u32; 3],
@@ -21,8 +20,7 @@ impl UserHostname {
         let mut userhost = UserHostname {
             username: user.to_string(),
             hostname: host.to_string(),
-            fg: config.appearance.get_fg(),
-            bg: config.appearance.get_bg(),
+            appearance: config.appearance.clone(),
             size: [0, 0, 0],
         };
 
@@ -55,11 +53,11 @@ impl PromptSegment for UserHostname {
     fn get_size(&self) -> &[u32; 3] {
         return &self.size;
     }
-    fn get_fg(&self) -> &str {
-        return &self.fg;
+    fn get_fg(&self) -> String {
+        return self.appearance.get_fg().to_string();
     }
-    fn get_bg(&self) -> &str {
-        return &self.bg;
+    fn get_bg(&self) -> String {
+        return self.appearance.get_bg().to_string();
     }
     fn is_enabled(&self) -> bool {
         return true;
