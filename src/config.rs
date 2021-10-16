@@ -158,18 +158,20 @@ impl ConfigLoader {
     pub fn build_profiles(&self) -> Result<Vec<ProfileConfig>, Box<dyn std::error::Error>> {
         let mut profiles: Vec<ProfileConfig> = vec![];
         for raw_profile in &self.config.profiles {
-            let segments: Vec<SegmentConfig> = raw_profile
-                .segments
-                .iter()
-                .map(|e| SegmentConfig {
-                    segment: Rc::clone(self.segments.get(&e.type_).unwrap_or_else(|| {
-                        eprintln!("Segment not found for key `{}`. Please setup `{}` segment on your config.", e.type_, e.type_);
-                        exit(1);
-                    })),
-                    location: util::load_location(&e.location.as_ref().unwrap_or(&"left".to_string())),
-                    size: util::load_lengthlevel(&e.size),
-                })
-                .collect();
+            let mut segments: Vec<SegmentConfig> = vec![];
+            for segment in &raw_profile.segments {
+                let seg = match self.segments.get(&segment.type_) {
+                    Some(e) => Rc::clone(e),
+                    None => continue,
+                };
+                segments.push(SegmentConfig {
+                    segment: seg,
+                    location: util::load_location(
+                        &segment.location.as_ref().unwrap_or(&"left".to_string()),
+                    ),
+                    size: util::load_lengthlevel(&segment.size),
+                });
+            }
             let profile = ProfileConfig { segments };
             profiles.push(profile);
         }
