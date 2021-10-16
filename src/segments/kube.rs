@@ -106,7 +106,7 @@ impl PromptSegment for Kube {
         mode: crate::builder::BuildMode,
     ) -> crate::builder::PromptStringBuilder {
         let mut builder = PromptStringBuilder::new(mode);
-        builder.push(' ');
+        builder.push_string(&" 🕸 ".to_string());
 
         match level {
             util::LengthLevel::LONG => {
