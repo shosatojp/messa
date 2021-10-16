@@ -15,5 +15,5 @@ build:
 test:
 	$(RUST_MUSL_BUILDER) cargo test
 
-release: pull
+release:
 	gh release create "v$(VERSION)" $(BIN_PATH)
