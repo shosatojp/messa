@@ -67,9 +67,7 @@ impl Kube {
             config: Kube::load_config(&util::expand_user(kube_config_path)?)?,
         };
 
-        kube.size[2] = kube
-            .construct(LengthLevel::LONG, BuildMode::ESTIMATE)
-            .count as u32;
+        kube.size[2] = kube.construct(LengthLevel::LONG, BuildMode::ESTIMATE).count as u32;
         kube.size[1] = kube
             .construct(LengthLevel::MEDIUM, BuildMode::ESTIMATE)
             .count as u32;
@@ -109,16 +107,24 @@ impl PromptSegment for Kube {
     ) -> crate::builder::PromptStringBuilder {
         let mut builder = PromptStringBuilder::new(mode);
         builder.push(' ');
-        builder.push_string(&self.get_context());
 
-        if level == util::LengthLevel::LONG {
-            match self.get_namespace() {
+        match level {
+            util::LengthLevel::LONG => {
+                builder.push_string(&self.get_context());
+                match self.get_namespace() {
+                    Some(ns) => {
+                        builder.push('/');
+                        builder.push_string(&ns.to_owned());
+                    }
+                    None => (),
+                }
+            }
+            util::LengthLevel::MEDIUM | util::LengthLevel::SHORT => match self.get_namespace() {
                 Some(ns) => {
-                    builder.push('/');
                     builder.push_string(&ns.to_owned());
                 }
                 None => (),
-            }
+            },
         }
         builder.push(' ');
 
