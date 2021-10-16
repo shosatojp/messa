@@ -1,8 +1,13 @@
-use super::builder::*;
-use super::util::colors::*;
-use super::util::symbols::*;
-use super::util::*;
+use crate::util::symbols::*;
+use crate::util::*;
+use crate::{builder::*, util::colors::RawAppearance};
 use git2::{Branch, Repository};
+use serde::Deserialize;
+
+#[derive(Deserialize, Debug, Clone)]
+pub struct RawGitConfig {
+    pub appearance: RawAppearance,
+}
 
 pub struct Git {
     enabled: bool,
@@ -10,13 +15,12 @@ pub struct Git {
     changed: u32,
     staged: u32,
     unpushed: u32,
-    fg: &'static str,
-    bg: &'static str,
+    config: RawGitConfig,
     pub size: [u32; 3],
 }
 
 impl Git {
-    pub fn new(fg: &'static str, bg: &'static str, pwd: &str) -> Git {
+    pub fn new(config: &RawGitConfig, pwd: &str) -> Git {
         let mut repo = None;
         for parent in std::path::Path::new(pwd)
             .ancestors()
@@ -45,8 +49,7 @@ impl Git {
                     changed,
                     staged,
                     unpushed,
-                    fg,
-                    bg,
+                    config: config.clone(),
                     size: [0, 0, 0],
                 }
             }
@@ -56,31 +59,28 @@ impl Git {
                 changed: 0,
                 staged: 0,
                 unpushed: 0,
-                fg,
-                bg,
+                config: config.clone(),
                 size: [0, 0, 0],
             },
         };
 
-        git.size[2] = git.construct(LENGTH_LEVEL::LONG, BuildMode::ESTIMATE).count as u32;
+        git.size[2] = git.construct(LengthLevel::LONG, BuildMode::ESTIMATE).count as u32;
         git.size[1] = git
-            .construct(LENGTH_LEVEL::MEDIUM, BuildMode::ESTIMATE)
+            .construct(LengthLevel::MEDIUM, BuildMode::ESTIMATE)
             .count as u32;
-        git.size[0] = git
-            .construct(LENGTH_LEVEL::SHORT, BuildMode::ESTIMATE)
-            .count as u32;
+        git.size[0] = git.construct(LengthLevel::SHORT, BuildMode::ESTIMATE).count as u32;
         return git;
     }
 }
 
 impl PromptSegment for Git {
-    fn construct(&self, level: LENGTH_LEVEL, mode: BuildMode) -> PromptStringBuilder {
+    fn construct(&self, level: LengthLevel, mode: BuildMode) -> PromptStringBuilder {
         let mut builder = PromptStringBuilder::new(mode);
         if self.enabled {
-            if level >= LENGTH_LEVEL::MEDIUM {
+            if level >= LengthLevel::MEDIUM {
                 builder.push(' ');
                 builder.push(SYMBOL_GIT_BRANCH);
-                if level >= LENGTH_LEVEL::LONG {
+                if level >= LengthLevel::LONG {
                     if self.branch_name.len() > 0 {
                         builder.push_string(&format!(" {}", self.branch_name));
                     }
@@ -103,11 +103,11 @@ impl PromptSegment for Git {
     fn get_size(&self) -> &[u32; 3] {
         return &self.size;
     }
-    fn get_fg(&self) -> &str {
-        return self.fg;
+    fn get_fg(&self) -> String {
+        return self.config.appearance.get_fg().to_string();
     }
-    fn get_bg(&self) -> &str {
-        return self.bg;
+    fn get_bg(&self) -> String {
+        return self.config.appearance.get_bg().to_string();
     }
     fn is_enabled(&self) -> bool {
         return self.enabled;

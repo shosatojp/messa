@@ -1,12 +1,13 @@
+use clap::{crate_name, crate_version};
+
 pub fn get_arg_matches<'a>() -> clap::ArgMatches<'a> {
-    return clap::App::new("fprompt")
-        .version("0.0.9")
+    return clap::App::new(crate_name!())
+        .version(crate_version!())
         .arg(
             clap::Arg::with_name("home")
                 .help("specify home directory")
                 .short("h")
                 .long("home")
-                .required(true)
                 .takes_value(true),
         )
         .arg(
@@ -14,7 +15,6 @@ pub fn get_arg_matches<'a>() -> clap::ArgMatches<'a> {
                 .help("specify current working directory")
                 .short("d")
                 .long("pwd")
-                .required(true)
                 .takes_value(true),
         )
         .arg(
@@ -42,7 +42,7 @@ pub fn get_arg_matches<'a>() -> clap::ArgMatches<'a> {
                 .long("user")
                 .required(true)
                 .takes_value(true),
-            )
+        )
         .arg(
             clap::Arg::with_name("host")
                 .help("hostname")
@@ -50,6 +50,22 @@ pub fn get_arg_matches<'a>() -> clap::ArgMatches<'a> {
                 .long("host")
                 .required(true)
                 .takes_value(true),
-            )
+        )
+        .arg(
+            clap::Arg::with_name("kubeconfig")
+                .help("kubernetes config file")
+                .short("k")
+                .long("kube")
+                .default_value("~/.kube/config")
+                .takes_value(true),
+        )
+        .arg(
+            clap::Arg::with_name("config")
+                .help("config file")
+                .short("c")
+                .long("config")
+                .default_value("~/.fprompt.yaml")
+                .takes_value(true),
+        )
         .get_matches();
 }

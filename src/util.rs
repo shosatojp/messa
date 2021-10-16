@@ -1,7 +1,12 @@
-use super::builder::*;
+use std::process::exit;
+
+use crate::builder::*;
 use git2::{Branch, Repository, StatusOptions};
 
 pub mod colors {
+    use serde::Deserialize;
+    use std::process::exit;
+
     pub const RED: &str = "5;203";
     pub const PINK: &str = "5;161";
     pub const PURPLE: &str = "5;127";
@@ -38,6 +43,58 @@ pub mod colors {
     pub fn resetcolor() -> String {
         return String::from("\\[\x1b[0m\\]");
     }
+
+    pub fn from_humanreadable(color_string: &str) -> &str {
+        match color_string.to_uppercase().as_str() {
+            "RED" => RED,
+            "PINK" => PINK,
+            "PURPLE" => PURPLE,
+            "DEEP_PURPLE" => DEEP_PURPLE,
+            "INDIGO" => INDIGO,
+            "BLUE" => BLUE,
+            "LIGHT_BLUE" => LIGHT_BLUE,
+            "CYAN" => CYAN,
+            "TEAL" => TEAL,
+            "GREEN" => GREEN,
+            "LIGHT_GREEN" => LIGHT_GREEN,
+            "LIME" => LIME,
+            "YELLOW" => YELLOW,
+            "AMBER" => AMBER,
+            "ORANGE" => ORANGE,
+            "DEEP_ORANGE" => DEEP_ORANGE,
+            "BROWN" => BROWN,
+            "GREY" => GREY,
+            "BLUE_GREY" => BLUE_GREY,
+            "WHITE" => WHITE,
+            "BLACK" => BLACK,
+            _ => {
+                eprintln!("unsupported color: {}", color_string);
+                exit(1);
+            }
+        }
+    }
+
+    pub fn from_color_config(color_config: &str) -> String {
+        match color_config.parse::<u8>() {
+            Ok(code) => format!("5;{}", code),
+            Err(_) => from_humanreadable(color_config).to_string(),
+        }
+    }
+
+    #[derive(Deserialize, Debug, Clone)]
+    pub struct RawAppearance {
+        pub fg: String,
+        pub bg: String,
+    }
+
+    impl RawAppearance {
+        pub fn get_fg(&self) -> String {
+            return from_color_config(&self.fg);
+        }
+        pub fn get_bg(&self) -> String {
+            return from_color_config(&self.bg);
+        }
+    }
 }
 
 pub mod symbols {
@@ -57,23 +114,26 @@ pub enum Location {
     RIGHT,
 }
 
+pub fn load_location(location: &str) -> Location {
+    match location.to_uppercase().as_str() {
+        "LEFT" => Location::LEFT,
+        "RIGHT" => Location::RIGHT,
+        _ => {
+            eprintln!("Unsupported location: {}", &location);
+            exit(1);
+        }
+    }
+}
+
 pub trait PromptSegment {
-    fn construct(&self, level: LENGTH_LEVEL, mode: BuildMode) -> PromptStringBuilder;
+    fn construct(&self, level: LengthLevel, mode: BuildMode) -> PromptStringBuilder;
     fn get_size(&self) -> &[u32; 3];
-    fn get_fg(&self) -> &str;
-    fn get_bg(&self) -> &str;
+    fn get_fg(&self) -> String;
+    fn get_bg(&self) -> String;
     fn is_enabled(&self) -> bool;
 }
 
-pub fn get_branch_name(repo: &Repository) -> String {
-    let branch = Branch::wrap(repo.head().unwrap());
-    return match branch.name() {
-        Ok(name) => format!(" {}", name.unwrap()),
-        Err(_) => String::from(""),
-    };
-}
-
-pub fn build_path_str(home_src: &str, path_src: &str, level: LENGTH_LEVEL) -> String {
+pub fn build_path_str(home_src: &str, path_src: &str, level: LengthLevel) -> String {
     let home = home_src.as_bytes();
     let home_len = home.len();
     let path = path_src.as_bytes();
@@ -93,7 +153,7 @@ pub fn build_path_str(home_src: &str, path_src: &str, level: LENGTH_LEVEL) -> St
         }
     }
     match level {
-        LENGTH_LEVEL::LONG => {
+        LengthLevel::LONG => {
             let mut piecies: Vec<String> = vec![];
             if in_home {
                 piecies.push("~".to_string());
@@ -107,7 +167,7 @@ pub fn build_path_str(home_src: &str, path_src: &str, level: LENGTH_LEVEL) -> St
             }
             return piecies.join(format!(" {} ", symbols::SYMBOL_RIGHT_ALT).as_str());
         }
-        LENGTH_LEVEL::MEDIUM => {
+        LengthLevel::MEDIUM => {
             let mut sliced = path_src[slice_start..].to_string();
             if !sliced.starts_with("/") {
                 sliced.insert(0, '/');
@@ -117,7 +177,7 @@ pub fn build_path_str(home_src: &str, path_src: &str, level: LENGTH_LEVEL) -> St
             }
             return sliced;
         }
-        LENGTH_LEVEL::SHORT => {
+        LengthLevel::SHORT => {
             return path_src[slice_start..]
                 .split('/')
                 .last()
@@ -128,10 +188,22 @@ pub fn build_path_str(home_src: &str, path_src: &str, level: LENGTH_LEVEL) -> St
 }
 
 #[derive(PartialOrd, PartialEq, Copy, Clone)]
-pub enum LENGTH_LEVEL {
+pub enum LengthLevel {
     LONG = 2,
     MEDIUM = 1,
     SHORT = 0,
+}
+
+pub fn load_lengthlevel(lengthlevel: &str) -> LengthLevel {
+    match lengthlevel.to_uppercase().as_str() {
+        "LONG" => LengthLevel::LONG,
+        "MEDIUM" => LengthLevel::MEDIUM,
+        "SHORT" => LengthLevel::SHORT,
+        _ => {
+            eprintln!("Unsupported length level: {}", &lengthlevel);
+            exit(1);
+        }
+    }
 }
 
 pub fn count_git_status(repo: &Repository) -> (u32, u32) {
@@ -165,4 +237,19 @@ pub fn count_unpushed(repo: &Repository, branch: &Branch) -> Result<u32, &'stati
     rw.hide(oid).or(Err("could not hide upstream oid"))?;
 
     return Ok(rw.count() as u32);
+}
+
+pub fn expand_user(path: &str) -> Result<String, Box<dyn std::error::Error>> {
+    if path.starts_with("~") {
+        let home_dir = std::env::var("HOME")?;
+        if path.starts_with("~/") {
+            let p = std::path::Path::new(&home_dir);
+            let joined = p.join(path.strip_prefix("~/").unwrap());
+            return Ok(joined.to_str().unwrap().to_string());
+        } else {
+            return Ok(home_dir);
+        }
+    } else {
+        return Ok(path.to_string());
+    }
 }

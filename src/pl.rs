@@ -1,121 +1,65 @@
-#![allow(dead_code)]
-#![allow(non_camel_case_types)]
-#![allow(unused_variables)]
-#![allow(unused_imports)]
-
-use git2::{Branch, Repository};
 mod util;
-use util::colors::*;
-use util::symbols::*;
-use util::*;
 mod args;
 use args::*;
-mod path;
-use path::*;
+mod segments {
+    pub mod git;
+    pub mod kube;
+    pub mod path;
+    pub mod prompt;
+    pub mod ssh;
+    pub mod time;
+    pub mod userhost;
+}
+
 mod builder;
-use builder::*;
-mod userhost;
-use userhost::*;
-mod git;
-use git::*;
-mod ssh;
-use ssh::*;
-mod prompt;
 use clap::ArgMatches;
-use prompt::*;
 mod out;
 use out::*;
-mod time;
-use time::*;
+mod config;
 
-fn main() {
+fn main() -> Result<(), String> {
     let matches: ArgMatches = get_arg_matches();
 
     // arguments
-    let pwd = matches.value_of("pwd").unwrap().to_string();
-    let home = matches.value_of("home").unwrap().to_string();
-
-    let width: u32 = match matches.value_of("width").unwrap().parse() {
-        Ok(width) => width,
-        Err(_) => return,
-    };
-    let prev_error: u8 = match matches.value_of("error").unwrap().parse() {
-        Ok(e) => e,
-        Err(_) => return,
-    };
+    let pwd = matches
+        .value_of("pwd")
+        .and_then(|e| Some(e.to_string()))
+        .unwrap_or({
+            let current_dir = std::env::current_dir().or(Err("failed to get current dir"))?;
+            current_dir.to_str().unwrap().to_string()
+        });
+    let home = matches
+        .value_of("home")
+        .and_then(|e| Some(e.to_string()))
+        .unwrap_or(std::env::var("HOME").or(Err("failed to get current dir"))?);
+    let width: u32 = matches
+        .value_of("width")
+        .unwrap()
+        .parse()
+        .or(Err("failed to parse width"))?;
+    let prev_error: u8 = matches
+        .value_of("error")
+        .unwrap()
+        .parse()
+        .or(Err("failed to parse error"))?;
     let user = matches.value_of("user").unwrap().to_string();
     let hostname = matches.value_of("host").unwrap().to_string();
+    let kube_config_path = matches.value_of("kubeconfig").unwrap();
 
-    // def colors
-    let fg = WHITE;
-    let bg_ssh = BLUE;
-    let bg_user_hostname = INDIGO;
-    let bg_path = TEAL;
-    let bg_git = DEEP_ORANGE;
-    let bg_prompt = if prev_error > 0 { PINK } else { CYAN };
+    let config_path = matches.value_of("config").unwrap();
+    let loader = config::ConfigLoader::new(
+        config_path,
+        &pwd,
+        &home,
+        &user,
+        &hostname,
+        kube_config_path,
+        prev_error,
+    )
+    .or_else(|e| Err(e.to_string()))?;
+    let profiles = loader.build_profiles().or_else(|e| Err(e.to_string()))?;
 
-    // partial prompt builders
-    let segment_ssh: Box<dyn PromptSegment> = Box::new(Ssh::new(fg, bg_ssh));
-    let segment_userhostname: Box<dyn PromptSegment> =
-        Box::new(UserHostname::new(fg, bg_user_hostname, &user, &hostname));
-    let segment_path: Box<dyn PromptSegment> = Box::new(Path::new(fg, bg_path, &home, &pwd));
-    let segment_git: Box<dyn PromptSegment> = Box::new(Git::new(fg, bg_git, pwd.as_str()));
-    let segment_time: Box<dyn PromptSegment> = Box::new(Time::new(fg, bg_ssh));
-    let prompt = Prompt::new(&user, fg, bg_prompt, prev_error);
+    out(width, &profiles, loader.get_prompt());
 
-    // profiles
-    let profiles: Vec<Vec<(&Box<dyn PromptSegment>, LENGTH_LEVEL, Location)>> = vec![
-        vec![
-            (&segment_ssh, LENGTH_LEVEL::LONG, Location::LEFT),
-            (&segment_userhostname, LENGTH_LEVEL::LONG, Location::LEFT),
-            (&segment_path, LENGTH_LEVEL::LONG, Location::LEFT),
-            (&segment_git, LENGTH_LEVEL::LONG, Location::LEFT),
-            (&segment_time, LENGTH_LEVEL::LONG, Location::RIGHT),
-        ],
-        vec![
-            (&segment_ssh, LENGTH_LEVEL::LONG, Location::LEFT),
-            (&segment_userhostname, LENGTH_LEVEL::LONG, Location::LEFT),
-            (&segment_path, LENGTH_LEVEL::MEDIUM, Location::LEFT),
-            (&segment_git, LENGTH_LEVEL::LONG, Location::LEFT),
-            (&segment_time, LENGTH_LEVEL::LONG, Location::RIGHT),
-        ],
-        vec![
-            (&segment_ssh, LENGTH_LEVEL::LONG, Location::LEFT),
-            (&segment_userhostname, LENGTH_LEVEL::LONG, Location::LEFT),
-            (&segment_path, LENGTH_LEVEL::MEDIUM, Location::LEFT),
-            (&segment_git, LENGTH_LEVEL::LONG, Location::LEFT),
-        ],
-        vec![
-            (&segment_ssh, LENGTH_LEVEL::LONG, Location::LEFT),
-            (&segment_userhostname, LENGTH_LEVEL::LONG, Location::LEFT),
-            (&segment_path, LENGTH_LEVEL::SHORT, Location::LEFT),
-            (&segment_git, LENGTH_LEVEL::LONG, Location::LEFT),
-        ],
-        vec![
-            (&segment_ssh, LENGTH_LEVEL::MEDIUM, Location::LEFT),
-            (&segment_userhostname, LENGTH_LEVEL::LONG, Location::LEFT),
-            (&segment_path, LENGTH_LEVEL::SHORT, Location::LEFT),
-            (&segment_git, LENGTH_LEVEL::MEDIUM, Location::LEFT),
-        ],
-        vec![
-            (&segment_ssh, LENGTH_LEVEL::MEDIUM, Location::LEFT),
-            (&segment_userhostname, LENGTH_LEVEL::MEDIUM, Location::LEFT),
-            (&segment_path, LENGTH_LEVEL::SHORT, Location::LEFT),
-            (&segment_git, LENGTH_LEVEL::MEDIUM, Location::LEFT),
-        ],
-        vec![
-            (&segment_ssh, LENGTH_LEVEL::SHORT, Location::LEFT),
-            (&segment_userhostname, LENGTH_LEVEL::SHORT, Location::LEFT),
-            (&segment_path, LENGTH_LEVEL::SHORT, Location::LEFT),
-            (&segment_git, LENGTH_LEVEL::MEDIUM, Location::LEFT),
-        ],
-        vec![
-            (&segment_ssh, LENGTH_LEVEL::SHORT, Location::LEFT),
-            (&segment_userhostname, LENGTH_LEVEL::SHORT, Location::LEFT),
-            (&segment_path, LENGTH_LEVEL::SHORT, Location::LEFT),
-            (&segment_git, LENGTH_LEVEL::MEDIUM, Location::LEFT),
-        ],
-    ];
-
-    out(width, &profiles, &prompt);
+    Ok(())
 }
