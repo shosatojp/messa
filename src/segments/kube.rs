@@ -11,7 +11,7 @@ use std::{fs::File, io::BufReader, path::Path};
 
 #[allow(non_snake_case)]
 #[derive(Deserialize, Serialize, Debug)]
-struct KubeConfig {
+pub struct KubeConfig {
     pub apiVersion: String,
     pub clusters: Vec<KubeClusterConfig>,
     pub contexts: Vec<KubeContextConfig>,
@@ -23,33 +23,33 @@ struct KubeConfig {
 
 #[allow(non_snake_case)]
 #[derive(Deserialize, Serialize, Debug)]
-struct KubeUserConfig {
+pub struct KubeUserConfig {
     pub name: String,
 }
 
 #[allow(non_snake_case)]
 #[derive(Deserialize, Serialize, Debug)]
-struct KubeClusterConfig {
+pub struct KubeClusterConfig {
     pub name: String,
 }
 
 #[allow(non_snake_case)]
 #[derive(Deserialize, Serialize, Debug)]
-struct KubeContextConfig {
+pub struct KubeContextConfig {
     pub name: String,
     pub context: KubeContext,
 }
 
 #[allow(non_snake_case)]
 #[derive(Deserialize, Serialize, Debug)]
-struct KubeContext {
+pub struct KubeContext {
     pub cluster: String,
     pub namespace: String,
     pub user: String,
 }
 
 #[allow(non_snake_case)]
-struct Kube {
+pub struct Kube {
     fg: String,
     bg: String,
     pub size: [u32; 3],
