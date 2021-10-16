@@ -123,6 +123,7 @@ impl PromptSegment for Kube {
                 None => (),
             }
         }
+        builder.push(' ');
 
         return builder;
     }
