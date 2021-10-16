@@ -30,7 +30,7 @@ export PROMPT_COMMAND="create_prompt;$PROMPT_COMMAND"
 2. Setup config
 
 ```sh
-wget -O ~/.fprompt.yaml https://github.com/shosatojp/fprompt/blob/master/.fprompt.yaml
+wget -O ~/.fprompt.yaml https://raw.githubusercontent.com/shosatojp/fprompt/master/.fprompt.yaml
 ```
 
 3. Reload your shell
