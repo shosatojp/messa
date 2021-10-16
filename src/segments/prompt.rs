@@ -2,7 +2,6 @@ use crate::builder::*;
 use crate::util::colors::*;
 use crate::util::symbols::*;
 use crate::util::*;
-use git2::{Branch, Repository};
 
 pub struct Prompt {
     prev_error: u8,
@@ -23,7 +22,7 @@ impl Prompt {
         };
 
         let long = prompt
-            .construct(LENGTH_LEVEL::LONG, BuildMode::ESTIMATE)
+            .construct(LengthLevel::LONG, BuildMode::ESTIMATE)
             .count as u32;
         prompt.size[0] = long;
         prompt.size[1] = long;
@@ -34,7 +33,7 @@ impl Prompt {
 }
 
 impl PromptSegment for Prompt {
-    fn construct(&self, level: LENGTH_LEVEL, mode: BuildMode) -> PromptStringBuilder {
+    fn construct(&self, _level: LengthLevel, mode: BuildMode) -> PromptStringBuilder {
         let mut builder = PromptStringBuilder::new(mode);
         builder.push_string(&background(&self.bg));
         builder.push_string(&forground(&self.fg));

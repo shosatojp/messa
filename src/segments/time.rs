@@ -1,6 +1,4 @@
 use crate::builder::*;
-use crate::util::colors::*;
-use crate::util::symbols::*;
 use crate::util::*;
 use chrono::Local;
 
@@ -22,11 +20,11 @@ impl Time {
 
         if time.enabled {
             time.size[2] = time
-                .construct(LENGTH_LEVEL::LONG, BuildMode::ESTIMATE)
+                .construct(LengthLevel::LONG, BuildMode::ESTIMATE)
                 .count as u32;
             time.size[1] = time.size[2];
             time.size[0] = time
-                .construct(LENGTH_LEVEL::SHORT, BuildMode::ESTIMATE)
+                .construct(LengthLevel::SHORT, BuildMode::ESTIMATE)
                 .count as u32;
         }
         return time;
@@ -34,7 +32,7 @@ impl Time {
 }
 
 impl PromptSegment for Time {
-    fn construct(&self, level: LENGTH_LEVEL, mode: BuildMode) -> PromptStringBuilder {
+    fn construct(&self, _level: LengthLevel, mode: BuildMode) -> PromptStringBuilder {
         let mut builder = PromptStringBuilder::new(mode);
         builder.push(' ');
         builder.push_string(&Local::now().format("%H:%M:%S").to_string());

@@ -90,22 +90,14 @@ pub enum Location {
 }
 
 pub trait PromptSegment {
-    fn construct(&self, level: LENGTH_LEVEL, mode: BuildMode) -> PromptStringBuilder;
+    fn construct(&self, level: LengthLevel, mode: BuildMode) -> PromptStringBuilder;
     fn get_size(&self) -> &[u32; 3];
     fn get_fg(&self) -> &str;
     fn get_bg(&self) -> &str;
     fn is_enabled(&self) -> bool;
 }
 
-pub fn get_branch_name(repo: &Repository) -> String {
-    let branch = Branch::wrap(repo.head().unwrap());
-    return match branch.name() {
-        Ok(name) => format!(" {}", name.unwrap()),
-        Err(_) => String::from(""),
-    };
-}
-
-pub fn build_path_str(home_src: &str, path_src: &str, level: LENGTH_LEVEL) -> String {
+pub fn build_path_str(home_src: &str, path_src: &str, level: LengthLevel) -> String {
     let home = home_src.as_bytes();
     let home_len = home.len();
     let path = path_src.as_bytes();
@@ -125,7 +117,7 @@ pub fn build_path_str(home_src: &str, path_src: &str, level: LENGTH_LEVEL) -> St
         }
     }
     match level {
-        LENGTH_LEVEL::LONG => {
+        LengthLevel::LONG => {
             let mut piecies: Vec<String> = vec![];
             if in_home {
                 piecies.push("~".to_string());
@@ -139,7 +131,7 @@ pub fn build_path_str(home_src: &str, path_src: &str, level: LENGTH_LEVEL) -> St
             }
             return piecies.join(format!(" {} ", symbols::SYMBOL_RIGHT_ALT).as_str());
         }
-        LENGTH_LEVEL::MEDIUM => {
+        LengthLevel::MEDIUM => {
             let mut sliced = path_src[slice_start..].to_string();
             if !sliced.starts_with("/") {
                 sliced.insert(0, '/');
@@ -149,7 +141,7 @@ pub fn build_path_str(home_src: &str, path_src: &str, level: LENGTH_LEVEL) -> St
             }
             return sliced;
         }
-        LENGTH_LEVEL::SHORT => {
+        LengthLevel::SHORT => {
             return path_src[slice_start..]
                 .split('/')
                 .last()
@@ -160,7 +152,7 @@ pub fn build_path_str(home_src: &str, path_src: &str, level: LENGTH_LEVEL) -> St
 }
 
 #[derive(PartialOrd, PartialEq, Copy, Clone)]
-pub enum LENGTH_LEVEL {
+pub enum LengthLevel {
     LONG = 2,
     MEDIUM = 1,
     SHORT = 0,

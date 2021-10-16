@@ -1,8 +1,6 @@
 use crate::builder::*;
-use crate::util::colors::*;
 use crate::util::symbols::*;
 use crate::util::*;
-use git2::{Branch, Repository};
 
 pub struct Ssh {
     enabled: bool,
@@ -24,10 +22,10 @@ impl Ssh {
         };
 
         if ssh.enabled {
-            ssh.size[2] = ssh.construct(LENGTH_LEVEL::LONG, BuildMode::ESTIMATE).count as u32;
+            ssh.size[2] = ssh.construct(LengthLevel::LONG, BuildMode::ESTIMATE).count as u32;
             ssh.size[1] = ssh.size[2];
             ssh.size[0] = ssh
-                .construct(LENGTH_LEVEL::SHORT, BuildMode::ESTIMATE)
+                .construct(LengthLevel::SHORT, BuildMode::ESTIMATE)
                 .count as u32;
         }
         return ssh;
@@ -35,10 +33,10 @@ impl Ssh {
 }
 
 impl PromptSegment for Ssh {
-    fn construct(&self, level: LENGTH_LEVEL, mode: BuildMode) -> PromptStringBuilder {
+    fn construct(&self, level: LengthLevel, mode: BuildMode) -> PromptStringBuilder {
         let mut builder = PromptStringBuilder::new(mode);
         builder.push(' ');
-        if level >= LENGTH_LEVEL::MEDIUM {
+        if level >= LengthLevel::MEDIUM {
             builder.push(SYMBOL_SSH);
             // builder.count += 1; // SYMBOL_SSH が幅２
             builder.push(' ');

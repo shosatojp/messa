@@ -1,13 +1,11 @@
 use crate::builder::*;
-use crate::util::colors::*;
-use crate::util::symbols::*;
 use crate::util::*;
 use crate::{
     builder::PromptStringBuilder,
     util::{self, PromptSegment},
 };
 use serde::{Deserialize, Serialize};
-use std::{fs::File, io::BufReader, path::Path};
+use std::{fs::File, io::BufReader};
 
 #[allow(non_snake_case)]
 #[derive(Deserialize, Serialize, Debug)]
@@ -70,13 +68,13 @@ impl Kube {
         };
 
         kube.size[2] = kube
-            .construct(LENGTH_LEVEL::LONG, BuildMode::ESTIMATE)
+            .construct(LengthLevel::LONG, BuildMode::ESTIMATE)
             .count as u32;
         kube.size[1] = kube
-            .construct(LENGTH_LEVEL::MEDIUM, BuildMode::ESTIMATE)
+            .construct(LengthLevel::MEDIUM, BuildMode::ESTIMATE)
             .count as u32;
         kube.size[0] = kube
-            .construct(LENGTH_LEVEL::SHORT, BuildMode::ESTIMATE)
+            .construct(LengthLevel::SHORT, BuildMode::ESTIMATE)
             .count as u32;
 
         return Ok(kube);
@@ -106,14 +104,14 @@ impl Kube {
 impl PromptSegment for Kube {
     fn construct(
         &self,
-        level: util::LENGTH_LEVEL,
+        level: util::LengthLevel,
         mode: crate::builder::BuildMode,
     ) -> crate::builder::PromptStringBuilder {
         let mut builder = PromptStringBuilder::new(mode);
         builder.push(' ');
         builder.push_string(&self.get_context());
 
-        if level == util::LENGTH_LEVEL::LONG {
+        if level == util::LengthLevel::LONG {
             match self.get_namespace() {
                 Some(ns) => {
                     builder.push('/');
@@ -151,5 +149,6 @@ fn test_load_config() -> Result<(), Box<dyn std::error::Error>> {
         .iter()
         .find(|x| x.name == context_name)
         .ok_or("context not found")?;
+    println!("namespace: {}", &context.context.namespace);
     Ok(())
 }

@@ -1,8 +1,5 @@
 use crate::builder::*;
-use crate::util::colors::*;
-use crate::util::symbols::*;
 use crate::util::*;
-use git2::{Branch, Repository};
 
 pub struct Path {
     home: String,
@@ -23,20 +20,20 @@ impl Path {
         };
 
         path.size[2] = path
-            .construct(LENGTH_LEVEL::LONG, BuildMode::ESTIMATE)
+            .construct(LengthLevel::LONG, BuildMode::ESTIMATE)
             .count as u32;
         path.size[1] = path
-            .construct(LENGTH_LEVEL::MEDIUM, BuildMode::ESTIMATE)
+            .construct(LengthLevel::MEDIUM, BuildMode::ESTIMATE)
             .count as u32;
         path.size[0] = path
-            .construct(LENGTH_LEVEL::SHORT, BuildMode::ESTIMATE)
+            .construct(LengthLevel::SHORT, BuildMode::ESTIMATE)
             .count as u32;
         return path;
     }
 }
 
 impl PromptSegment for Path {
-    fn construct(&self, level: LENGTH_LEVEL, mode: BuildMode) -> PromptStringBuilder {
+    fn construct(&self, level: LengthLevel, mode: BuildMode) -> PromptStringBuilder {
         let mut builder = PromptStringBuilder::new(mode);
         builder.push(' ');
         builder.push_string(&build_path_str(

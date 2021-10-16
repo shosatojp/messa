@@ -1,12 +1,4 @@
-#![allow(dead_code)]
-#![allow(non_camel_case_types)]
-#![allow(unused_variables)]
-#![allow(unused_imports)]
-
-use git2::{Branch, Repository};
 mod util;
-use util::colors::*;
-use util::symbols::*;
 use util::*;
 mod args;
 use args::*;
@@ -20,9 +12,8 @@ mod segments {
     pub mod userhost;
 }
 
-use segments::{git::*, kube::*, path::*, prompt::*, ssh::*, time::*, userhost::*};
+use segments::prompt::*;
 mod builder;
-use builder::*;
 use clap::ArgMatches;
 mod out;
 use out::*;

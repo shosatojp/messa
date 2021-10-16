@@ -1,16 +1,11 @@
-use serde::de::Unexpected;
-use serde::{de, Deserialize, Deserializer, Serialize};
-use std::ops::Deref;
+use serde::Deserialize;
 use std::rc::Rc;
-use std::{collections::HashMap, fs::File, io::BufReader, iter::Map, process::exit};
+use std::{collections::HashMap, fs::File, io::BufReader, process::exit};
 
-use crate::segments::kube::{Kube, KubeConfig};
+use crate::segments::kube::Kube;
 use crate::segments::{git::Git, path::Path, ssh::Ssh, time::Time, userhost::UserHostname};
 use crate::util::colors;
-use crate::util::{
-    colors::{background, forground},
-    Location, PromptSegment, LENGTH_LEVEL,
-};
+use crate::util::{Location, PromptSegment, LengthLevel};
 
 type SegmentsMap = HashMap<String, Rc<Box<dyn PromptSegment>>>;
 
@@ -27,28 +22,14 @@ struct RawSegmentConfig {
     #[serde(rename = "type")]
     pub type_: String,
     pub size: String,
-    // #[serde(deserialize_with = "location_deserialize")]
-    // pub location: Location,
     pub location: Option<String>,
 }
 
 pub struct SegmentConfig {
     pub segment: Rc<Box<dyn PromptSegment>>,
-    pub size: LENGTH_LEVEL,
+    pub size: LengthLevel,
     pub location: Location,
 }
-
-// fn location_deserialize<'de, D>(deserializer: D) -> Result<Location, D::Error>
-// where
-//     D: Deserializer<'de>,
-// {
-//     let s = String::deserialize(deserializer)?;
-//     match s.as_str() {
-//         "left" => Ok(Location::LEFT),
-//         "right" => Ok(Location::RIGHT),
-//         _ => Err(de::Error::invalid_value(Unexpected::Str(&s), &"")),
-//     }
-// }
 
 #[allow(non_snake_case)]
 #[derive(Deserialize, Debug)]
@@ -98,7 +79,7 @@ impl ConfigLoader {
         })
     }
     fn load_config(path: &str) -> Result<RawConfig, Box<dyn std::error::Error>> {
-        let file = File::open(path).unwrap_or_else(|e| {
+        let file = File::open(path).unwrap_or_else(|_| {
             eprintln!("Unable to open config file: {}", &path);
             exit(1);
         });
@@ -152,7 +133,7 @@ impl ConfigLoader {
                             .expect(&format!("key not found: {}", e.type_)),
                     ),
                     location: Location::LEFT, // TODO
-                    size: LENGTH_LEVEL::LONG, // TODO
+                    size: LengthLevel::LONG, // TODO
                 })
                 .collect();
             let profile = ProfileConfig { segments };

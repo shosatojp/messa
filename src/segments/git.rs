@@ -1,5 +1,4 @@
 use crate::builder::*;
-use crate::util::colors::*;
 use crate::util::symbols::*;
 use crate::util::*;
 use git2::{Branch, Repository};
@@ -62,25 +61,25 @@ impl Git {
             },
         };
 
-        git.size[2] = git.construct(LENGTH_LEVEL::LONG, BuildMode::ESTIMATE).count as u32;
+        git.size[2] = git.construct(LengthLevel::LONG, BuildMode::ESTIMATE).count as u32;
         git.size[1] = git
-            .construct(LENGTH_LEVEL::MEDIUM, BuildMode::ESTIMATE)
+            .construct(LengthLevel::MEDIUM, BuildMode::ESTIMATE)
             .count as u32;
         git.size[0] = git
-            .construct(LENGTH_LEVEL::SHORT, BuildMode::ESTIMATE)
+            .construct(LengthLevel::SHORT, BuildMode::ESTIMATE)
             .count as u32;
         return git;
     }
 }
 
 impl PromptSegment for Git {
-    fn construct(&self, level: LENGTH_LEVEL, mode: BuildMode) -> PromptStringBuilder {
+    fn construct(&self, level: LengthLevel, mode: BuildMode) -> PromptStringBuilder {
         let mut builder = PromptStringBuilder::new(mode);
         if self.enabled {
-            if level >= LENGTH_LEVEL::MEDIUM {
+            if level >= LengthLevel::MEDIUM {
                 builder.push(' ');
                 builder.push(SYMBOL_GIT_BRANCH);
-                if level >= LENGTH_LEVEL::LONG {
+                if level >= LengthLevel::LONG {
                     if self.branch_name.len() > 0 {
                         builder.push_string(&format!(" {}", self.branch_name));
                     }

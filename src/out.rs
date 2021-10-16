@@ -80,7 +80,7 @@ pub fn out(width: u32, profiles: &Vec<ProfileConfig>, prompt: &Prompt) {
     print!(
         "{} ",
         prompt
-            .construct(LENGTH_LEVEL::LONG, BuildMode::CONSTRUCT)
+            .construct(LengthLevel::LONG, BuildMode::CONSTRUCT)
             .data
     );
 }
