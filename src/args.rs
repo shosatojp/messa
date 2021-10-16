@@ -51,5 +51,13 @@ pub fn get_arg_matches<'a>() -> clap::ArgMatches<'a> {
                 .required(true)
                 .takes_value(true),
         )
+        .arg(
+            clap::Arg::with_name("kubeconfig")
+                .help("kubernetes config file")
+                .short("k")
+                .long("kube")
+                .default_value("~/.kube/config")
+                .takes_value(true),
+        )
         .get_matches();
 }

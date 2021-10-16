@@ -80,9 +80,17 @@ impl ConfigLoader {
         home: &str,
         user: &str,
         hostname: &str,
+        kube_config_path: &str,
     ) -> Result<ConfigLoader, Box<dyn std::error::Error>> {
         let config = ConfigLoader::load_config(path)?;
-        let segments = ConfigLoader::build_segments(&config.config, pwd, home, user, hostname)?;
+        let segments = ConfigLoader::build_segments(
+            &config.config,
+            pwd,
+            home,
+            user,
+            hostname,
+            kube_config_path,
+        )?;
         Ok(ConfigLoader {
             path: path.to_string(),
             config,
@@ -102,6 +110,7 @@ impl ConfigLoader {
         home: &str,
         user: &str,
         hostname: &str,
+        kube_config_path: &str,
     ) -> Result<SegmentsMap, Box<dyn std::error::Error>> {
         let mut hashmap: SegmentsMap = HashMap::new();
         for (type_, type_config) in type_configs {
@@ -113,7 +122,7 @@ impl ConfigLoader {
                 "path" => Box::new(Path::new(&fg, &bg, home, pwd)),
                 "git" => Box::new(Git::new(&fg, &bg, &pwd)),
                 "time" => Box::new(Time::new(&fg, &bg)),
-                "kube" => Box::new(Kube::new(&fg, &bg)?),
+                "kube" => Box::new(Kube::new(kube_config_path, &fg, &bg)?),
                 _ => {
                     eprintln!("Unsupported segment type");
                     exit(1);

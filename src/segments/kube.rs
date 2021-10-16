@@ -57,12 +57,16 @@ pub struct Kube {
 }
 
 impl Kube {
-    pub fn new(fg: &str, bg: &str) -> Result<Kube, Box<dyn std::error::Error>> {
+    pub fn new(
+        kube_config_path: &str,
+        fg: &str,
+        bg: &str,
+    ) -> Result<Kube, Box<dyn std::error::Error>> {
         let mut kube = Kube {
             fg: fg.to_string(),
             bg: bg.to_string(),
             size: [0, 0, 0],
-            config: Kube::load_config(&util::expand_user("~/.kube/config")?)?,
+            config: Kube::load_config(&util::expand_user(kube_config_path)?)?,
         };
 
         kube.size[2] = kube

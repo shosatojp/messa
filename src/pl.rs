@@ -55,9 +55,10 @@ fn main() -> Result<(), String> {
         .or(Err("failed to parse error"))?;
     let user = matches.value_of("user").unwrap().to_string();
     let hostname = matches.value_of("host").unwrap().to_string();
+    let kube_config_path = matches.value_of("kubeconfig").unwrap();
 
     let config_path = "config.yaml";
-    let loader = config::ConfigLoader::new(config_path, &pwd, &home, &user, &hostname)
+    let loader = config::ConfigLoader::new(config_path, &pwd, &home, &user, &hostname, kube_config_path)
         .or_else(|e| Err(e.to_string()))?;
     let profiles = loader.build_profiles().or_else(|e| Err(e.to_string()))?;
 
