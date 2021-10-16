@@ -72,6 +72,13 @@ pub mod colors {
             }
         }
     }
+
+    pub fn from_color_config(color_config: &str) -> String {
+        match color_config.parse::<u8>() {
+            Ok(code) => format!("5;{}", code),
+            Err(_) => from_humanreadable(color_config).to_string(),
+        }
+    }
 }
 
 pub mod symbols {

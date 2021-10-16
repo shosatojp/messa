@@ -104,8 +104,8 @@ impl ConfigLoader {
     ) -> Result<SegmentsMap, Box<dyn std::error::Error>> {
         let mut hashmap: SegmentsMap = HashMap::new();
         for (type_, type_config) in type_configs {
-            let fg = colors::from_humanreadable(&type_config.fg);
-            let bg = colors::from_humanreadable(&type_config.bg);
+            let fg = colors::from_color_config(&type_config.fg);
+            let bg = colors::from_color_config(&type_config.bg);
             let segment: Box<dyn PromptSegment> = match type_.as_str() {
                 "ssh" => Box::new(Ssh::new(&fg, &bg)),
                 "userhost" => Box::new(UserHostname::new(&fg, &bg, user, hostname)),
