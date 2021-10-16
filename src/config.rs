@@ -120,7 +120,6 @@ impl ConfigLoader {
     }
 
     pub fn build_profiles(&self) -> Result<Vec<ProfileConfig>, Box<dyn std::error::Error>> {
-        // let segments = ConfigLoader::build_segments(type_configs, pwd, home, user, hostname)
         let mut profiles: Vec<ProfileConfig> = vec![];
         for raw_profile in &self.config.profiles {
             let segments: Vec<SegmentConfig> = raw_profile
