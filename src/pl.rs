@@ -28,7 +28,7 @@ mod out;
 use out::*;
 mod config;
 
-fn main() {
+fn main() -> Result<(), String> {
     let matches: ArgMatches = get_arg_matches();
 
     // arguments
@@ -46,76 +46,19 @@ fn main() {
     let user = matches.value_of("user").unwrap().to_string();
     let hostname = matches.value_of("host").unwrap().to_string();
 
-    // def colors
-    let fg = WHITE;
-    let bg_ssh = BLUE;
-    let bg_user_hostname = INDIGO;
-    let bg_path = TEAL;
-    let bg_git = DEEP_ORANGE;
-    let bg_prompt = if prev_error > 0 { PINK } else { CYAN };
+    let config_path = "config.yaml";
+    let loader = config::ConfigLoader::new(config_path, &pwd, &home, &user, &hostname)
+        .or_else(|e| Err(e.to_string()))?;
+    let profiles = loader.build_profiles().or_else(|e| Err(e.to_string()))?;
 
-    // partial prompt builders
-    let segment_ssh: Box<dyn PromptSegment> = Box::new(Ssh::new(fg, bg_ssh));
-    let segment_userhostname: Box<dyn PromptSegment> =
-        Box::new(UserHostname::new(fg, bg_user_hostname, &user, &hostname));
-    let segment_path: Box<dyn PromptSegment> = Box::new(Path::new(fg, bg_path, &home, &pwd));
-    let segment_git: Box<dyn PromptSegment> = Box::new(Git::new(fg, bg_git, pwd.as_str()));
-    let segment_time: Box<dyn PromptSegment> = Box::new(Time::new(fg, bg_ssh));
-    let prompt = Prompt::new(&user, fg, bg_prompt, prev_error);
-
-    // profiles
-    let profiles: Vec<Vec<(&Box<dyn PromptSegment>, LENGTH_LEVEL, Location)>> = vec![
-        vec![
-            (&segment_ssh, LENGTH_LEVEL::LONG, Location::LEFT),
-            (&segment_userhostname, LENGTH_LEVEL::LONG, Location::LEFT),
-            (&segment_path, LENGTH_LEVEL::LONG, Location::LEFT),
-            (&segment_git, LENGTH_LEVEL::LONG, Location::LEFT),
-            (&segment_time, LENGTH_LEVEL::LONG, Location::RIGHT),
-        ],
-        vec![
-            (&segment_ssh, LENGTH_LEVEL::LONG, Location::LEFT),
-            (&segment_userhostname, LENGTH_LEVEL::LONG, Location::LEFT),
-            (&segment_path, LENGTH_LEVEL::MEDIUM, Location::LEFT),
-            (&segment_git, LENGTH_LEVEL::LONG, Location::LEFT),
-            (&segment_time, LENGTH_LEVEL::LONG, Location::RIGHT),
-        ],
-        vec![
-            (&segment_ssh, LENGTH_LEVEL::LONG, Location::LEFT),
-            (&segment_userhostname, LENGTH_LEVEL::LONG, Location::LEFT),
-            (&segment_path, LENGTH_LEVEL::MEDIUM, Location::LEFT),
-            (&segment_git, LENGTH_LEVEL::LONG, Location::LEFT),
-        ],
-        vec![
-            (&segment_ssh, LENGTH_LEVEL::LONG, Location::LEFT),
-            (&segment_userhostname, LENGTH_LEVEL::LONG, Location::LEFT),
-            (&segment_path, LENGTH_LEVEL::SHORT, Location::LEFT),
-            (&segment_git, LENGTH_LEVEL::LONG, Location::LEFT),
-        ],
-        vec![
-            (&segment_ssh, LENGTH_LEVEL::MEDIUM, Location::LEFT),
-            (&segment_userhostname, LENGTH_LEVEL::LONG, Location::LEFT),
-            (&segment_path, LENGTH_LEVEL::SHORT, Location::LEFT),
-            (&segment_git, LENGTH_LEVEL::MEDIUM, Location::LEFT),
-        ],
-        vec![
-            (&segment_ssh, LENGTH_LEVEL::MEDIUM, Location::LEFT),
-            (&segment_userhostname, LENGTH_LEVEL::MEDIUM, Location::LEFT),
-            (&segment_path, LENGTH_LEVEL::SHORT, Location::LEFT),
-            (&segment_git, LENGTH_LEVEL::MEDIUM, Location::LEFT),
-        ],
-        vec![
-            (&segment_ssh, LENGTH_LEVEL::SHORT, Location::LEFT),
-            (&segment_userhostname, LENGTH_LEVEL::SHORT, Location::LEFT),
-            (&segment_path, LENGTH_LEVEL::SHORT, Location::LEFT),
-            (&segment_git, LENGTH_LEVEL::MEDIUM, Location::LEFT),
-        ],
-        vec![
-            (&segment_ssh, LENGTH_LEVEL::SHORT, Location::LEFT),
-            (&segment_userhostname, LENGTH_LEVEL::SHORT, Location::LEFT),
-            (&segment_path, LENGTH_LEVEL::SHORT, Location::LEFT),
-            (&segment_git, LENGTH_LEVEL::MEDIUM, Location::LEFT),
-        ],
-    ];
+    let prompt = Prompt::new(
+        &user,
+        colors::from_humanreadable("red"),
+        colors::from_humanreadable("white"),
+        prev_error,
+    );
 
     out(width, &profiles, &prompt);
+
+    Ok(())
 }
