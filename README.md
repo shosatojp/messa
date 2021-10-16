@@ -1,6 +1,8 @@
 # fprompt
 
 - Width flexible shell prompt
+- Configure with yaml
+- Supports ssh, git, kubernetes, datetime
 
 ![](image.png)
 
