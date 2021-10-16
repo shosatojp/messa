@@ -1,5 +1,7 @@
 # fprompt
 
+[![CI](https://github.com/shosatojp/fprompt/actions/workflows/ci.yml/badge.svg)](https://github.com/shosatojp/fprompt/actions/workflows/ci.yml)
+
 - Width flexible shell prompt
 - Configure with yaml
 - Supports ssh, git, kubernetes, datetime
