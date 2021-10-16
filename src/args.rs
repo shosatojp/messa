@@ -8,7 +8,6 @@ pub fn get_arg_matches<'a>() -> clap::ArgMatches<'a> {
                 .help("specify home directory")
                 .short("h")
                 .long("home")
-                .required(true)
                 .takes_value(true),
         )
         .arg(
@@ -16,7 +15,6 @@ pub fn get_arg_matches<'a>() -> clap::ArgMatches<'a> {
                 .help("specify current working directory")
                 .short("d")
                 .long("pwd")
-                .required(true)
                 .takes_value(true),
         )
         .arg(

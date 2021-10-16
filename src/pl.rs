@@ -32,17 +32,17 @@ fn main() -> Result<(), String> {
     let matches: ArgMatches = get_arg_matches();
 
     // arguments
-    let pwd = matches.value_of("pwd").unwrap().to_string();
-    let home = matches.value_of("home").unwrap().to_string();
-
-    let width: u32 = match matches.value_of("width").unwrap().parse() {
-        Ok(width) => width,
-        Err(_) => return,
-    };
-    let prev_error: u8 = match matches.value_of("error").unwrap().parse() {
-        Ok(e) => e,
-        Err(_) => return,
-    };
+    let pwd = matches
+        .value_of("pwd")
+        .and_then(|e| Some(e.to_string()))
+        .unwrap_or({
+            let current_dir = std::env::current_dir().or(Err("failed to get current dir"))?;
+            current_dir.to_str().unwrap().to_string()
+        });
+    let home = matches
+        .value_of("home")
+        .and_then(|e| Some(e.to_string()))
+        .unwrap_or(std::env::var("HOME").or(Err("failed to get current dir"))?);
     let user = matches.value_of("user").unwrap().to_string();
     let hostname = matches.value_of("host").unwrap().to_string();
 
