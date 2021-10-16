@@ -8,7 +8,8 @@ use crate::util;
 use crate::util::colors;
 use crate::util::{LengthLevel, Location, PromptSegment};
 
-type SegmentsMap = HashMap<String, Rc<Box<dyn PromptSegment>>>;
+pub type Segment = Rc<Box<dyn PromptSegment>>;
+pub type SegmentsMap = HashMap<String, Segment>;
 
 #[allow(non_snake_case)]
 #[derive(Deserialize, Debug)]
