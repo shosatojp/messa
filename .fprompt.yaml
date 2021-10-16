@@ -1,0 +1,125 @@
+config:
+  ssh:
+    fg: white
+    bg: blue
+  path:
+    fg: 253
+    bg: 238
+  userhost:
+    fg: white
+    bg: teal
+  time:
+    fg: white
+    bg: 26
+  git:
+    fg: white
+    bg: pink
+  kube:
+    fg: white
+    bg: deep_purple
+  prompt:
+    fg: red
+    bg: black
+  
+profiles:
+  - segments:
+      - type: ssh
+        size: long
+      - type: userhost
+        size: long
+      - type: path
+        size: long
+      - type: git
+        size: long
+      - type: kube
+        size: long
+        location: right
+      - type: time
+        size: long
+        location: right
+  - segments:
+      - type: ssh
+        size: long
+      - type: userhost
+        size: long
+      - type: path
+        size: long
+      - type: git
+        size: long
+      - type: kube
+        size: short
+        location: right
+      - type: time
+        size: medium
+        location: right
+  - segments:
+      - type: ssh
+        size: long
+      - type: userhost
+        size: medium
+      - type: path
+        size: medium
+      - type: git
+        size: long
+      - type: kube
+        size: short
+        location: right
+      - type: time
+        size: medium
+        location: right
+  - segments:
+      - type: ssh
+        size: long
+      - type: userhost
+        size: medium
+      - type: path
+        size: short
+      - type: git
+        size: long
+      - type: kube
+        size: short
+        location: right
+      - type: time
+        size: short
+        location: right
+  - segments:
+      - type: ssh
+        size: long
+      - type: userhost
+        size: medium
+      - type: path
+        size: medium
+      - type: git
+        size: long
+  - segments:
+      - type: ssh
+        size: long
+      - type: userhost
+        size: medium
+      - type: path
+        size: short
+      - type: git
+        size: long
+  - segments:
+      - type: ssh
+        size: long
+      - type: userhost
+        size: medium
+      - type: path
+        size: short
+      - type: git
+        size: short
+  - segments:
+      - type: ssh
+        size: short
+      - type: userhost
+        size: short
+      - type: path
+        size: short
+      - type: git
+        size: short
+  - segments:
+      - type: userhost
+        size: short
+      - type: path
+        size: short
