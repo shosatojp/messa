@@ -57,9 +57,10 @@ fn main() -> Result<(), String> {
     let hostname = matches.value_of("host").unwrap().to_string();
     let kube_config_path = matches.value_of("kubeconfig").unwrap();
 
-    let config_path = "config.yaml";
-    let loader = config::ConfigLoader::new(config_path, &pwd, &home, &user, &hostname, kube_config_path)
-        .or_else(|e| Err(e.to_string()))?;
+    let config_path = matches.value_of("config").unwrap();
+    let loader =
+        config::ConfigLoader::new(config_path, &pwd, &home, &user, &hostname, kube_config_path)
+            .or_else(|e| Err(e.to_string()))?;
     let profiles = loader.build_profiles().or_else(|e| Err(e.to_string()))?;
 
     let prompt = Prompt::new(

@@ -98,7 +98,10 @@ impl ConfigLoader {
         })
     }
     fn load_config(path: &str) -> Result<RawConfig, Box<dyn std::error::Error>> {
-        let file = File::open(path)?;
+        let file = File::open(path).unwrap_or_else(|e| {
+            eprintln!("Unable to open config file: {}", &path);
+            exit(1);
+        });
         let reader = BufReader::new(&file);
         let config: RawConfig = serde_yaml::from_reader(reader)?;
         Ok(config)

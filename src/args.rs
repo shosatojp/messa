@@ -59,5 +59,13 @@ pub fn get_arg_matches<'a>() -> clap::ArgMatches<'a> {
                 .default_value("~/.kube/config")
                 .takes_value(true),
         )
+        .arg(
+            clap::Arg::with_name("config")
+                .help("config file")
+                .short("c")
+                .long("config")
+                .default_value("~/.fprompt.yaml")
+                .takes_value(true),
+        )
         .get_matches();
 }
