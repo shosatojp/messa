@@ -2,6 +2,8 @@ use crate::builder::*;
 use git2::{Branch, Repository, StatusOptions};
 
 pub mod colors {
+    use std::process::exit;
+
     pub const RED: &str = "5;203";
     pub const PINK: &str = "5;161";
     pub const PURPLE: &str = "5;127";
@@ -37,6 +39,36 @@ pub mod colors {
 
     pub fn resetcolor() -> String {
         return String::from("\\[\x1b[0m\\]");
+    }
+
+    pub fn from_humanreadable(color_string: &str) -> &str {
+        match color_string.to_uppercase().as_str() {
+            "RED" => RED,
+            "PINK" => PINK,
+            "PURPLE" => PURPLE,
+            "DEEP_PURPLE" => DEEP_PURPLE,
+            "INDIGO" => INDIGO,
+            "BLUE" => BLUE,
+            "LIGHT_BLUE" => LIGHT_BLUE,
+            "CYAN" => CYAN,
+            "TEAL" => TEAL,
+            "GREEN" => GREEN,
+            "LIGHT_GREEN" => LIGHT_GREEN,
+            "LIME" => LIME,
+            "YELLOW" => YELLOW,
+            "AMBER" => AMBER,
+            "ORANGE" => ORANGE,
+            "DEEP_ORANGE" => DEEP_ORANGE,
+            "BROWN" => BROWN,
+            "GREY" => GREY,
+            "BLUE_GREY" => BLUE_GREY,
+            "WHITE" => WHITE,
+            "BLACK" => BLACK,
+            _ => {
+                eprintln!("unsupported color: {}", color_string);
+                exit(1);
+            }
+        }
     }
 }
 
