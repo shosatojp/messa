@@ -1,7 +1,13 @@
-use crate::builder::*;
 use crate::util::symbols::*;
 use crate::util::*;
+use crate::{builder::*, util::colors::RawAppearance};
 use git2::{Branch, Repository};
+use serde::Deserialize;
+
+#[derive(Deserialize, Debug, Clone)]
+pub struct RawGitConfig {
+    pub appearance: RawAppearance,
+}
 
 pub struct Git {
     enabled: bool,
@@ -9,13 +15,12 @@ pub struct Git {
     changed: u32,
     staged: u32,
     unpushed: u32,
-    fg: String,
-    bg: String,
+    config: RawGitConfig,
     pub size: [u32; 3],
 }
 
 impl Git {
-    pub fn new(fg: &str, bg: &str, pwd: &str) -> Git {
+    pub fn new(config: &RawGitConfig, pwd: &str) -> Git {
         let mut repo = None;
         for parent in std::path::Path::new(pwd)
             .ancestors()
@@ -44,8 +49,7 @@ impl Git {
                     changed,
                     staged,
                     unpushed,
-                    fg: fg.to_string(),
-                    bg: bg.to_string(),
+                    config: config.clone(),
                     size: [0, 0, 0],
                 }
             }
@@ -55,8 +59,7 @@ impl Git {
                 changed: 0,
                 staged: 0,
                 unpushed: 0,
-                fg: fg.to_string(),
-                bg: bg.to_string(),
+                config: config.clone(),
                 size: [0, 0, 0],
             },
         };
@@ -65,9 +68,7 @@ impl Git {
         git.size[1] = git
             .construct(LengthLevel::MEDIUM, BuildMode::ESTIMATE)
             .count as u32;
-        git.size[0] = git
-            .construct(LengthLevel::SHORT, BuildMode::ESTIMATE)
-            .count as u32;
+        git.size[0] = git.construct(LengthLevel::SHORT, BuildMode::ESTIMATE).count as u32;
         return git;
     }
 }
@@ -102,11 +103,11 @@ impl PromptSegment for Git {
     fn get_size(&self) -> &[u32; 3] {
         return &self.size;
     }
-    fn get_fg(&self) -> &str {
-        return &self.fg;
+    fn get_fg(&self) -> String {
+        return self.config.appearance.get_fg().to_string();
     }
-    fn get_bg(&self) -> &str {
-        return &self.bg;
+    fn get_bg(&self) -> String {
+        return self.config.appearance.get_bg().to_string();
     }
     fn is_enabled(&self) -> bool {
         return self.enabled;

@@ -1,21 +1,26 @@
 use crate::builder::*;
+use crate::util::colors::RawAppearance;
 use crate::util::*;
+use serde::Deserialize;
+
+#[derive(Deserialize, Debug, Clone)]
+pub struct RawUserhostConfig {
+    pub appearance: RawAppearance,
+}
 
 pub struct UserHostname {
-    fg: String,
-    bg: String,
+    config: RawUserhostConfig,
     username: String,
     hostname: String,
     pub size: [u32; 3],
 }
 
 impl UserHostname {
-    pub fn new(fg: &str, bg: &str, user: &str, host: &str) -> UserHostname {
+    pub fn new(config: &RawUserhostConfig, user: &str, host: &str) -> UserHostname {
         let mut userhost = UserHostname {
             username: user.to_string(),
             hostname: host.to_string(),
-            fg: fg.to_string(),
-            bg: bg.to_string(),
+            config: config.clone(),
             size: [0, 0, 0],
         };
 
@@ -48,11 +53,11 @@ impl PromptSegment for UserHostname {
     fn get_size(&self) -> &[u32; 3] {
         return &self.size;
     }
-    fn get_fg(&self) -> &str {
-        return &self.fg;
+    fn get_fg(&self) -> String {
+        return self.config.appearance.get_fg().to_string();
     }
-    fn get_bg(&self) -> &str {
-        return &self.bg;
+    fn get_bg(&self) -> String {
+        return self.config.appearance.get_bg().to_string();
     }
     fn is_enabled(&self) -> bool {
         return true;

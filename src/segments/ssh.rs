@@ -1,32 +1,35 @@
 use crate::builder::*;
+use crate::util::colors::RawAppearance;
 use crate::util::symbols::*;
 use crate::util::*;
+use serde::Deserialize;
+
+#[derive(Deserialize, Debug, Clone)]
+pub struct RawSshConfig {
+    pub appearance: RawAppearance,
+}
 
 pub struct Ssh {
     enabled: bool,
-    fg: String,
-    bg: String,
+    config: RawSshConfig,
     pub size: [u32; 3],
 }
 
 impl Ssh {
-    pub fn new<'a>(fg: &str, bg: &str) -> Ssh {
+    pub fn new<'a>(config: &RawSshConfig) -> Ssh {
         let mut ssh = Ssh {
             enabled: std::env::var("SSH_TTY")
                 .and_then(|s| Ok(s.len()))
                 .unwrap_or(0)
                 != 0,
-            fg: fg.to_string(),
-            bg: bg.to_string(),
+            config: config.clone(),
             size: [0, 0, 0],
         };
 
         if ssh.enabled {
             ssh.size[2] = ssh.construct(LengthLevel::LONG, BuildMode::ESTIMATE).count as u32;
             ssh.size[1] = ssh.size[2];
-            ssh.size[0] = ssh
-                .construct(LengthLevel::SHORT, BuildMode::ESTIMATE)
-                .count as u32;
+            ssh.size[0] = ssh.construct(LengthLevel::SHORT, BuildMode::ESTIMATE).count as u32;
         }
         return ssh;
     }
@@ -46,11 +49,11 @@ impl PromptSegment for Ssh {
     fn get_size(&self) -> &[u32; 3] {
         return &self.size;
     }
-    fn get_fg(&self) -> &str {
-        return &self.fg;
+    fn get_fg(&self) -> String {
+        return self.config.appearance.get_fg().to_string();
     }
-    fn get_bg(&self) -> &str {
-        return &self.bg;
+    fn get_bg(&self) -> String {
+        return self.config.appearance.get_bg().to_string();
     }
     fn is_enabled(&self) -> bool {
         return self.enabled;

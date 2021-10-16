@@ -4,6 +4,7 @@ use crate::builder::*;
 use git2::{Branch, Repository, StatusOptions};
 
 pub mod colors {
+    use serde::Deserialize;
     use std::process::exit;
 
     pub const RED: &str = "5;203";
@@ -79,6 +80,21 @@ pub mod colors {
             Err(_) => from_humanreadable(color_config).to_string(),
         }
     }
+
+    #[derive(Deserialize, Debug, Clone)]
+    pub struct RawAppearance {
+        pub fg: String,
+        pub bg: String,
+    }
+
+    impl RawAppearance {
+        pub fn get_fg(&self) -> String {
+            return from_color_config(&self.fg);
+        }
+        pub fn get_bg(&self) -> String {
+            return from_color_config(&self.bg);
+        }
+    }
 }
 
 pub mod symbols {
@@ -112,8 +128,8 @@ pub fn load_location(location: &str) -> Location {
 pub trait PromptSegment {
     fn construct(&self, level: LengthLevel, mode: BuildMode) -> PromptStringBuilder;
     fn get_size(&self) -> &[u32; 3];
-    fn get_fg(&self) -> &str;
-    fn get_bg(&self) -> &str;
+    fn get_fg(&self) -> String;
+    fn get_bg(&self) -> String;
     fn is_enabled(&self) -> bool;
 }
 
