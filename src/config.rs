@@ -140,10 +140,9 @@ impl ConfigLoader {
             );
         }
         if let Some(kube) = &segments_config.kube {
-            hashmap.insert(
-                String::from("kube"),
-                Rc::new(Box::new(Kube::new(kube, kube_config_path)?)),
-            );
+            if let Ok(kube_seg) = Kube::new(kube, kube_config_path) {
+                hashmap.insert(String::from("kube"), Rc::new(Box::new(kube_seg)));
+            }
         }
         if let Some(prompt) = &segments_config.prompt {
             hashmap.insert(
