@@ -67,7 +67,7 @@ impl Kube {
             fg: fg.to_string(),
             bg: bg.to_string(),
             size: [0, 0, 0],
-            config: Kube::load_config("~/.kube/config")?,
+            config: Kube::load_config(&util::expand_user("~/.kube/config")?)?,
         };
 
         kube.size[2] = kube
