@@ -1,137 +1,71 @@
 config:
   ssh:
-    appearance:
-      fg: white
-      bg: blue
+    appearance: { fg: white, bg: blue }
   path:
-    appearance:
-      fg: 253
-      bg: 238
+    appearance: { fg: 253, bg: 238 }
   userhost:
-    appearance:
-      fg: white
-      bg: teal
+    appearance: { fg: white, bg: teal }
   time:
-    appearance:
-      fg: white
-      bg: 26
+    appearance: { fg: white, bg: 26 }
   git:
-    appearance:
-      fg: white
-      bg: pink
+    appearance: { fg: white, bg: pink }
   kube:
-    appearance:
-      fg: white
-      bg: deep_purple
+    appearance: { fg: white, bg: deep_purple }
   prompt:
     ok:
-      appearance:
-        fg: white
-        bg: 238
+      appearance: { fg: white, bg: 238 }
     error:
-      appearance:
-        fg: white
-        bg: pink
-  
+      appearance: { fg: white, bg: pink }
+
 profiles:
   - segments:
-      - type: ssh
-        size: long
-      - type: userhost
-        size: long
-      - type: path
-        size: long
-      - type: git
-        size: long
-      - type: kube
-        size: long
-        location: right
-      - type: time
-        size: long
-        location: right
+      - { type: ssh, size: long }
+      - { type: userhost, size: long }
+      - { type: path, size: long }
+      - { type: git, size: long }
+      - { type: kube, size: long, location: right }
+      - { type: time, size: long, location: right }
   - segments:
-      - type: ssh
-        size: long
-      - type: userhost
-        size: long
-      - type: path
-        size: long
-      - type: git
-        size: long
-      - type: kube
-        size: short
-        location: right
-      - type: time
-        size: medium
-        location: right
+      - { type: ssh, size: long }
+      - { type: userhost, size: long }
+      - { type: path, size: long }
+      - { type: git, size: long }
+      - { type: kube, size: short, location: right }
+      - { type: time, size: medium, location: right }
   - segments:
-      - type: ssh
-        size: long
-      - type: userhost
-        size: medium
-      - type: path
-        size: medium
-      - type: git
-        size: long
-      - type: kube
-        size: short
-        location: right
-      - type: time
-        size: medium
-        location: right
+      - { type: ssh, size: long }
+      - { type: userhost, size: medium }
+      - { type: path, size: medium }
+      - { type: git, size: long }
+      - { type: kube, size: short, location: right }
+      - { type: time, size: medium, location: right }
   - segments:
-      - type: ssh
-        size: long
-      - type: userhost
-        size: medium
-      - type: path
-        size: short
-      - type: git
-        size: long
-      - type: kube
-        size: short
-        location: right
-      - type: time
-        size: short
-        location: right
+      - { type: ssh, size: long }
+      - { type: userhost, size: medium }
+      - { type: path, size: short }
+      - { type: git, size: long }
+      - { type: kube, size: short, location: right }
+      - { type: time, size: short, location: right }
   - segments:
-      - type: ssh
-        size: long
-      - type: userhost
-        size: medium
-      - type: path
-        size: medium
-      - type: git
-        size: long
+      - { type: ssh, size: long }
+      - { type: userhost, size: medium }
+      - { type: path, size: medium }
+      - { type: git, size: long }
   - segments:
-      - type: ssh
-        size: long
-      - type: userhost
-        size: medium
-      - type: path
-        size: short
-      - type: git
-        size: long
+      - { type: ssh, size: long }
+      - { type: userhost, size: medium }
+      - { type: path, size: short }
+      - { type: git, size: long }
   - segments:
-      - type: ssh
-        size: long
-      - type: userhost
-        size: medium
-      - type: path
-        size: short
-      - type: git
-        size: short
+      - { type: ssh, size: long }
+      - { type: userhost, size: medium }
+      - { type: path, size: short }
+      - { type: git, size: short }
   - segments:
-      - type: ssh
-        size: short
-      - type: userhost
-        size: short
-      - type: path
-        size: short
-      - type: git
-        size: short
+      - { type: ssh, size: short }
+      - { type: userhost, size: short }
+      - { type: path, size: short }
+      - { type: git, size: short }
   - segments:
-      - type: userhost
-        size: short
-      - type: path
-        size: short
+      - { type: userhost, size: short }
+      - { type: path, size: short }
