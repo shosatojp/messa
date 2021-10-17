@@ -7,6 +7,24 @@ use serde::Deserialize;
 #[derive(Deserialize, Debug, Clone)]
 pub struct RawTimeConfig {
     pub appearance: RawAppearance,
+    #[serde(default = "default_format_long")]
+    pub format_long: String,
+    #[serde(default = "default_format_medium")]
+    pub format_medium: String,
+    #[serde(default = "default_format_short")]
+    pub format_short: String,
+}
+
+fn default_format_long() -> String {
+    "%Y/%m/%d %H:%M:%S".to_string()
+}
+
+fn default_format_medium() -> String {
+    "%H:%M:%S".to_string()
+}
+
+fn default_format_short() -> String {
+    "%H:%M".to_string()
 }
 
 pub struct Time {
@@ -42,12 +60,14 @@ impl PromptSegment for Time {
         builder.push(' ');
         match level {
             LengthLevel::LONG => {
-                builder.push_string(&Local::now().format("%Y/%m/%d %H:%M:%S").to_string())
+                builder.push_string(&Local::now().format(&self.config.format_long).to_string())
             }
             LengthLevel::MEDIUM => {
-                builder.push_string(&Local::now().format("%H:%M:%S").to_string())
+                builder.push_string(&Local::now().format(&self.config.format_medium).to_string())
             }
-            LengthLevel::SHORT => builder.push_string(&Local::now().format("%H:%M").to_string()),
+            LengthLevel::SHORT => {
+                builder.push_string(&Local::now().format(&self.config.format_short).to_string())
+            }
         }
         builder.push(' ');
         return builder;
