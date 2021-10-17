@@ -10,7 +10,7 @@
 
 ## Install
 
-1. Install `fprompt`
+### 1. Install `fprompt`
 
 - statically linked single binary from [here](https://github.com/shosatojp/fprompt/releases/latest)
 - or Use `cargo`
@@ -19,7 +19,7 @@
     cargo install fprompt
     ```
 
-1. Append following code to your `.bashrc`
+### 2. Append following code to your `.bashrc`
 
 ```sh
 export PATH="$HOME/.cargo/bin:$PATH"
@@ -29,13 +29,13 @@ function create_prompt(){
 export PROMPT_COMMAND="create_prompt;$PROMPT_COMMAND"
 ```
 
-2. Setup config
+### 3. Setup config
 
 ```sh
 wget -O ~/.fprompt.yaml https://raw.githubusercontent.com/shosatojp/fprompt/master/.fprompt.yaml
 ```
 
-3. Reload your shell
+### 4. Reload your shell
 
 ```sh
 . ~/.bashrc
