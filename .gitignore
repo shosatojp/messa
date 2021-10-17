@@ -1,5 +1,11 @@
 /target/
 /.vscode/
-Cargo.lock
+
 *.yaml
+*.data
+*.old
+*.svg
+*.py
+
+Cargo.lock
 .envrc
