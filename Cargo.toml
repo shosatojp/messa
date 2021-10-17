@@ -1,6 +1,6 @@
 [[bin]]
 name = "fprompt"
-path = "src/pl.rs"
+path = "src/main.rs"
 
 [package]
 name = "fprompt"
