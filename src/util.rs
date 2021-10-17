@@ -1,7 +1,6 @@
 use std::process::exit;
 
 use crate::builder::*;
-use git2::{Branch, Repository, StatusOptions};
 
 pub mod colors {
     use serde::Deserialize;
@@ -204,54 +203,6 @@ pub fn load_lengthlevel(lengthlevel: &str) -> LengthLevel {
             exit(1);
         }
     }
-}
-
-pub fn count_git_status(repo: &Repository) -> (u32, u32) {
-    let staged_mask = 0b11111;
-    let changed_mask = 0b11111 << 7;
-
-    let mut changed = false;
-    let mut staged = false;
-    let mut options = StatusOptions::default();
-
-    for status in repo.statuses(Some(&mut options)).unwrap().iter() {
-        let bits = &status.status().bits();
-        changed |= bits & changed_mask > 0;
-        staged |= bits & staged_mask > 0;
-        if staged && changed {
-            break;
-        }
-    }
-
-    return (changed as u32, staged as u32);
-}
-
-pub fn count_unpushed(repo: &Repository, branch: &Branch) -> Result<u32, &'static str> {
-    let mut rw = repo.revwalk().or(Err("could not get revwalk"))?;
-    rw.push_head().or(Err("could not push head"))?;
-    let upstream = branch.upstream().or(Err("could not get upstream"))?;
-    let oid = upstream
-        .into_reference()
-        .target()
-        .ok_or("could not get oid")?;
-    rw.hide(oid).or(Err("could not hide upstream oid"))?;
-
-    return Ok(rw.count() as u32);
-}
-
-pub fn has_unpushed(branch: Branch) -> Result<bool, String> {
-    let origin = branch.upstream().or(Err("failed to get upstream"))?;
-    let remote_head_oid = match origin.into_reference().target() {
-        Some(oid) => oid,
-        None => Err("failed to get remote head oid".to_string())?,
-    };
-
-    let local_head_oid = match branch.into_reference().target() {
-        Some(oid) => oid,
-        None => Err("failed to get local head oid".to_string())?,
-    };
-
-    Ok(remote_head_oid != local_head_oid)
 }
 
 pub fn expand_user(path: &str) -> Result<String, Box<dyn std::error::Error>> {
