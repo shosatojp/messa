@@ -1,14 +1,14 @@
 [[bin]]
-name = "fprompt"
+name = "messa"
 path = "src/main.rs"
 
 [package]
-name = "fprompt"
-description = "fprompt"
-version = "1.1.1"
+name = "messa"
+description = "fast, width flexible, powerline-shell like prompt."
+version = "2.0.0"
 authors = [ "shosatojp <me@shosato.jp>" ]
 edition = "2018"
-repository = "https://github.com/shosatojp/fprompt"
+repository = "https://github.com/shosatojp/messa"
 license = "MIT"
 
 [dependencies]

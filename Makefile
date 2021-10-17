@@ -1,5 +1,5 @@
 TARGET:=x86_64-unknown-linux-musl
-BIN:=fprompt
+BIN:=messa
 PROFILE:=release
 BIN_PATH:=target/$(TARGET)/$(PROFILE)/$(BIN)
 RUST_MUSL_BUILDER:=docker run -v $(shell pwd):/home/rust/src ekidd/rust-musl-builder

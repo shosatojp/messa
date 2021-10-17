@@ -64,7 +64,7 @@ pub fn get_arg_matches<'a>() -> clap::ArgMatches<'a> {
                 .help("config file")
                 .short("c")
                 .long("config")
-                .default_value("~/.fprompt.yaml")
+                .default_value("~/.messa.yaml")
                 .takes_value(true),
         )
         .get_matches();
