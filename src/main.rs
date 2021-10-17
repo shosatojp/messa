@@ -15,6 +15,8 @@ mod builder;
 use clap::ArgMatches;
 mod out;
 use out::*;
+
+use crate::config::RawConfig;
 mod config;
 
 fn main() -> Result<(), String> {
@@ -46,9 +48,16 @@ fn main() -> Result<(), String> {
     let hostname = matches.value_of("host").unwrap().to_string();
     let kube_config_path = util::expand_user(&home, matches.value_of("kubeconfig").unwrap());
     let config_path = util::expand_user(&home, matches.value_of("config").unwrap());
+    let raw_config = if std::path::Path::new(&config_path).exists() {
+        RawConfig::from_file(&config_path)
+            .or(Err(format!("failed to load config file: {}", config_path)))?
+    } else {
+        let config_src = std::include_str!("../.messa.yaml");
+        RawConfig::from_str(config_src).or(Err("failed to load default config"))?
+    };
 
     let loader = config::ConfigLoader::new(
-        &config_path,
+        raw_config,
         &pwd,
         &home,
         &user,

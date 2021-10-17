@@ -66,15 +66,31 @@ pub struct RawConfig {
     pub profiles: Vec<RawProfileConfig>,
 }
 
+impl RawConfig {
+    pub fn from_file(path: &str) -> Result<RawConfig, Box<dyn std::error::Error>> {
+        let file = File::open(path).unwrap_or_else(|_| {
+            eprintln!("Unable to open config file: {}", &path);
+            exit(1);
+        });
+        let reader = BufReader::new(&file);
+        let config: RawConfig = serde_yaml::from_reader(reader)?;
+        Ok(config)
+    }
+
+    pub fn from_str(src: &str) -> Result<RawConfig, Box<dyn std::error::Error>> {
+        let config: RawConfig = serde_yaml::from_str(src)?;
+        Ok(config)
+    }
+}
+
 pub struct ConfigLoader {
-    pub path: String,
     pub config: RawConfig,
     pub segments: SegmentsMap,
 }
 
 impl ConfigLoader {
     pub fn new(
-        path: &str,
+        raw_config: RawConfig,
         pwd: &str,
         home: &str,
         user: &str,
@@ -82,9 +98,8 @@ impl ConfigLoader {
         kube_config_path: &str,
         prev_error: u8,
     ) -> Result<ConfigLoader, Box<dyn std::error::Error>> {
-        let config = ConfigLoader::load_config(path)?;
         let segments = ConfigLoader::build_segments(
-            &config.config,
+            &raw_config.config,
             pwd,
             home,
             user,
@@ -93,19 +108,9 @@ impl ConfigLoader {
             prev_error,
         )?;
         Ok(ConfigLoader {
-            path: path.to_string(),
-            config,
+            config: raw_config,
             segments,
         })
-    }
-    fn load_config(path: &str) -> Result<RawConfig, Box<dyn std::error::Error>> {
-        let file = File::open(path).unwrap_or_else(|_| {
-            eprintln!("Unable to open config file: {}", &path);
-            exit(1);
-        });
-        let reader = BufReader::new(&file);
-        let config: RawConfig = serde_yaml::from_reader(reader)?;
-        Ok(config)
     }
 
     pub fn build_segments(
