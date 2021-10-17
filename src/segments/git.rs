@@ -1,12 +1,28 @@
-use crate::util::symbols::*;
-use crate::util::*;
-use crate::{builder::*, util::colors::RawAppearance};
-use git2::{Branch, Repository};
+use crate::builder::{BuildMode, PromptStringBuilder};
+use crate::util::colors::RawAppearance;
+use crate::util::{symbols::*, LengthLevel, PromptSegment};
+use git2::{Branch, Repository, StatusOptions};
 use serde::Deserialize;
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct RawGitConfig {
     pub appearance: RawAppearance,
+    #[serde(default = "return_true")]
+    pub count_unpushed: bool,
+    #[serde(default = "return_true")]
+    pub show_status: bool,
+    #[serde(default = "return_true")]
+    pub show_merging: bool,
+    #[serde(default = "default_merging_badge")]
+    pub merging_badge: String,
+}
+
+fn return_true() -> bool {
+    true
+}
+
+fn default_merging_badge() -> String {
+    "(merging)".to_string()
 }
 
 pub struct Git {
@@ -16,6 +32,7 @@ pub struct Git {
     staged: u32,
     unpushed: u32,
     config: RawGitConfig,
+    merging: bool,
     pub size: [u32; 3],
 }
 
@@ -38,10 +55,18 @@ impl Git {
                 let head = repo.head();
                 if head.is_ok() {
                     let branch = Branch::wrap(head.unwrap());
-                    unpushed = count_unpushed(&repo, &branch).unwrap_or(0);
-                    branch_name = branch.name().unwrap_or(None).unwrap_or("").to_string()
+                    branch_name = branch.name().unwrap_or(None).unwrap_or("").to_string();
+                    if config.count_unpushed {
+                        unpushed = count_unpushed(&repo, &branch).unwrap_or(0);
+                    } else {
+                        unpushed = has_unpushed(branch).unwrap_or(false) as u32;
+                    }
                 }
-                let (changed, staged) = count_git_status(&repo);
+                let (changed, staged) = match config.show_status {
+                    true => count_git_status(&repo),
+                    false => (0, 0),
+                };
+                let merging = config.show_merging && is_merging(&repo);
 
                 Git {
                     enabled: true,
@@ -49,6 +74,7 @@ impl Git {
                     changed,
                     staged,
                     unpushed,
+                    merging,
                     config: config.clone(),
                     size: [0, 0, 0],
                 }
@@ -59,6 +85,7 @@ impl Git {
                 changed: 0,
                 staged: 0,
                 unpushed: 0,
+                merging: false,
                 config: config.clone(),
                 size: [0, 0, 0],
             },
@@ -85,14 +112,23 @@ impl PromptSegment for Git {
                         builder.push_string(&format!(" {}", self.branch_name));
                     }
                 }
-                if self.changed > 0 {
-                    builder.push(SYMBOL_GIT_CHANGED);
-                }
-                if self.staged > 0 {
-                    builder.push(SYMBOL_GIT_STAGED);
+                if self.config.show_status {
+                    if self.changed > 0 {
+                        builder.push(SYMBOL_GIT_CHANGED);
+                    }
+                    if self.staged > 0 {
+                        builder.push(SYMBOL_GIT_STAGED);
+                    }
                 }
                 if self.unpushed > 0 {
-                    builder.push_string(&format!(" {}{}", SYMBOL_GIT_UNPUSHED, self.unpushed));
+                    if self.config.count_unpushed {
+                        builder.push_string(&format!(" {}{}", SYMBOL_GIT_UNPUSHED, self.unpushed));
+                    } else {
+                        builder.push_string(&format!(" {}", SYMBOL_GIT_UNPUSHED));
+                    }
+                }
+                if self.config.show_merging && self.merging {
+                    builder.push_string(&format!(" {}", self.config.merging_badge));
                 }
             }
 
@@ -112,4 +148,56 @@ impl PromptSegment for Git {
     fn is_enabled(&self) -> bool {
         return self.enabled;
     }
+}
+
+pub fn count_git_status(repo: &Repository) -> (u32, u32) {
+    let staged_mask = 0b11111;
+    let changed_mask = 0b11111 << 7;
+
+    let mut changed = false;
+    let mut staged = false;
+    let mut options = StatusOptions::default();
+
+    for status in repo.statuses(Some(&mut options)).unwrap().iter() {
+        let bits = &status.status().bits();
+        changed |= bits & changed_mask > 0;
+        staged |= bits & staged_mask > 0;
+        if staged && changed {
+            break;
+        }
+    }
+
+    return (changed as u32, staged as u32);
+}
+
+pub fn count_unpushed(repo: &Repository, branch: &Branch) -> Result<u32, &'static str> {
+    let mut rw = repo.revwalk().or(Err("could not get revwalk"))?;
+    rw.push_head().or(Err("could not push head"))?;
+    let upstream = branch.upstream().or(Err("could not get upstream"))?;
+    let oid = upstream
+        .into_reference()
+        .target()
+        .ok_or("could not get oid")?;
+    rw.hide(oid).or(Err("could not hide upstream oid"))?;
+
+    return Ok(rw.count() as u32);
+}
+
+pub fn has_unpushed(branch: Branch) -> Result<bool, String> {
+    let origin = branch.upstream().or(Err("failed to get upstream"))?;
+    let remote_head_oid = match origin.into_reference().target() {
+        Some(oid) => oid,
+        None => Err("failed to get remote head oid".to_string())?,
+    };
+
+    let local_head_oid = match branch.into_reference().target() {
+        Some(oid) => oid,
+        None => Err("failed to get local head oid".to_string())?,
+    };
+
+    Ok(remote_head_oid != local_head_oid)
+}
+
+pub fn is_merging(repo: &Repository) -> bool {
+    repo.find_reference("MERGE_HEAD").is_ok()
 }
