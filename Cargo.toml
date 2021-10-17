@@ -19,13 +19,9 @@ unicode-width = "0.1.8"
 serde = { version = "^1.0.101", features = ["derive"] }
 serde_yaml = "^0.8"
 
-[profile.dev]
+[profile.release]
 opt-level = 3
 lto = true
 panic = "abort"
-debug = false
+# debug = true
 codegen-units = 1
-link-args = "-static"
-
-[build]
-jobs = 16
