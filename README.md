@@ -4,6 +4,13 @@
 
 - Width flexible shell prompt
 - Fast
+
+    |normal directory|git directory|
+    |---|---|
+    |1.1 ms ± 0.2 ms|5.2 ms ± 0.1ms|
+
+    > measured with [hyperfine](https://github.com/sharkdp/hyperfine)
+
 - Configure with yaml
 - Supports ssh, git, kubernetes, datetime
 
