@@ -12,7 +12,7 @@
 
 1. Install `fprompt`
 
-- Download from [here](https://github.com/shosatojp/fprompt/releases/latest)
+- statically linked single binary from [here](https://github.com/shosatojp/fprompt/releases/latest)
 - or Use `cargo`
 
     ```sh
