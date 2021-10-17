@@ -69,7 +69,7 @@ impl Kube {
         let mut kube = Kube {
             config: config.clone(),
             size: [0, 0, 0],
-            kube_config: Kube::load_config(&util::expand_user(kube_config_path)?)?,
+            kube_config: Kube::load_config(kube_config_path)?,
         };
 
         kube.size[2] = kube.construct(LengthLevel::LONG, BuildMode::ESTIMATE).count as u32;
@@ -160,7 +160,8 @@ impl PromptSegment for Kube {
 
 #[test]
 fn test_load_config() -> Result<(), Box<dyn std::error::Error>> {
-    let path = util::expand_user("~/.kube/config")?;
+    let home_dir = std::env::var("HOME").unwrap();
+    let path = util::expand_user(&home_dir, "~/.kube/config");
     let config = Kube::load_config(&path)?;
     let context_name = config.current_context;
     let context = config

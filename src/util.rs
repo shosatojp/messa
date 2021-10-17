@@ -205,17 +205,16 @@ pub fn load_lengthlevel(lengthlevel: &str) -> LengthLevel {
     }
 }
 
-pub fn expand_user(path: &str) -> Result<String, Box<dyn std::error::Error>> {
+pub fn expand_user(home_dir: &str, path: &str) -> String {
     if path.starts_with("~") {
-        let home_dir = std::env::var("HOME")?;
         if path.starts_with("~/") {
             let p = std::path::Path::new(&home_dir);
             let joined = p.join(path.strip_prefix("~/").unwrap());
-            return Ok(joined.to_str().unwrap().to_string());
+            return joined.to_str().unwrap().to_string();
         } else {
-            return Ok(home_dir);
+            return home_dir.to_string();
         }
     } else {
-        return Ok(path.to_string());
+        return path.to_string();
     }
 }

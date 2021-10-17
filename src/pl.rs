@@ -1,5 +1,5 @@
-mod util;
 mod args;
+mod util;
 use args::*;
 mod segments {
     pub mod git;
@@ -44,16 +44,16 @@ fn main() -> Result<(), String> {
         .or(Err("failed to parse error"))?;
     let user = matches.value_of("user").unwrap().to_string();
     let hostname = matches.value_of("host").unwrap().to_string();
-    let kube_config_path = matches.value_of("kubeconfig").unwrap();
+    let kube_config_path = util::expand_user(&home, matches.value_of("kubeconfig").unwrap());
+    let config_path = util::expand_user(&home, matches.value_of("config").unwrap());
 
-    let config_path = matches.value_of("config").unwrap();
     let loader = config::ConfigLoader::new(
-        config_path,
+        &config_path,
         &pwd,
         &home,
         &user,
         &hostname,
-        kube_config_path,
+        &kube_config_path,
         prev_error,
     )
     .or_else(|e| Err(e.to_string()))?;
