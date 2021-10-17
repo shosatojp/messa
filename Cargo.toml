@@ -12,10 +12,10 @@ repository = "https://github.com/shosatojp/powerline-shell"
 license = "MIT"
 
 [dependencies]
-git2 = "0.13.10"
-clap = "2.33.3"
+git2 = "^0.13.10"
+clap = "^2.33.3"
 chrono = "^0.4.19"
-unicode-width = "0.1.8"
+unicode-width = "^0.1.8"
 serde = { version = "^1.0.101", features = ["derive"] }
 serde_yaml = "^0.8"
 
