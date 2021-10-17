@@ -22,9 +22,11 @@ fn out_line(width: u32, profiles: &Vec<ProfileConfig>) {
         let mut right_sum = 0;
 
         for seg in &profile.segments {
-            match seg.location {
-                Location::LEFT => left_sum += seg.segment.get_size()[seg.size as usize] + 1,
-                Location::RIGHT => right_sum += seg.segment.get_size()[seg.size as usize] + 1,
+            if seg.segment.is_enabled() {
+                match seg.location {
+                    Location::LEFT => left_sum += seg.segment.get_size()[seg.size as usize] + 1,
+                    Location::RIGHT => right_sum += seg.segment.get_size()[seg.size as usize] + 1,
+                }
             }
         }
 
