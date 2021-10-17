@@ -1,6 +1,6 @@
 use crate::builder::{BuildMode, PromptStringBuilder};
-use crate::util::{LengthLevel, PromptSegment, symbols::*};
-use crate::{util::colors::RawAppearance};
+use crate::util::colors::RawAppearance;
+use crate::util::{symbols::*, LengthLevel, PromptSegment};
 use git2::{Branch, Repository, StatusOptions};
 use serde::Deserialize;
 
@@ -11,10 +11,18 @@ pub struct RawGitConfig {
     pub count_unpushed: bool,
     #[serde(default = "return_true")]
     pub show_status: bool,
+    #[serde(default = "return_true")]
+    pub show_merging: bool,
+    #[serde(default = "default_merging_badge")]
+    pub merging_badge: String,
 }
 
 fn return_true() -> bool {
     true
+}
+
+fn default_merging_badge() -> String {
+    "(merging)".to_string()
 }
 
 pub struct Git {
@@ -24,6 +32,7 @@ pub struct Git {
     staged: u32,
     unpushed: u32,
     config: RawGitConfig,
+    merging: bool,
     pub size: [u32; 3],
 }
 
@@ -57,6 +66,7 @@ impl Git {
                     true => count_git_status(&repo),
                     false => (0, 0),
                 };
+                let merging = config.show_merging && is_merging(&repo);
 
                 Git {
                     enabled: true,
@@ -64,6 +74,7 @@ impl Git {
                     changed,
                     staged,
                     unpushed,
+                    merging,
                     config: config.clone(),
                     size: [0, 0, 0],
                 }
@@ -74,6 +85,7 @@ impl Git {
                 changed: 0,
                 staged: 0,
                 unpushed: 0,
+                merging: false,
                 config: config.clone(),
                 size: [0, 0, 0],
             },
@@ -114,6 +126,9 @@ impl PromptSegment for Git {
                     } else {
                         builder.push_string(&format!(" {}", SYMBOL_GIT_UNPUSHED));
                     }
+                }
+                if self.config.show_merging && self.merging {
+                    builder.push_string(&format!(" {}", self.config.merging_badge));
                 }
             }
 
@@ -181,4 +196,8 @@ pub fn has_unpushed(branch: Branch) -> Result<bool, String> {
     };
 
     Ok(remote_head_oid != local_head_oid)
+}
+
+pub fn is_merging(repo: &Repository) -> bool {
+    repo.find_reference("MERGE_HEAD").is_ok()
 }
