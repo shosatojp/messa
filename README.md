@@ -47,3 +47,8 @@ wget -O ~/.messa.yaml https://raw.githubusercontent.com/shosatojp/messa/master/.
 ```sh
 cargo build
 ```
+
+## Related projects
+
+- [`powerline-shell`](https://github.com/b-ryan/powerline-shell) (Python)
+- [`powerline-go`](https://github.com/justjanne/powerline-go) (Go)
