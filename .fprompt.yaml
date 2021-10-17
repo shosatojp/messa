@@ -7,6 +7,11 @@ config:
     appearance: { fg: white, bg: teal }
   time:
     appearance: { fg: white, bg: 26 }
+    # format specifiers reference
+    # https://docs.rs/chrono/latest/chrono/format/strftime/index.html
+    format_long: "%Y/%m/%d %H:%M:%S"
+    format_medium: "%H:%M:%S"
+    format_short: "%H:%M"
   git:
     appearance: { fg: white, bg: pink }
   kube:
