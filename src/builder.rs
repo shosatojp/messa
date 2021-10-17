@@ -32,15 +32,6 @@ impl PromptStringBuilder {
         }
         if !string.starts_with("\\[\x1b") {
             self.count += UnicodeWidthStr::width(string.as_str());
-            // self.count += string.chars().count();
         }
     }
-    // fn push_str(&mut self, string: &str, len: usize) {
-    //     if self.mode == BuildMode::CONSTRUCT {
-    //         self.data.push_str(string);
-    //     }
-    //     if string.as_bytes()[0] != '\x1b' as u8 {
-    //         self.count += len;
-    //     }
-    // }
 }
