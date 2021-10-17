@@ -3,6 +3,7 @@
 [![CI](https://github.com/shosatojp/messa/actions/workflows/ci.yml/badge.svg)](https://github.com/shosatojp/messa/actions/workflows/ci.yml)
 
 - Width flexible shell prompt
+- Fast
 - Configure with yaml
 - Supports ssh, git, kubernetes, datetime
 
