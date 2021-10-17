@@ -8,7 +8,7 @@ description = "fprompt"
 version = "1.0.0"
 authors = [ "shosatojp <me@shosato.jp>" ]
 edition = "2018"
-repository = "https://github.com/shosatojp/powerline-shell"
+repository = "https://github.com/shosatojp/fprompt"
 license = "MIT"
 
 [dependencies]
