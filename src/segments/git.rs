@@ -7,6 +7,12 @@ use serde::Deserialize;
 #[derive(Deserialize, Debug, Clone)]
 pub struct RawGitConfig {
     pub appearance: RawAppearance,
+    #[serde(default = "default_count_unpushed")]
+    pub count_unpushed: bool,
+}
+
+fn default_count_unpushed() -> bool {
+    true
 }
 
 pub struct Git {
@@ -38,8 +44,12 @@ impl Git {
                 let head = repo.head();
                 if head.is_ok() {
                     let branch = Branch::wrap(head.unwrap());
-                    unpushed = count_unpushed(&repo, &branch).unwrap_or(0);
-                    branch_name = branch.name().unwrap_or(None).unwrap_or("").to_string()
+                    branch_name = branch.name().unwrap_or(None).unwrap_or("").to_string();
+                    if config.count_unpushed {
+                        unpushed = count_unpushed(&repo, &branch).unwrap_or(0);
+                    } else {
+                        unpushed = has_unpushed(branch).unwrap_or(false) as u32;
+                    }
                 }
                 let (changed, staged) = count_git_status(&repo);
 
@@ -92,7 +102,11 @@ impl PromptSegment for Git {
                     builder.push(SYMBOL_GIT_STAGED);
                 }
                 if self.unpushed > 0 {
-                    builder.push_string(&format!(" {}{}", SYMBOL_GIT_UNPUSHED, self.unpushed));
+                    if self.config.count_unpushed {
+                        builder.push_string(&format!(" {}{}", SYMBOL_GIT_UNPUSHED, self.unpushed));
+                    } else {
+                        builder.push_string(&format!(" {}", SYMBOL_GIT_UNPUSHED));
+                    }
                 }
             }
 

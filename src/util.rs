@@ -239,6 +239,21 @@ pub fn count_unpushed(repo: &Repository, branch: &Branch) -> Result<u32, &'stati
     return Ok(rw.count() as u32);
 }
 
+pub fn has_unpushed(branch: Branch) -> Result<bool, String> {
+    let origin = branch.upstream().or(Err("failed to get upstream"))?;
+    let remote_head_oid = match origin.into_reference().target() {
+        Some(oid) => oid,
+        None => Err("failed to get remote head oid".to_string())?,
+    };
+
+    let local_head_oid = match branch.into_reference().target() {
+        Some(oid) => oid,
+        None => Err("failed to get local head oid".to_string())?,
+    };
+
+    Ok(remote_head_oid != local_head_oid)
+}
+
 pub fn expand_user(path: &str) -> Result<String, Box<dyn std::error::Error>> {
     if path.starts_with("~") {
         let home_dir = std::env::var("HOME")?;
