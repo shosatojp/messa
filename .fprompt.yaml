@@ -9,6 +9,8 @@ config:
     appearance: { fg: white, bg: 26 }
   git:
     appearance: { fg: white, bg: pink }
+    count_unpushed: true
+    show_status: true
   kube:
     appearance: { fg: white, bg: deep_purple }
     icon: '🕸 '

@@ -7,11 +7,13 @@ use serde::Deserialize;
 #[derive(Deserialize, Debug, Clone)]
 pub struct RawGitConfig {
     pub appearance: RawAppearance,
-    #[serde(default = "default_count_unpushed")]
+    #[serde(default = "return_true")]
     pub count_unpushed: bool,
+    #[serde(default = "return_true")]
+    pub show_status: bool,
 }
 
-fn default_count_unpushed() -> bool {
+fn return_true() -> bool {
     true
 }
 
@@ -51,7 +53,10 @@ impl Git {
                         unpushed = has_unpushed(branch).unwrap_or(false) as u32;
                     }
                 }
-                let (changed, staged) = count_git_status(&repo);
+                let (changed, staged) = match config.show_status {
+                    true => count_git_status(&repo),
+                    false => (0, 0),
+                };
 
                 Git {
                     enabled: true,
@@ -95,11 +100,13 @@ impl PromptSegment for Git {
                         builder.push_string(&format!(" {}", self.branch_name));
                     }
                 }
-                if self.changed > 0 {
-                    builder.push(SYMBOL_GIT_CHANGED);
-                }
-                if self.staged > 0 {
-                    builder.push(SYMBOL_GIT_STAGED);
+                if self.config.show_status {
+                    if self.changed > 0 {
+                        builder.push(SYMBOL_GIT_CHANGED);
+                    }
+                    if self.staged > 0 {
+                        builder.push(SYMBOL_GIT_STAGED);
+                    }
                 }
                 if self.unpushed > 0 {
                     if self.config.count_unpushed {
