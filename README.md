@@ -27,15 +27,38 @@
     cargo install messa
     ```
 
-### 2. Append following code to your `.bashrc`
+### 2. Append following code to your shell config file
 
-```sh
-export PATH="$HOME/.cargo/bin:$PATH"
-function create_prompt(){
-    PS1=$(messa --error $? --width $COLUMNS --user $USER --host $HOSTNAME -c $HOME/.messa.yaml)
-}
-export PROMPT_COMMAND="create_prompt;$PROMPT_COMMAND"
-```
+- **Bash**
+
+    ```sh
+    # ~/.bashrc
+    export PATH="$HOME/.cargo/bin:$PATH"
+    function create_prompt(){
+        PS1=$(messa --error $? --width $COLUMNS --user $USER --host $HOSTNAME --shell bash)
+    }
+    export PROMPT_COMMAND="create_prompt;$PROMPT_COMMAND"
+    ```
+
+- **Zsh**
+
+    ```sh
+    # ~/.zshrc
+    export PATH="$HOME/.cargo/bin:$PATH"
+    function create_prompt() {
+        PS1=$(messa --error $? --width $COLUMNS --user $USER --host $HOSTNAME --shell zsh)
+    }
+    precmd_functions+=(create_prompt)
+    ```
+
+- **Fish**
+
+    ```sh
+    # ~/.config/fish/config.fish
+    function fish_prompt
+        messa --error $status --width $COLUMNS --user $USER --host $HOSTNAME --shell fish
+    end
+    ```
 
 ### 3. Setup config
 
