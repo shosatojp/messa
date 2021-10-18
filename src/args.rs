@@ -52,6 +52,15 @@ pub fn get_arg_matches<'a>() -> clap::ArgMatches<'a> {
                 .takes_value(true),
         )
         .arg(
+            clap::Arg::with_name("shell")
+                .help("shell type")
+                .short("s")
+                .long("shell")
+                .possible_values(&["bash", "zsh", "fish", "tcsh", "csh"])
+                .default_value("bash")
+                .takes_value(true),
+        )
+        .arg(
             clap::Arg::with_name("kubeconfig")
                 .help("kubernetes config file")
                 .short("k")
