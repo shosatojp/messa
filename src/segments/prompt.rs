@@ -1,12 +1,10 @@
 use crate::builder::*;
 use crate::util::colors::*;
-use crate::util::symbols::*;
 use crate::util::*;
 use serde::Deserialize;
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct RawPromptConfig {
-    // pub appearance: RawAppearance,
     pub ok: PromptStatusConfig,
     pub error: PromptStatusConfig,
 }
@@ -46,8 +44,6 @@ impl Prompt {
 impl PromptSegment for Prompt {
     fn construct(&self, _level: LengthLevel, mode: BuildMode) -> PromptStringBuilder {
         let mut builder = PromptStringBuilder::new(mode);
-        builder.push_string(&background(&self.get_bg()));
-        builder.push_string(&forground(&self.get_fg()));
         builder.push_string(&format!(
             " {} {} ",
             if self.prev_error > 0 {
@@ -57,10 +53,6 @@ impl PromptSegment for Prompt {
             },
             if self.user == "root" { "#" } else { "$" }
         ));
-        builder.push_string(&forground(&self.get_bg()));
-        builder.push_string(&resetbackground());
-        builder.push(SYMBOL_RIGHT);
-        builder.push_string(&resetcolor());
         return builder;
     }
     fn get_size(&self) -> &[u32; 3] {
