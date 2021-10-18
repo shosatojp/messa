@@ -14,7 +14,7 @@
 - Configure with yaml
 - Supports ssh, git, kubernetes, datetime
 
-![](image.png)
+![](messa.png)
 
 ## Install
 
