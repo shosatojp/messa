@@ -1,3 +1,4 @@
+use std::io::Write;
 use std::process::exit;
 
 use crate::builder::*;
@@ -48,7 +49,8 @@ fn out_prompt(profile: &ProfileConfig, shell: &GenericShell) {
     string.push(SYMBOL_RIGHT);
     string.push_style(&shell.resetcolor());
 
-    print!("{} ", string.data);
+    let _ = std::io::stdout().write_all(string.data.as_bytes());
+    let _ = std::io::stdout().write_all(b" ");
 }
 
 fn out_line<'a>(
@@ -123,8 +125,8 @@ fn out_line<'a>(
             string.push_string(" ".repeat(width as usize - sum as usize).as_str());
             string.push_string(&right_string.data);
 
-            print!("{}", string.data);
-            print!("{}", shell.newline());
+            let _ = std::io::stdout().write_all(string.data.as_bytes());
+            let _ = std::io::stdout().write_all(shell.newline().as_bytes());
             return Some(&profile);
         }
     }
