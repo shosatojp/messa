@@ -2,48 +2,37 @@ use std::process::exit;
 
 use crate::builder::*;
 
+type ColorCode = u8;
+
 pub mod colors {
     use serde::Deserialize;
     use std::process::exit;
 
-    pub const RED: &str = "5;203";
-    pub const PINK: &str = "5;161";
-    pub const PURPLE: &str = "5;127";
-    pub const DEEP_PURPLE: &str = "5;61";
-    pub const INDIGO: &str = "5;61";
-    pub const BLUE: &str = "5;33";
-    pub const LIGHT_BLUE: &str = "5;39";
-    pub const CYAN: &str = "5;38";
-    pub const TEAL: &str = "5;30";
-    pub const GREEN: &str = "5;71";
-    pub const LIGHT_GREEN: &str = "5;107";
-    pub const LIME: &str = "5;107";
-    pub const YELLOW: &str = "5;221";
-    pub const AMBER: &str = "5;214";
-    pub const ORANGE: &str = "5;208";
-    pub const DEEP_ORANGE: &str = "5;202";
-    pub const BROWN: &str = "5;";
-    pub const GREY: &str = "5;247";
-    pub const BLUE_GREY: &str = "5;66";
-    pub const WHITE: &str = "5;15";
-    pub const BLACK: &str = "5;0";
-    pub fn forground(color: &str) -> String {
-        return format!("\\[\x1b[38;{}m\\]", color);
-    }
+    use super::ColorCode;
 
-    pub fn background(color: &str) -> String {
-        return format!("\\[\x1b[48;{}m\\]", color);
-    }
+    pub const RED: ColorCode = 203;
+    pub const PINK: ColorCode = 161;
+    pub const PURPLE: ColorCode = 127;
+    pub const DEEP_PURPLE: ColorCode = 61;
+    pub const INDIGO: ColorCode = 61;
+    pub const BLUE: ColorCode = 33;
+    pub const LIGHT_BLUE: ColorCode = 39;
+    pub const CYAN: ColorCode = 38;
+    pub const TEAL: ColorCode = 30;
+    pub const GREEN: ColorCode = 71;
+    pub const LIGHT_GREEN: ColorCode = 107;
+    pub const LIME: ColorCode = 107;
+    pub const YELLOW: ColorCode = 221;
+    pub const AMBER: ColorCode = 214;
+    pub const ORANGE: ColorCode = 208;
+    pub const DEEP_ORANGE: ColorCode = 202;
+    pub const BROWN: ColorCode = 0;
+    pub const GREY: ColorCode = 247;
+    pub const BLUE_GREY: ColorCode = 66;
+    pub const WHITE: ColorCode = 15;
+    pub const BLACK: ColorCode = 0;
 
-    pub fn resetbackground() -> String {
-        return String::from("\\[\x1b[49;24m\\]");
-    }
-
-    pub fn resetcolor() -> String {
-        return String::from("\\[\x1b[0m\\]");
-    }
-
-    pub fn from_humanreadable(color_string: &str) -> &str {
+    pub fn from_humanreadable(color_string: &str) -> u8 {
         match color_string.to_uppercase().as_str() {
             "RED" => RED,
             "PINK" => PINK,
@@ -73,10 +62,10 @@ pub mod colors {
         }
     }
 
-    pub fn from_color_config(color_config: &str) -> String {
-        match color_config.parse::<u8>() {
-            Ok(code) => format!("5;{}", code),
-            Err(_) => from_humanreadable(color_config).to_string(),
+    pub fn color_code(config: &str) -> ColorCode {
+        match config.parse::<u8>() {
+            Ok(code) => code,
+            Err(_) => from_humanreadable(config),
         }
     }
 
@@ -88,10 +77,10 @@ pub mod colors {
 
     impl RawAppearance {
         pub fn get_fg(&self) -> String {
-            return from_color_config(&self.fg);
+            return self.fg.to_string();
         }
         pub fn get_bg(&self) -> String {
-            return from_color_config(&self.bg);
+            return self.bg.to_string();
         }
     }
 }
@@ -111,12 +100,14 @@ pub mod symbols {
 pub enum Location {
     LEFT,
     RIGHT,
+    PROMPT,
 }
 
 pub fn load_location(location: &str) -> Location {
     match location.to_uppercase().as_str() {
         "LEFT" => Location::LEFT,
         "RIGHT" => Location::RIGHT,
+        "PROMPT" => Location::PROMPT,
         _ => {
             eprintln!("Unsupported location: {}", &location);
             exit(1);
