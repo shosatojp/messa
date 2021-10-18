@@ -26,12 +26,15 @@ impl PromptStringBuilder {
         }
         self.count += UnicodeWidthChar::width(ch).unwrap_or(0);
     }
-    pub fn push_string(&mut self, string: &String) {
+    pub fn push_string(&mut self, string: &str) {
         if self.mode == BuildMode::CONSTRUCT {
-            self.data.push_str(string.as_str());
+            self.data.push_str(string);
         }
-        if !string.starts_with("\\[\x1b") {
-            self.count += UnicodeWidthStr::width(string.as_str());
+        self.count += UnicodeWidthStr::width(string);
+    }
+    pub fn push_style(&mut self, style: &str) {
+        if self.mode == BuildMode::CONSTRUCT {
+            self.data.push_str(style);
         }
     }
 }

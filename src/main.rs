@@ -1,5 +1,8 @@
 mod args;
+mod shell;
 mod util;
+use std::process::exit;
+
 use args::*;
 mod segments {
     pub mod git;
@@ -15,6 +18,7 @@ mod builder;
 use clap::ArgMatches;
 mod out;
 use out::*;
+use shell::{Bash, Fish, GenericShell, Zsh};
 mod config;
 
 fn main() -> Result<(), String> {
@@ -59,7 +63,16 @@ fn main() -> Result<(), String> {
     .or_else(|e| Err(e.to_string()))?;
     let profiles = loader.build_profiles().or_else(|e| Err(e.to_string()))?;
 
-    out(width, &profiles, loader.get_prompt());
+    let shell: GenericShell = match matches.value_of("shell") {
+        Some("bash") => Box::new(Bash::new()),
+        Some("zsh") => Box::new(Zsh::new()),
+        Some("fish") => Box::new(Fish::new()),
+        _ => {
+            eprintln!("Unsupported shell type");
+            exit(1);
+        }
+    };
+    out(width, &profiles, loader.get_prompt(), &shell);
 
     Ok(())
 }
