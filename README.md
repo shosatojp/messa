@@ -60,6 +60,13 @@
     end
     ```
 
+- **Nushell** [🔗](https://www.nushell.sh/)
+
+    ```sh
+    # command in nushell
+    config set prompt "messa --error 0 --width (tput cols) --user $nu.env.USER --host (hostname) --shell fish"
+    ```
+
 ### 3. Setup config
 
 ```sh
