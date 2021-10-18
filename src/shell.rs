@@ -7,6 +7,7 @@ pub trait Shell {
     fn set_bg(&self, config: &str) -> String;
     fn resetbackground(&self) -> String;
     fn resetcolor(&self) -> String;
+    fn newline(&self) -> String;
 }
 
 pub struct Bash {}
@@ -32,6 +33,10 @@ impl Shell for Bash {
 
     fn resetcolor(&self) -> String {
         String::from("\\[\x1b[0m\\]")
+    }
+
+    fn newline(&self) -> String {
+        String::from("\n")
     }
 }
 
@@ -59,6 +64,10 @@ impl Shell for Zsh {
     fn resetcolor(&self) -> String {
         format!("%{{\x1b[0m%}}")
     }
+
+    fn newline(&self) -> String {
+        String::from("\n")
+    }
 }
 
 pub struct Fish {}
@@ -84,5 +93,39 @@ impl Shell for Fish {
 
     fn resetcolor(&self) -> String {
         format!("\x1b[0m")
+    }
+
+    fn newline(&self) -> String {
+        String::from("\n")
+    }
+}
+
+pub struct Tcsh {}
+
+impl Tcsh {
+    pub fn new() -> Tcsh {
+        Tcsh {}
+    }
+}
+
+impl Shell for Tcsh {
+    fn set_fg(&self, config: &str) -> String {
+        format!("%{{\x1b[38;5;{}m%}}", color_code(config))
+    }
+
+    fn set_bg(&self, config: &str) -> String {
+        format!("%{{\x1b[48;5;{}m%}}", color_code(config))
+    }
+
+    fn resetbackground(&self) -> String {
+        format!("%{{\x1b[49;24m%}}")
+    }
+
+    fn resetcolor(&self) -> String {
+        format!("%{{\x1b[0m%}}")
+    }
+
+    fn newline(&self) -> String {
+        String::from("%{\\n%}")
     }
 }

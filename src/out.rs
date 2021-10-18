@@ -123,7 +123,8 @@ fn out_line<'a>(
             string.push_string(" ".repeat(width as usize - sum as usize).as_str());
             string.push_string(&right_string.data);
 
-            println!("{}", string.data);
+            print!("{}", string.data);
+            print!("{}", shell.newline());
             return Some(&profile);
         }
     }

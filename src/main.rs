@@ -18,7 +18,7 @@ mod builder;
 use clap::ArgMatches;
 mod out;
 use out::*;
-use shell::{Bash, Fish, GenericShell, Zsh};
+use shell::{Bash, Fish, GenericShell, Tcsh, Zsh};
 mod config;
 
 fn main() -> Result<(), String> {
@@ -67,6 +67,7 @@ fn main() -> Result<(), String> {
         Some("bash") => Box::new(Bash::new()),
         Some("zsh") => Box::new(Zsh::new()),
         Some("fish") => Box::new(Fish::new()),
+        Some("tcsh") => Box::new(Tcsh::new()),
         _ => {
             eprintln!("Unsupported shell type");
             exit(1);
