@@ -20,6 +20,14 @@
 
 ## Install
 
+### 0. Requirements
+
+- C Compiler
+  - `gcc`
+- OpenSSL Development Package
+  - Ubuntu/Debian: `libssl-dev`
+  - Fedora: `openssl-devel`
+
 ### 1. Install `messa`
 
 - statically linked single binary from [here](https://github.com/shosatojp/messa/releases/latest)
