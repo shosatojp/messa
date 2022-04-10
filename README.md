@@ -24,9 +24,15 @@
 
 - C Compiler
   - `gcc`
+- `pkg-config`
 - OpenSSL Development Package
   - Ubuntu/Debian: `libssl-dev`
   - Fedora: `openssl-devel`
+
+```sh
+# ubuntu
+sudo apt-get install -y gcc pkg-config libssl-dev
+```
 
 ### 1. Install `messa`
 
