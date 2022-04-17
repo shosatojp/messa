@@ -43,7 +43,9 @@ sudo apt-get install -y gcc pkg-config libssl-dev
     
     > You may need to modify PATH
 
-- or Use `cargo`
+OR
+
+- via `cargo`
 
     ```sh
     cargo install messa
