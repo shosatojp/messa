@@ -42,6 +42,9 @@ sudo apt-get install -y gcc pkg-config libssl-dev
     ```
     
     > You may need to modify PATH
+    > ```
+    > export PATH="$HOME/.local/bin:$PATH"
+    > ```
 
 OR
 
