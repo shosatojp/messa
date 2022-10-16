@@ -20,20 +20,6 @@
 
 ## Install
 
-### 0. Requirements
-
-- C Compiler
-  - `gcc`
-- `pkg-config`
-- OpenSSL Development Package
-  - Ubuntu/Debian: `libssl-dev`
-  - Fedora: `openssl-devel`
-
-```sh
-# ubuntu
-sudo apt-get install -y gcc pkg-config libssl-dev
-```
-
 ### 1. Install `messa`
 
 - statically linked single binary from [here](https://github.com/shosatojp/messa/releases/latest)
@@ -49,6 +35,17 @@ sudo apt-get install -y gcc pkg-config libssl-dev
 OR
 
 - via `cargo`
+    - Requirements
+        - C Compiler
+          - `gcc`
+        - `pkg-config`
+        - OpenSSL Development Package
+          - Ubuntu/Debian: `libssl-dev`
+          - Fedora: `openssl-devel`
+        ```sh
+        # ubuntu
+        sudo apt-get install -y gcc pkg-config libssl-dev
+        ```
 
     ```sh
     cargo install messa
