@@ -24,7 +24,7 @@
 
 - statically linked single binary from [here](https://github.com/shosatojp/messa/releases/latest)
     ```sh
-    install -D -m 755 <(curl -L https://github.com/shosatojp/messa/releases/download/v2.1.0/messa) .local/bin/messa
+    install -D -m 755 <(curl -L https://github.com/shosatojp/messa/releases/download/v2.1.0/messa) ~/.local/bin/messa
     ```
     
     > You may need to modify PATH
